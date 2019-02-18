@@ -86,6 +86,10 @@ p = PropellerAds(**credentials)
 p.authorize()
 assert p.is_authorized()
 
-print json.dumps(p.campaigns_by_statuses(PropellerAds.Status.WORKING), indent=4, sort_keys=True)
+# print json.dumps(p.campaigns_by_statuses(PropellerAds.Status.WORKING), indent=4, sort_keys=True)
+
+# print json.dumps(p.campaigns_by_statuses(PropellerAds.Status.STOPPED), indent=4, sort_keys=True)
+# print p.campaign_start_by_id(1790281)
+
 # print p.campaign_stop_by_id(1790281)
 # print p.campaign_start_by_id(1790281)
