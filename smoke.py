@@ -31,41 +31,61 @@ class PropellerAds(object):
         headers = {
             'Content-Type': "application/json",
             'Cache-Control': "no-cache"
-            }
+        }
 
-        response = requests.request("POST", target_url, data=payload, headers=headers)
-        if response.status_code == 200:
-            json_response = json.loads(response.text)
-            self._token = json_response['api_token']
-        else:
-            raise Exception('Invalid Username or Password')
+        json_response = self._error_or_result(requests.request("POST", target_url, data=payload, headers=headers))
+        self._token = json_response['api_token']
 
     def is_authorized(self):
         return self._token is not None
 
+    def _auth_headers(self):
+        return { 'Authorization': 'Bearer %s' % self._token }
+    def _content_type(self):
+        return { 'Content-Type': 'application/json' }
+
+    def _error_or_result(self, response):
+        response_obj = json.loads(response.text)
+
+        if "error" in response_obj.keys() or "errors" in response_obj.keys():
+            raise Exception("'%s': %s" % (response_obj.get('message', 'Error'), response_obj['errors']))
+
+        return response_obj
+
     def campaigns_all(self, urlpath='/adv/campaigns'):
-        headers = {
-            'Authorization': 'Bearer %s' % self._token
-        }
         target_url = "%s%s" % (self.REST_URL, urlpath)
-        response = requests.request("GET", target_url, headers=headers)
-        return json.loads(response.text)
+        return self._error_or_result(requests.request("GET", target_url, headers=self._auth_headers()))
 
     def campaigns_by_statuses(self, *statuses):
         if not all([x in self.Status.ANY for x in statuses]):
             raise Exception('Invalid status provided')
-        #
         status_str = '&'.join(["status[]=%s" % str(x) for x in statuses])
 
         urlpath = '/adv/campaigns?%s' % status_str
         return self.campaigns_all(urlpath=urlpath)
 
+    def campaign_stop_by_id(self, *campaign_ids, **kwargs):
+        if len(campaign_ids) == 0:
+            return None
+
+        urlpath = kwargs.get('urlpath', '/adv/campaigns/stop')
+        target_url = "%s%s" % (self.REST_URL, urlpath)
+        headers = dict(self._auth_headers(), **self._content_type())
+        payload = json.dumps({'campaign_ids': campaign_ids})
+
+        return self._error_or_result(requests.request("PUT", target_url, headers=headers, data=payload))
+
+    def campaign_start_by_id(self, *campaign_ids, **kwargs):
+        return self.campaign_stop_by_id(*campaign_ids, urlpath='/adv/campaigns/play')
 
 
-from credentials import CREDENTIALS;
 
-p = PropellerAds(**CREDENTIALS)
+from credentials import credentials
+
+p = PropellerAds(**credentials)
 p.authorize()
 assert p.is_authorized()
 
 print json.dumps(p.campaigns_by_statuses(PropellerAds.Status.WORKING), indent=4, sort_keys=True)
+# print p.campaign_stop_by_id(1790281)
+# print p.campaign_start_by_id(1790281)
