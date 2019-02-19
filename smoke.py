@@ -37,8 +37,8 @@ class PropellerAds(object):
         self.log.info("Authorization with credentials: %s / %s", self.username, '*' * len(self.password))
 
         if self.is_authorized():
-            self.log.info("The user %s is already authorized! Token will expire on %s", self.username, self.when_authorization_will_expire())
-            return
+            self.log.debug("The user %s is already authorized! Token will expire on %s", self.username, self.when_authorization_will_expire())
+            return self
 
         target_url = "%s%s" % (self.REST_URL, urlpath)
         payload = json.dumps({'username': self.username, 'password': self.password})
@@ -51,6 +51,8 @@ class PropellerAds(object):
         self._token = json_response['api_token']
         self._token_will_expire = datetime.now() + timedelta(seconds=int(json_response['expires_in']))
         self.log.info("New authorization token acquired. Will expire on %s", self.when_authorization_will_expire())
+
+        return self
 
     def is_authorized(self):
         if self._token is None or self._token_will_expire is None:
@@ -66,6 +68,8 @@ class PropellerAds(object):
         return { 'Authorization': 'Bearer %s' % self._token }
     def _content_type(self):
         return { 'Content-Type': 'application/json' }
+    def _json_headers(self):
+        return dict(self._auth_headers(), **self._content_type())
 
     def _error_or_result(self, response):
         response_obj = json.loads(response.text)
@@ -105,10 +109,9 @@ class PropellerAds(object):
 
         urlpath = kwargs.get('urlpath', '/adv/campaigns/stop')
         target_url = "%s%s" % (self.REST_URL, urlpath)
-        headers = dict(self._auth_headers(), **self._content_type())
         payload = json.dumps({'campaign_ids': campaign_ids})
 
-        return self._error_or_result(requests.request("PUT", target_url, headers=headers, data=payload))
+        return self._error_or_result(requests.request("PUT", target_url, headers=self._json_headers(), data=payload))
 
     def campaign_start_by_id(self, *campaign_ids, **kwargs):
         self.log.info("Starting campaigns by ID: %s", campaign_ids)
@@ -117,8 +120,7 @@ class PropellerAds(object):
     def campaign_get_include_zones(self, campaign_id, urlpath='/adv/campaigns/{campaign_id}/targeting/include/zone?campaignId={campaign_id}'):
         self.log.info("Getting 'include' zone targeting for campaign: %s", campaign_id)
         target_url = "%s%s" % (self.REST_URL, urlpath.format(**{'campaign_id': campaign_id}))
-        headers = dict(self._auth_headers(), **self._content_type())
-        result = self._error_or_result(requests.request("GET", target_url, headers=headers))
+        result = self._error_or_result(requests.request("GET", target_url, headers=self._json_headers()))
         return result['zone']
 
     def campaign_get_exclude_zones(self, campaign_id, urlpath='/adv/campaigns/{campaign_id}/targeting/exclude/zone?campaignId={campaign_id}'):
@@ -128,8 +130,7 @@ class PropellerAds(object):
     def campaign_info_by_id(self, campaign_id, urlpath='/adv/campaigns/{campaign_id}'):
         self.log.info("Getting full campaign info for campaign: %s", campaign_id)
         target_url = "%s%s" % (self.REST_URL, urlpath.format(**{'campaign_id': campaign_id}))
-        headers = dict(self._auth_headers(), **self._content_type())
-        return self._error_or_result(requests.request("GET", target_url, headers=headers))
+        return self._error_or_result(requests.request("GET", target_url, headers=self._json_headers()))
 
 
 
@@ -142,8 +143,8 @@ p = PropellerAds(credentials['username'], credentials['password'], logger=logger
 p.authorize()
 assert p.is_authorized()
 
-p.campaigns_by_statuses(PropellerAds.Status.WORKING)
-p.campaigns_by_statuses(PropellerAds.Status.STOPPED)
+p.authorize().campaigns_by_statuses(PropellerAds.Status.WORKING)
+p.authorize().campaigns_by_statuses(PropellerAds.Status.STOPPED)
 
 # print json.dumps(p.campaigns_by_statuses(PropellerAds.Status.WORKING), indent=4, sort_keys=True)
 
@@ -156,6 +157,6 @@ p.campaigns_by_statuses(PropellerAds.Status.STOPPED)
 # print p.campaign_get_exclude_zones(1734282)
 # assert len(p.campaign_get_exclude_zones(1734282)) == 25
 
-print p.campaign_info_by_id(1734282)
+print p.authorize().campaign_info_by_id(1734282)
 
 # print p.campaigns_by_statuses(PropellerAds.Status.STOPPED)
