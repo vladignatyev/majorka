@@ -144,7 +144,6 @@ class PropellerAds(object):
             for item in items:
                 yield item
 
-
     def campaigns_all(self, name="campaigns", urlpath='/adv/campaigns', querystring="", per_page=50):
         return self.list_query(name=name,
                                urlpath=urlpath,
@@ -159,7 +158,6 @@ class PropellerAds(object):
 
         return self.campaigns_all(name="campaigns with statuses: %s" % statuses,
                                   querystring=self._query_multifield('status', *statuses))
-
 
     def campaign_stop_by_id(self, *campaign_ids, **kwargs):
         if len(campaign_ids) == 0:
@@ -177,15 +175,23 @@ class PropellerAds(object):
         self.log.info("Starting campaigns by ID: %s", campaign_ids)
         return self.campaign_stop_by_id(*campaign_ids, urlpath='/adv/campaigns/play')
 
-    def campaign_get_include_zones(self, campaign_id, urlpath='/adv/campaigns/{campaign_id}/targeting/include/zone?campaignId={campaign_id}'):
-        self.log.info("Getting 'include' zone targeting for campaign: %s", campaign_id)
+    def campaign_get_include_zones(self, campaign_id, targeting_name='include', urlpath='/adv/campaigns/{campaign_id}/targeting/include/zone?campaignId={campaign_id}'):
+        self.log.info("Getting '%s' zone targeting for campaign: %s", targeting_name, campaign_id)
         target_url = "%s%s" % (self.REST_URL, urlpath.format(**{'campaign_id': campaign_id}))
         result = self._error_or_result(requests.request("GET", target_url, headers=self._json_headers()))
         return result['zone']
 
+    def campaign_set_include_zones(self, campaign_id, zones, targeting_name='include', urlpath='/adv/campaigns/{campaign_id}/targeting/include/zone'):
+        self.log.info("Setting '%s' zone targeting for campaign: %s", targeting_name, campaign_id)
+        target_url = "%s%s" % (self.REST_URL, urlpath.format(**{'campaign_id': campaign_id}))
+        payload = json.dumps({'zone': zones})
+        return self._error_or_result(requests.request("PUT", target_url, headers=self._json_headers(), data=payload))
+
+    def campaign_set_exclude_zones(self, campaign_id, zones, urlpath='/adv/campaigns/{campaign_id}/targeting/exclude/zone'):
+        return self.campaign_set_include_zones(campaign_id=campaign_id, zones=zones, targeting_name='exclude', urlpath=urlpath)
+
     def campaign_get_exclude_zones(self, campaign_id, urlpath='/adv/campaigns/{campaign_id}/targeting/exclude/zone?campaignId={campaign_id}'):
-        self.log.info("Getting 'exclude' zone targeting for campaign: %s", campaign_id)
-        return self.campaign_get_include_zones(campaign_id, urlpath=urlpath)
+        return self.campaign_get_include_zones(campaign_id, targeting_name='exclude', urlpath=urlpath)
 
     def campaign_info_by_id(self, campaign_id, urlpath='/adv/campaigns/{campaign_id}'):
         self.log.info("Getting full campaign info for campaign: %s", campaign_id)

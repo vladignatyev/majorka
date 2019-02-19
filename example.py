@@ -5,8 +5,7 @@ from credentials import credentials
 # ugly format because of handmade coloring
 logging.basicConfig(format='\33[92m[%(name)s] \33[0m\33[90m%(asctime)-15s\33[1m\33[37m %(message)s\33[0m')
 logger = logging.getLogger('propellerads')
-# logger.setLevel(logging.DEBUG)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 propeller = PropellerAds(credentials['username'], credentials['password'], logger=logger)
 # p.authorize()
@@ -15,13 +14,16 @@ propeller = PropellerAds(credentials['username'], credentials['password'], logge
 # for campaign in propeller.authorized().campaigns_by_statuses(PropellerAds.Status.STOPPED):
 #     print campaign
 
-from datetime import datetime, timedelta
-for stat in propeller.authorized().get_statistics(
-                                campaign_ids=(1791408,),
-                                date_from=(datetime.now() - timedelta(days=7)),
-                                date_to=datetime.now(),
-                                group_by=(PropellerAds.GroupBy.ZONE_ID,)):
-    print stat
+# from datetime import datetime, timedelta
+# for stat in propeller.authorized().get_statistics(campaign_ids=(1791408,),
+#                                                   date_from=(datetime.now() - timedelta(days=7)),
+#                                                   date_to=datetime.now(),
+#                                                   group_by=(PropellerAds.GroupBy.ZONE_ID,)):
+#     print stat
+
+
+# print propeller.authorized().campaign_set_include_zones(campaign_id=1791408, zones=[634917, 762488])
+print propeller.authorized().campaign_set_exclude_zones(campaign_id=1791408, zones=[634917, 762488])
 
 
 # for campaign in propeller.authorized().campaigns_all():
