@@ -2,6 +2,7 @@ import logging
 from apis.propellerads import PropellerAds
 from credentials import credentials
 
+# ugly format because of handmade coloring
 logging.basicConfig(format='\33[92m[%(name)s] \33[0m\33[90m%(asctime)-15s\33[1m\33[37m %(message)s\33[0m')
 logger = logging.getLogger('propellerads')
 logger.setLevel(logging.INFO)
@@ -10,8 +11,14 @@ propeller = PropellerAds(credentials['username'], credentials['password'], logge
 # p.authorize()
 # assert p.is_authorized()
 
-propeller.authorized().campaigns_by_statuses(PropellerAds.Status.WORKING)
-propeller.authorized().campaigns_by_statuses(PropellerAds.Status.STOPPED)
+for campaign in propeller.authorized().campaigns_by_statuses(PropellerAds.Status.STOPPED):
+    print campaign
+
+
+# for campaign in propeller.authorized().campaigns_all():
+#     print campaign
+
+# propeller.authorized().campaigns_by_statuses(PropellerAds.Status.STOPPED)
 
 # print json.dumps(propeller.authorized().campaigns_by_statuses(PropellerAds.Status.WORKING), indent=4, sort_keys=True)
 
@@ -27,8 +34,3 @@ propeller.authorized().campaigns_by_statuses(PropellerAds.Status.STOPPED)
 # print propeller.authorized().campaign_info_by_id(1734282)
 
 # print propeller.authorized().campaigns_by_statuses(PropellerAds.Status.STOPPED)
-#
-# CRED = '\033[91m'
-# CEND = '\033[0m'
-#
-# print CRED + "TEST!!!" + CEND
