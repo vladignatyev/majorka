@@ -2,7 +2,7 @@ import logging
 from apis.propellerads import PropellerAds
 from credentials import credentials
 
-logging.basicConfig(format='\33[92m [%(name)s] \33[0m\33[90m %(asctime)-15s \33[1m\33[37m %(message)s \33[0m')
+logging.basicConfig(format='\33[92m[%(name)s] \33[0m\33[90m%(asctime)-15s\33[1m\33[37m %(message)s\33[0m')
 logger = logging.getLogger('propellerads')
 logger.setLevel(logging.INFO)
 
