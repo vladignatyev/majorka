@@ -118,7 +118,7 @@ class PropellerAds(object):
         return (items, page, total_pages)
 
     def _query_multifield(self, field_name, *values):
-        return '&'.join(["%s[]=%s" % (field_name, str(x)) for x in values])
+        return ('&'.join(["%s[]=%s" % (field_name, str(x)) for x in values])) or ''
 
     '''
     Function for iterating over result that contains multiple items
@@ -192,4 +192,22 @@ class PropellerAds(object):
         target_url = "%s%s" % (self.REST_URL, urlpath.format(**{'campaign_id': campaign_id}))
         return self._error_or_result(requests.request("GET", target_url, headers=self._json_headers()))
 
-    
+    def get_statistics(self, date_from, date_to, campaign_ids=(), zone_ids=(), group_by=(), urlpath='/adv/statistics', per_page=50):
+        if not self.GroupBy.is_valid_grouping(*group_by):
+            self.log.critical("Invalid 'group by' provided %s", group_by)
+            raise Exception("Invalid 'group by' provided! %s", group_by)
+
+        querystring = "&".join((self._query_multifield('campaign_id', *campaign_ids),
+                            self._query_multifield('zone_id', *zone_ids),
+                            self._query_multifield('group_by', *group_by),
+                            "date_from=%s" % date_from.strftime('%Y-%m-%d'),
+                            "date_to=%s" % date_to.strftime('%Y-%m-%d')))
+
+        self.log.debug("URL: %s", urlpath)
+        self.log.debug("Querystring: %s", querystring)
+
+        return self.list_query(name="table values of statistics",
+                               urlpath=urlpath,
+                               headers=self._auth_headers(),
+                               querystring=querystring,
+                               per_page=per_page)
