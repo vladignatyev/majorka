@@ -38,7 +38,7 @@ class PropellerAds(object):
 
         if self.is_authorized():
             self.log.debug("The user %s is already authorized! Token will expire on %s", self.username, self.when_authorization_will_expire())
-            return self
+            return
 
         target_url = "%s%s" % (self.REST_URL, urlpath)
         payload = json.dumps({'username': self.username, 'password': self.password})
@@ -52,6 +52,8 @@ class PropellerAds(object):
         self._token_will_expire = datetime.now() + timedelta(seconds=int(json_response['expires_in']))
         self.log.info("New authorization token acquired. Will expire on %s", self.when_authorization_will_expire())
 
+    def authorized(self):
+        self.authorize()
         return self
 
     def is_authorized(self):
@@ -139,24 +141,24 @@ logger = logging.getLogger('propellerads')
 logger.setLevel(logging.INFO)
 
 from credentials import credentials
-p = PropellerAds(credentials['username'], credentials['password'], logger=logger)
-p.authorize()
-assert p.is_authorized()
+propeller = PropellerAds(credentials['username'], credentials['password'], logger=logger)
+# p.authorize()
+# assert p.is_authorized()
 
-p.authorize().campaigns_by_statuses(PropellerAds.Status.WORKING)
-p.authorize().campaigns_by_statuses(PropellerAds.Status.STOPPED)
+propeller.authorized().campaigns_by_statuses(PropellerAds.Status.WORKING)
+propeller.authorized().campaigns_by_statuses(PropellerAds.Status.STOPPED)
 
-# print json.dumps(p.campaigns_by_statuses(PropellerAds.Status.WORKING), indent=4, sort_keys=True)
+# print json.dumps(propeller.authorized().campaigns_by_statuses(PropellerAds.Status.WORKING), indent=4, sort_keys=True)
 
-# print json.dumps(p.campaigns_by_statuses(PropellerAds.Status.STOPPED), indent=4, sort_keys=True)
-# print p.campaign_start_by_id(1790281)
+# print json.dumps(propeller.authorized().campaigns_by_statuses(PropellerAds.Status.STOPPED), indent=4, sort_keys=True)
+# print propeller.authorized().campaign_start_by_id(1790281)
 
-# p.campaign_stop_by_id(1791408)
-# print p.campaign_start_by_id(1790281)
+# propeller.authorized().campaign_stop_by_id(1791408)
+# print propeller.authorized().campaign_start_by_id(1790281)
 
-# print p.campaign_get_exclude_zones(1734282)
-# assert len(p.campaign_get_exclude_zones(1734282)) == 25
+# print propeller.authorized().campaign_get_exclude_zones(1734282)
+# assert len(propeller.authorized().campaign_get_exclude_zones(1734282)) == 25
 
-print p.authorize().campaign_info_by_id(1734282)
+print propeller.authorized().campaign_info_by_id(1734282)
 
-# print p.campaigns_by_statuses(PropellerAds.Status.STOPPED)
+# print propeller.authorized().campaigns_by_statuses(PropellerAds.Status.STOPPED)
