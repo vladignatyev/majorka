@@ -1,3 +1,0 @@
-
-class RedirectServer(object):
-    pass
