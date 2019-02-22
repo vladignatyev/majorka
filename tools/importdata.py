@@ -21,10 +21,9 @@ print campaign.offers
 # # import timeit
 # # start = timeit.timeit()
 for hit in c.multiread('Hits'):
-    # print hit.__dict__
     print hit.cost
     print hit.time
     print hit.destination
-    break
+
 # # end = timeit.timeit()
 # # print end - start
