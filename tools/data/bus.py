@@ -7,7 +7,7 @@ class DataException(Exception):
 
 
 def _check_entity(some_entity):
-    return some_entity in ENTITIES_KEYS
+    return some_entity in ENTITIES.keys()
 
 def _get_entity_from_key(key_or_entity):
     id_chunks = key_or_entity.split(':', 1)
@@ -27,7 +27,7 @@ def _check_id(some_id):
 
 
 def _parse_one_result(o):
-    return (json.loads(o) if str(o).startswith('{') else o)
+    return json.loads(o)
 
 def _parse_result(*results):
     return map(lambda (o, f): f(**_parse_one_result(o)) if str(o).startswith('{') else o, results)
@@ -91,6 +91,6 @@ class Connection(object):
 
         n = start_idx
         while n <= end_idx:
-            obj = _parse_one_result(self._redis.get(_key_by_index(entity, n)))
+            obj = _parse_result((self._redis.get(_key_by_index(entity, n)), ENTITIES[entity]))[0]
             yield obj
             n += 1
