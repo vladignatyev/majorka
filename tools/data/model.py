@@ -1,25 +1,16 @@
-from base import DbObject
+from base import *
 
 
 class Campaign(DbObject):
     @property
-    def alias(self):
-        return self.__dict__['alias']
-
-    @property
+    @linked('offers')
     def offers(self):
-        self._getter_stub()
-
-    def get_offers(self, connection):
-        return self._get_linked_objects(connection, 'offers')
+        pass
 
     @property
+    @linked('paused_offers')
     def paused_offers(self):
-        self._getter_stub()
-
-    def get_paused_offers(self, connection):
-        return self._get_linked_objects(connection, 'paused_offers')
-
+        pass
 
 class Offer(DbObject):
     pass  # default implementation
@@ -27,28 +18,36 @@ class Offer(DbObject):
 
 class Conversion(DbObject):
     @property
+    @time('time')
     def time(self):
-        return self._getter_timefield()
+        pass
 
     @property
+    @money('revenue')
     def revenue(self):
-        return self._getter_money_field('revenue')
+        pass
 
 
 class Hit(DbObject):
-    def get_campaign(self, connection):
-        return self._get_linked_objects(connection, 'campaign_id')
-
-    def get_destination(self, connection):
-        return self._get_linked_objects(connection, 'destination_id')
+    @property
+    @linked('campaign_id')
+    def campaign(self):
+        pass
 
     @property
+    @linked('destination_id')
+    def destination(self):
+        pass
+
+    @property
+    @money('cost')
     def cost(self):
-        return self._getter_money_field('cost')
+        pass
 
     @property
+    @time('time')
     def time(self):
-        return self._getter_timefield()
+        pass
 
 
 # see entity names in core/src/campaigns/model.rs

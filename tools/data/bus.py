@@ -29,8 +29,8 @@ def _check_id(some_id):
 def _parse_one_result(o):
     return json.loads(o)
 
-def _parse_result(*results):
-    return map(lambda (o, f): f(**_parse_one_result(o)) if str(o).startswith('{') else o, results)
+def _parse_result(connection, *results):
+    return map(lambda (o, f): f(connection, **_parse_one_result(o)) if str(o).startswith('{') else o, results)
 
 def _key_counter(checked_entity):
     return "%s:_counter" % checked_entity
@@ -53,18 +53,19 @@ def checked_entity(func):
 
 
 class AllowedQueriesPipeline(object):
-    def __init__(self, redis_pipe):
-        self.pipe = redis_pipe
-        self.factories = []
+    def __init__(self, connection, redis_pipe):
+        self._connection = connection
+        self._pipe = redis_pipe
+        self._factories = []
 
     @checked_id
     def by_id(self, id):
-        self.pipe.get(id)
-        self.factories.append(ENTITIES[_get_entity_from_key(id)])
+        self._pipe.get(id)
+        self._factories.append(ENTITIES[_get_entity_from_key(id)])
         return self
 
     def execute(self):
-        return _parse_result(*zip(self.pipe.execute(), self.factories))
+        return _parse_result(self._connection, *zip(self._pipe.execute(), self._factories))
 
 
 class Connection(object):
@@ -72,7 +73,7 @@ class Connection(object):
         self._redis = Redis(**kwargs)
 
     def readonly(self):
-        return AllowedQueriesPipeline(self._redis.pipeline())
+        return AllowedQueriesPipeline(self, self._redis.pipeline())
 
     @checked_entity
     def multiread(self, entity, start_idx=0, end_idx=None):
@@ -91,6 +92,6 @@ class Connection(object):
 
         n = start_idx
         while n <= end_idx:
-            obj = _parse_result((self._redis.get(_key_by_index(entity, n)), ENTITIES[entity]))[0]
+            obj = _parse_result(self, (self._redis.get(_key_by_index(entity, n)), ENTITIES[entity]))[0]
             yield obj
             n += 1

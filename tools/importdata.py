@@ -11,7 +11,7 @@ campaign, offer1, offer2, nonexisting, conversion = c.readonly()\
 
 print conversion.revenue
 print conversion.time
-print campaign.get_offers(c)
+print campaign.offers
 #
 # print campaign.get_offers(c)
 # print offer1.__dict__
@@ -24,7 +24,7 @@ for hit in c.multiread('Hits'):
     # print hit.__dict__
     print hit.cost
     print hit.time
-    print hit.get_destination(c)
+    print hit.destination
     break
 # # end = timeit.timeit()
 # # print end - start
