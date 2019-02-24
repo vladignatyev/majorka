@@ -1,7 +1,7 @@
 from base import *
 
 
-class Campaign(DbObject):
+class Campaign(DataObject):
     @property
     @linked('offers')
     def offers(self):
@@ -12,11 +12,11 @@ class Campaign(DbObject):
     def paused_offers(self):
         pass
 
-class Offer(DbObject):
+class Offer(DataObject):
     pass  # default implementation
 
 
-class Conversion(DbObject):
+class Conversion(DataObject):
     @property
     @time('time')
     def time(self):
@@ -28,7 +28,7 @@ class Conversion(DbObject):
         pass
 
 
-class Hit(DbObject):
+class Hit(DataObject):
     @property
     @linked('campaign_id')
     def campaign(self):
@@ -57,16 +57,3 @@ ENTITIES = {
     'Conversions': Conversion,
     'Hits': Hit
 }
-
-
-
-class DataimportScheme(object):
-    _COLUMNS = (('name', str), ('_counter', long))
-
-    def __init__(self):
-        self.entities_info = {}
-
-    def read(self, reporting_connection):
-        c = reporting_connection.connected()
-        for row, _, _ in c.read("SELECT * FROM dataimport_scheme;", columns=_COLUMNS):
-            self.entities_info.update(row)

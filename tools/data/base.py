@@ -3,7 +3,7 @@ from decimal import *
 from functools import wraps
 
 
-class DbObject(object):
+class DataObject(object):
     MONEY_DECIMAL_SHIFT = 100000  # see core/src/campaigns/currency/mod.rs
 
     def __init__(self, connection, **kwargs):
@@ -47,3 +47,17 @@ def linked(ids_field):
 
         return wrapped
     return wrapper
+
+
+class DataimportScheme(object):
+    _COLUMNS = (('name', str), ('_counter', long))
+
+    def __init__(self):
+        self.entities_info = {}
+
+    def read(self, reporting_connection):
+        c = reporting_connection.connected()
+        for row, _, _ in c.read("SELECT * FROM dataimport_scheme;", columns=_COLUMNS):
+            self.entities_info.update(row)
+
+    
