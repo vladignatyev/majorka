@@ -57,3 +57,16 @@ ENTITIES = {
     'Conversions': Conversion,
     'Hits': Hit
 }
+
+
+
+class DataimportScheme(object):
+    _COLUMNS = (('name', str), ('_counter', long))
+
+    def __init__(self):
+        self.entities_info = {}
+
+    def read(self, reporting_connection):
+        c = reporting_connection.connected()
+        for row, _, _ in c.read("SELECT * FROM dataimport_scheme;", columns=_COLUMNS):
+            self.entities_info.update(row)

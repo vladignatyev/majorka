@@ -1,3 +1,6 @@
 redis==3.2.0
 requests==2.21.0
 hiredis==1.0.0
+furl==2.0.0
+ipaddr==2.2.0
+prettytable==0.7.2
