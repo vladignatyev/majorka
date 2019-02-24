@@ -6,9 +6,15 @@ from functools import wraps
 class DataObject(object):
     MONEY_DECIMAL_SHIFT = 100000  # see core/src/campaigns/currency/mod.rs
 
-    def __init__(self, connection, **kwargs):
+    def __init__(self, connection, id, **kwargs):
+        self._from_id(id)
         self._connection = connection
         self.__dict__.update(**kwargs)
+
+    def _from_id(self, id):
+        self._id = id
+        self._entity = id.split(':')[0]
+        self._idx = long(id.split('[')[1].split(']')[0])
 
 
 def money(field):
@@ -47,17 +53,3 @@ def linked(ids_field):
 
         return wrapped
     return wrapper
-
-
-class DataimportScheme(object):
-    _COLUMNS = (('name', str), ('_counter', long))
-
-    def __init__(self):
-        self.entities_info = {}
-
-    def read(self, reporting_connection):
-        c = reporting_connection.connected()
-        for row, _, _ in c.read("SELECT * FROM dataimport_scheme;", columns=_COLUMNS):
-            self.entities_info.update(row)
-
-    

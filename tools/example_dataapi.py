@@ -27,7 +27,7 @@ print conversion.time
 print offer1.__dict__
 
 
-for hit in c.multiread('Hits'):
+for hit in bus.multiread('Hits'):
     print hit.cost
     print hit.time
     print hit.destination

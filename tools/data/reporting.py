@@ -11,7 +11,8 @@ class ConnectionError(Exception):
 class DbError(Exception):
     def __init__(self, query_string, error_string):
         message = """
-        Database responded with error when tried to execute SQL.
+
+        Database responded with error when tried to execute SQL statement.
         SQL statement: %s
           DB response: %s
         """ % (query_string, error_string)
@@ -25,25 +26,64 @@ class Database(object):
         self._db_is_created = None  # Unknown
         self.ping()
 
+    def drop(self):
+        self.write("DROP DATABASE %s;" % self._db)
+
     def connected(self):
         self._create_database()
         return self
 
     def read(self, sql, columns=(), simple=False):
         head_foot = self._divide(sql)
+
         if len(head_foot) == 2: # if SQL is multiline
             head, foot = head_foot
             response = requests.request("GET", self._query_url(head), data=foot)
         else:
             response = requests.request("GET", self._query_url(head_foot))
-        return self._parsed_result(sql, response, columns, simple)
+
+        if simple:
+            return self._parsed_result_simple(sql, response)
+        else:
+            return self._parsed_result(sql, response, columns)
 
     def write(self, sql):
-        response = requests.request("POST", self._query_url(sql))
-        return self._parsed_result(sql, response, simple=True)
+        head_foot = self._divide(sql)
+        if len(head_foot) == 2: # if SQL is multiline
+            head, foot = head_foot
+            response = requests.request("POST", self._query_url(head), data=foot)
+        else:
+            response = requests.request("POST", self._query_url(head_foot))
+
+        return self._parsed_result_simple(sql, response)
 
     def importdata(self):
         pass
+
+    def _entity_name_to_table_name(self, entity_name):
+        return "%s" % (entity_name.lower())
+
+    def create_entity_table(self, entity_name):
+        table_name = self._entity_name_to_table_name(entity_name)
+        sql = """
+        CREATE TABLE IF NOT EXISTS %s.%s
+        (
+            date_added Date DEFAULT today(),
+            id UInt64
+        ) ENGINE = MergeTree(date_added, (id, date_added), 8192)
+        """ % (self._db, table_name)
+        self.write(sql)
+
+    def insert_entity(self, entity_name, entity):
+        table_name = self._entity_name_to_table_name(entity_name)
+
+
+        pass
+
+    def describe(self, table_name, db=None):
+        db = db or self._db
+        return self.read(sql="DESCRIBE TABLE %s.%s;" % (db, table_name),
+                         columns=(('name', str), ('type', str)))
 
     def ping(self):
         try:
@@ -63,12 +103,14 @@ class Database(object):
         if self._db_is_created is None:
             self._db_is_created = self.write(sql="CREATE DATABASE IF NOT EXISTS \"%s\";" % self._db)
 
-    def _parsed_result(self, query, response, columns=(), simple=False):
+    def _parsed_result_simple(self, query, response):
         if response.status_code != 200:
             raise DbError(query, response.text)
+        return True
 
-        if simple:
-            return  # if no exception occured, just return empty iterator
+    def _parsed_result(self, query, response, columns=()):
+        if response.status_code != 200:
+            raise DbError(query, response.text)
 
         response_strings = response.text.split('\n')
         rows = list(filter(bool, response_strings)) # clean out empty strings

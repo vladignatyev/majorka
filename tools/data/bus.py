@@ -26,12 +26,6 @@ def _check_id(some_id):
     return some_id
 
 
-def _parse_one_result(o):
-    return json.loads(o)
-
-def _parse_result(connection, *results):
-    return map(lambda (o, f): f(connection, **_parse_one_result(o)) if str(o).startswith('{') else o, results)
-
 def _key_counter(checked_entity):
     return "%s:_counter" % checked_entity
 
@@ -52,20 +46,26 @@ def checked_entity(func):
     return wrapped
 
 
+def _parse_result(connection, *results):
+    return map(lambda (i, o, f): f(connection, i, **json.loads(o)) if str(o).startswith('{') else o, results)
+
+
 class AllowedQueriesPipeline(object):
     def __init__(self, connection, redis_pipe):
         self._connection = connection
         self._pipe = redis_pipe
         self._factories = []
+        self._ids = []
 
     @checked_id
     def by_id(self, id):
         self._pipe.get(id)
         self._factories.append(ENTITIES[_get_entity_from_key(id)])
+        self._ids.append(id)
         return self
 
     def execute(self):
-        return _parse_result(self._connection, *zip(self._pipe.execute(), self._factories))
+        return _parse_result(self._connection, *zip(self._ids, self._pipe.execute(), self._factories))
 
 
 class Connection(object):
@@ -76,8 +76,8 @@ class Connection(object):
         return AllowedQueriesPipeline(self, self._redis.pipeline())
 
     @checked_entity
-    def multiread(self, entity, start_idx=0, end_idx=None):
-        if start_idx < 0:
+    def multiread(self, entity, start=0, end=None):
+        if start < 0:
             raise Exception("Start index couldn't be less than 0.")
 
         checked_entity = entity
@@ -85,13 +85,13 @@ class Connection(object):
         counter = int(self._redis.get(_key_counter(checked_entity))) or 0
         last_idx = counter - 1
 
-        if start_idx > last_idx:
-            return # there is no objects to read
-        if end_idx is None:
-            end_idx = last_idx
+        if start > last_idx:
+            return # there is no objects to read, returning empty iterator
+        if end is None:
+            end = last_idx
 
-        n = start_idx
-        while n <= end_idx:
-            obj = _parse_result(self, (self._redis.get(_key_by_index(entity, n)), ENTITIES[entity]))[0]
+        n = start
+        while n <= end:
+            obj = _parse_result(self, (_key_by_index(entity, n), self._redis.get(_key_by_index(entity, n)), ENTITIES[entity]))[0]
             yield obj
             n += 1
