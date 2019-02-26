@@ -99,3 +99,6 @@ Set the 'TEST_CLICKHOUSE_URL' environmental variable to proper Clickhouse URL.
 
     def test_describe(self):
         db = self.report_db.connected()
+        schema_rows = list(db.describe(db='system', table='processes'))
+        self.assertEqual(len(schema_rows), 35)
+        self.assertIn({'type': 'Int64', 'name': 'memory_usage'}, zip(*schema_rows)[0])

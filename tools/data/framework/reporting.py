@@ -41,9 +41,9 @@ class Database(object):
     def drop(self):
         self.write("DROP DATABASE %s;" % self._db)
 
-    def describe(self, table_name, db=None):
+    def describe(self, table, db=None):
         db = db or self._db
-        return self.read(sql="DESCRIBE TABLE %s.%s;" % (db, table_name),
+        return self.read(sql="DESCRIBE TABLE %s.%s;" % (db, table),
                          columns=(('name', ModelTypes.STRING), ('type', ModelTypes.STRING)))
 
     def read(self, sql, columns=(), simple=False):
