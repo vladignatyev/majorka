@@ -1,3 +1,4 @@
+import sys
 import json
 from redis import Redis
 from model import *
@@ -5,6 +6,8 @@ from model import *
 class DataException(Exception):
     pass
 
+class UnsafeException(Exception):
+    pass
 
 def _check_entity(some_entity):
     return some_entity in ENTITIES.keys()
@@ -67,13 +70,27 @@ class AllowedQueriesPipeline(object):
     def execute(self):
         return _parse_result(self._connection, *zip(self._ids, self._pipe.execute(), self._factories))
 
+class Unsafe(object):
+    def __init__(self, redis):
+        if not 'unittest' in sys.modules:
+            raise UnsafeException("""`Unsafe` set of commands can be executed only within test code.""")
+
+        self._redis = redis
+
+    def flushdb(self):
+        self._redis.flushdb()
+
+
 
 class Connection(object):
-    def __init__(self, **kwargs):
-        self._redis = Redis(**kwargs)
+    def __init__(self, redis_url):
+        self._redis = Redis.from_url(redis_url)
 
     def readonly(self):
         return AllowedQueriesPipeline(self, self._redis.pipeline())
+
+    def unsafe(self):
+        return Unsafe(self._redis)
 
     @checked_entity
     def multiread(self, entity, start=0, end=None):

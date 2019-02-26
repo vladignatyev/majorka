@@ -3,6 +3,8 @@ import re
 from furl import furl
 import requests
 
+from types import ModelTypes, factory_from_db_type
+
 
 class ConnectionError(Exception):
     pass
@@ -26,12 +28,23 @@ class Database(object):
         self._db_is_created = None  # Unknown
         self.ping()
 
-    def drop(self):
-        self.write("DROP DATABASE %s;" % self._db)
+    def ping(self):
+        try:
+            self.read(sql="SELECT 1;", simple=True)
+        except DbError:
+            raise ConnectionError("Connection is not available.")
 
     def connected(self):
         self._create_database()
         return self
+
+    def drop(self):
+        self.write("DROP DATABASE %s;" % self._db)
+
+    def describe(self, table_name, db=None):
+        db = db or self._db
+        return self.read(sql="DESCRIBE TABLE %s.%s;" % (db, table_name),
+                         columns=(('name', ModelTypes.STRING), ('type', ModelTypes.STRING)))
 
     def read(self, sql, columns=(), simple=False):
         head_foot = self._divide(sql)
@@ -57,39 +70,9 @@ class Database(object):
 
         return self._parsed_result_simple(sql, response)
 
-    def importdata(self):
-        pass
-
-    def _entity_name_to_table_name(self, entity_name):
-        return "%s" % (entity_name.lower())
-
-    def create_entity_table(self, entity_name):
-        table_name = self._entity_name_to_table_name(entity_name)
-        sql = """
-        CREATE TABLE IF NOT EXISTS %s.%s
-        (
-            date_added Date DEFAULT today(),
-            id UInt64
-        ) ENGINE = MergeTree(date_added, (id, date_added), 8192)
-        """ % (self._db, table_name)
-        self.write(sql)
-
-    def insert_entity(self, entity_name, entity):
-        table_name = self._entity_name_to_table_name(entity_name)
-
-
-        pass
-
-    def describe(self, table_name, db=None):
+    def get_columns_for_table(self, table_name, db=None):
         db = db or self._db
-        return self.read(sql="DESCRIBE TABLE %s.%s;" % (db, table_name),
-                         columns=(('name', str), ('type', str)))
-
-    def ping(self):
-        try:
-            self.read(sql="SELECT 1;", simple=True)
-        except DbError:
-            raise ConnectionError("Connection is not available.")
+        return map(lambda (o, i, l): (o['name'], o['type']), self.describe(table_name, db=db))
 
     def _divide(self, s):
         try:
@@ -121,7 +104,8 @@ class Database(object):
         try:
             # if columns is ((name1, type1), (name2, type2)...) tuple
             field_names, field_types = zip(*columns)
-            return self._typed_dict_from_result(rows, field_names, field_types)
+            type_factories = map(lambda db_type: factory_from_db_type(db_type), field_types)
+            return self._typed_dict_from_result(rows, field_names, type_factories)
         except:
             # if columns is (name1, name2...) tuple
             field_names = columns
@@ -132,14 +116,14 @@ class Database(object):
             fields = s.split('\t')
             yield list(map(_response_field_parser, fields)), i, total
 
-    def _typed_dict_from_result(self, row_strings, field_names, field_types):
+    def _typed_dict_from_result(self, row_strings, field_names, type_factories):
         total = len(row_strings)
         for i, s in enumerate(row_strings):
             fields = s.split('\t')
-            yield dict(zip(field_names, self._typed(field_types, fields))), i, total
+            yield dict(zip(field_names, self._typed(type_factories, fields))), i, total
 
-    def _typed(self, types, vals):
-        return map(lambda (t, v): t(v), zip(types, vals))
+    def _typed(self, type_factories, vals):
+        return map(lambda (t, v): t(v), zip(type_factories, vals))
 
     def _dict_from_result(self, row_strings, field_names):
         total = len(row_strings)

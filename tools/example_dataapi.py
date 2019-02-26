@@ -59,3 +59,14 @@ for row, i, total in report_db.connected().read(sql="SELECT user, address, elaps
 for row, i, total in report_db.connected().read(sql="SELECT user, address, elapsed, memory_usage FROM system.processes;",
                                                 columns=('user', 'address', 'elapsed', 'memory_usage')):
     print row
+
+
+# Typed read of unknown table structure
+#######################################
+
+# columns is a ((name1, type1), (name2, type2) ...) tuple
+columns = report_db.connected().get_columns_for_table("processes", db='system')
+
+for o, i, l in report_db.connected().read(sql="SELECT * FROM system.processes;",
+                                          columns=columns):
+    print o
