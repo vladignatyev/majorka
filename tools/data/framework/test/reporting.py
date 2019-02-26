@@ -102,3 +102,19 @@ Set the 'TEST_CLICKHOUSE_URL' environmental variable to proper Clickhouse URL.
         schema_rows = list(db.describe(db='system', table='processes'))
         self.assertEqual(len(schema_rows), 35)
         self.assertIn({'type': 'Int64', 'name': 'memory_usage'}, zip(*schema_rows)[0])
+
+    def test_use_get_columns_for_table_for_typed_reading_from_table_with_unknown_schema(self):
+        db = self.report_db.connected()
+
+        query = "select * from system.processes;"
+        schema = db.get_columns_for_table(db='system', table='processes')
+
+        for row, i, l in db.read(sql=query, columns=schema):
+            self.assertEqual(l, 1)
+            self.assertEqual(type(row['port']), int)
+            self.assertEqual(type(row['Settings.Values']), list)
+            self.assertEqual(type(row['ProfileEvents.Values']), list)
+            self.assertTrue(all(map(lambda item: type(item) == int, row['ProfileEvents.Values'])))
+            self.assertEqual(type(row['http_method']), bool)
+            self.assertTrue(row['http_method'])
+            break

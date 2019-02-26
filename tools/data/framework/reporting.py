@@ -70,9 +70,9 @@ class Database(object):
 
         return self._parsed_result_simple(sql, response)
 
-    def get_columns_for_table(self, table_name, db=None):
+    def get_columns_for_table(self, table, db=None):
         db = db or self._db
-        return map(lambda (o, i, l): (o['name'], o['type']), self.describe(table_name, db=db))
+        return map(lambda (o, i, l): (o['name'], o['type']), self.describe(table=table, db=db))
 
     def _divide(self, s):
         try:
