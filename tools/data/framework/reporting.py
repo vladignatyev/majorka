@@ -104,7 +104,11 @@ class Database(object):
         try:
             # if columns is ((name1, type1), (name2, type2)...) tuple
             field_names, field_types = zip(*columns)
-            type_factories = map(lambda db_type: factory_from_db_type(db_type), field_types)
+
+            if type(field_types[0]) is str:
+                type_factories = map(lambda db_type: factory_from_db_type(db_type), field_types)
+            else:
+                type_factories = field_types
             return self._typed_dict_from_result(rows, field_names, type_factories)
         except:
             # if columns is (name1, name2...) tuple
@@ -112,9 +116,10 @@ class Database(object):
             return self._dict_from_result(rows, field_names)
 
     def _list_from_result(self, row_strings):
+        total = len(row_strings)
         for i, s in enumerate(row_strings):
             fields = s.split('\t')
-            yield list(map(_response_field_parser, fields)), i, total
+            yield list(map(str, fields)), i, total
 
     def _typed_dict_from_result(self, row_strings, field_names, type_factories):
         total = len(row_strings)

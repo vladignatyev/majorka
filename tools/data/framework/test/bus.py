@@ -18,11 +18,10 @@ def import_fixture(redis_instance, data):
 
 class DatabusTestCase(unittest.TestCase):
     def setUp(self):
-        print(os.environ.get('TEST_REDIS_URL'))
         if not os.environ.get('TEST_REDIS_URL', None):
             raise Exception("""
 
-For safety reason, framework tests are running only on test Redis instance.
+For safety reason, framework tests are running only on test database instance.
 Set the 'TEST_REDIS_URL' environmental variable to proper Redis URL.
             """)
             return # just in case
