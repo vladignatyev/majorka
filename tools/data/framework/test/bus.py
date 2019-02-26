@@ -1,6 +1,10 @@
 import unittest
 import sys
 
+print sys.path
+
+from ..bus import Connection
+
 class DatabusTestCase(unittest.TestCase):
     def setUp(self):
         print "set up"

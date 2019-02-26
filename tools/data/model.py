@@ -2,7 +2,7 @@ from framework.base import *
 from framework.types import ModelTypes, _db_type_into_money, _db_type_into_linked, _db_type_into_datetime
 
 
-class Campaign(DataObject):
+class Campaign(DataObject, ReportingObject):
     @property
     @linked('offers')
     def offers(self):
@@ -28,11 +28,11 @@ class Campaign(DataObject):
          ('slicing_attrs', ModelTypes.ARRAY_OF_STRINGS))
 
 
-class Offer(DataObject):
+class Offer(DataObject, ReportingObject):
     pass  # default implementation
 
 
-class Conversion(DataObject):
+class Conversion(DataObject, ReportingObject):
     @property
     @time('time')
     def time(self):
@@ -51,7 +51,7 @@ class Conversion(DataObject):
                  ('time', ModelTypes.DATETIME))
 
 
-class Hit(DataObject):
+class Hit(DataObject, ReportingObject):
     @property
     @linked('campaign_id')
     def campaign(self):
