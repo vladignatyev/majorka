@@ -8,7 +8,7 @@ from decimal import Decimal
 
 # Databus reading example
 ############################################
-bus = BusConnection(host='localhost', port='6379', db=0)
+bus = BusConnection(url='redis://localhost:6379/1')
 
 campaign, offer1, offer2, nonexisting, conversion = bus.readonly()\
                                         .by_id("Campaign:[0]")\
