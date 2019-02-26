@@ -1,3 +1,7 @@
+#
+# TODO: Remove when become obsolete. Tests and framework docs should be explaining by itself.
+#
+
 from data.bus import Connection as BusConnection
 from data.reporting import Database
 

@@ -1,11 +1,15 @@
 import sys
 import json
 from redis import Redis
+
+# todo: remove this dependency
+# extract ENTITIES as paramter. ENTITIES is a dict that maps entity names in Databus into domain object classes
 from model import *
+
 
 class ConnectionError(Exception): pass
 class DataException(Exception): pass
-class UnsafeException(Exception): pass
+
 
 def _check_entity(some_entity):
     return some_entity in ENTITIES.keys()
