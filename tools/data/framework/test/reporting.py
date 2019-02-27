@@ -197,8 +197,29 @@ class ReportingDbTestCase(unittest.TestCase):
 
         pass
 
-    def test_data_insert_and_sql_generator(self):
-        pass
+    def test_data_create_and_insert(self):
+        rows = [
+            ['foo', datetime.now(), 123, [1,2,3]],
+            ['bar', datetime.now(), 666, [6,6,6]],
+            ['baz', datetime.now(), 321, [3,2,1]]
+        ]
+
+        columns = (('name', ModelTypes.STRING),
+                   ('date_added', ModelTypes.DATE),
+                   ('value', ModelTypes.INTEGER),
+                   ('set', ModelTypes.ARRAY_OF_IDX))
+
+        db = self.report_db.connected()
+
+        self.assertTrue(db.write(db.sql.create_table(table='testtable',
+                                                     date_column='date_added',
+                                                     index=('name',),
+                                                     columns=columns)))
+
+        self.assertTrue(db.write(db.sql.insert_values(table='testtable',
+                                                      values=rows,
+                                                      columns=columns)))
+
 
 class TabSeparatedTestCase(unittest.TestCase):
     def test_trivial(self):
@@ -245,9 +266,9 @@ class SQLGeneratorTestCase(unittest.TestCase):
         gen = SQLGenerator(db_name='test')
 
         rows = [
-            ['foo', 123, '[1,2,3]'],
-            ['bar', 666, '[6,6,6]'],
-            ['baz', 321, '[3,2,1]']
+            ['foo', 123, [1,2,3]],
+            ['bar', 666, [6,6,6]],
+            ['baz', 321, [3,2,1]]
         ]
 
         columns = (('name', ModelTypes.STRING),
@@ -257,7 +278,7 @@ class SQLGeneratorTestCase(unittest.TestCase):
         sql = gen.insert_values(table='sometable',
                                     values=rows,
                                     columns=columns)
-        expected = """INSERT INTO test.sometable (('name', 'value', 'set')) FORMAT TabSeparated
+        expected = """INSERT INTO test.sometable (name, value, set) FORMAT TabSeparated
 foo\t123\t[1,2,3]
 bar\t666\t[6,6,6]
 baz\t321\t[3,2,1]"""

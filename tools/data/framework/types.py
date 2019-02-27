@@ -102,7 +102,10 @@ def _db_type_into_array(t):
             # use value._idx as value, instead of str(value)
             return "[%s]" % (','.join(map(lambda v: str(v._idx), obj_val)))
         else:                           # if array of primitive types
-            return "['%s']" % ('\',\''.join(map(lambda v: str(v), obj_val)))
+            if type(obj_val) is str:
+                return "['%s']" % ('\',\''.join(map(lambda v: str(v), obj_val)))
+            else:
+                return "[%s]" % (','.join(map(lambda v: str(v), obj_val)))
     return f
 
 def _db_type_into_money(obj_val):

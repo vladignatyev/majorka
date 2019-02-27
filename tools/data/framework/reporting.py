@@ -3,7 +3,7 @@ import re
 from furl import furl
 import requests
 
-from types import ModelTypes, factory_from_db_type
+from types import ModelTypes, factory_from_db_type, factory_into_db_type
 from tsv import TabSeparated
 
 class ConnectionError(Exception):
@@ -82,16 +82,25 @@ class SQLGenerator(object):
         if len(values[0]) != len(columns):
             raise Exception("Dimensions of `values` and `columns` definition should match.")
         if type(columns[0]) is tuple:
-            column_names = zip(*columns)[0]
+            unzipped = zip(*columns)
+            column_names = unzipped[0]
+            column_factories = map(lambda type_name: factory_into_db_type(type_name), unzipped[1])
+            db_typed_values = [None] * len(values)
+            for row, row_values in enumerate(values):
+                db_typed_values[row] = map(lambda (f, v): f(v), zip(column_factories, row_values))
         else:
             column_names = columns
+            db_typed_values = values  # we expect that values are already db typed
 
-        tab_separated_data = TabSeparated(data=values)
+
+        tab_separated_data = TabSeparated(data=db_typed_values)
+
+        column_names_fmt = ', '.join( map(lambda n: str(n), column_names))
 
         sql = "INSERT INTO {db}.{table_name} ({column_names}) "\
               "FORMAT TabSeparated\n{tab_separated_data}".format(db=self._db_name,
                                                                  table_name=table,
-                                                                 column_names=column_names,
+                                                                 column_names=column_names_fmt,
                                                                  tab_separated_data=tab_separated_data.generate())
 
         return sql
