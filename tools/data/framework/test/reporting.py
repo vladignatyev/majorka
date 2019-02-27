@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 import os
 import unittest
 
 from ipaddr import IPAddress, IPv4Address
 from decimal import Decimal
 
-from ..reporting import Database, SQLGenerator, DbError, ConnectionError
+from ..reporting import Database, SQLGenerator, DbError, ConnectionError, TabSeparated, TabSeparatedError
 from ..base import ReportingObject
 from ..types import *
 from asserts import create_fake_entity
@@ -61,7 +62,7 @@ class ReportingDbTestCase(unittest.TestCase):
 
     def test_read_simple_result(self):
         db = self.report_db.connected()
-        self.assertEqual(db.read(sql="SELECT 2+2;", columns=(('result', ModelTypes.INTEGER),), simple=True), True)
+        self.assertTrue(db.read(sql="SELECT 2+2;", columns=(('result', ModelTypes.INTEGER),), simple=True))
 
     def test_read_with_type_factories_trivial_one_result(self):
         db = self.report_db.connected()
@@ -116,6 +117,25 @@ class ReportingDbTestCase(unittest.TestCase):
             self.assertEqual(type(row['memory_usage']), int)
             self.assertEqual(type(row['elapsed']), Decimal)
 
+    def test_multiline_write(self):
+        db = self.report_db.connected()
+
+        multiline_sql = """
+        /* SQL comment: we create some fake table */
+        CREATE TABLE IF NOT EXISTS test.fakeentity
+        (
+            id UInt64,
+            date_added Date DEFAULT today(),
+            name String,
+            alias String,
+            offers Array(UInt64),
+            paused_offers Array(UInt64),
+            optimize UInt8,
+            hit_limit_for_optimization Int64,
+            slicing_attrs Array(String)
+        ) ENGINE = MergeTree(date_added, (id, date_added), 8192)
+        """
+        self.assertTrue(db.write(sql=multiline_sql))
 
     def test_read_with_db_type_names(self):
         db = self.report_db.connected()
@@ -161,6 +181,23 @@ class ReportingDbTestCase(unittest.TestCase):
             break
 
 
+class TabSeparatedTestCase(unittest.TestCase):
+    def test_trivial(self):
+        ts = TabSeparated(data=())
+        self.assertEqual(ts.generate(), "")
+
+    def test_normal(self):
+        ts = TabSeparated(data=(('Petya', 22), ('Masha', 19), (u'Василий', 34)))
+        self.assertMultiLineEqual(ts.generate(), u"Petya\t22\nMasha\t19\nВасилий\t34")
+
+    def test_with_tabs(self):
+        ts = TabSeparated(data=(('Petya', 22), ('H\tacker\t', 19), (u'Василий', 34)))
+        with self.assertRaises(TabSeparatedError):
+            ts.generate()
+
+        ts_dims = TabSeparated(data=(('Petya', 22), ('Hacker',), (u'Василий', 34)))
+        with self.assertRaises(TabSeparatedError):
+            ts_dims.generate()
 
 
 class SQLGeneratorTestCase(unittest.TestCase):
@@ -202,7 +239,7 @@ class SQLGeneratorTestCase(unittest.TestCase):
         CREATE TABLE IF NOT EXISTS test.fakeentity
         (
             id UInt64,
-            date_added Date DEFAULT today,
+            date_added Date DEFAULT today(),
             name String,
             alias String,
             offers Array(UInt64),
@@ -210,4 +247,4 @@ class SQLGeneratorTestCase(unittest.TestCase):
             optimize UInt8,
             hit_limit_for_optimization Int64,
             slicing_attrs Array(String)
-        ) ENGINE = MergeTree('id','date_added')""")
+        ) ENGINE = MergeTree(date_added, (id, date_added), 8192)""")

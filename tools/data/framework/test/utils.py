@@ -3,6 +3,11 @@ from ..utils import diff, diff_apply
 
 
 class DiffTestCase(unittest.TestCase):
+    def test_trivial_incorrect(self):
+        a = [5,6]
+        b = [1,2,3]
+        self.assertIsNone(diff(a,b))
+
     def test_diff_empty(self):
         a = [1,2,3]
         b = [1,2,3]

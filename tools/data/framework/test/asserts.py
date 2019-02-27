@@ -5,23 +5,20 @@ class Fakebus(object):
     class FakePipe(object):
         def __init__(self):
             self.objs = []
+
         def execute(self):
             return self.objs
+
         def by_id(linked_obj_id):
             if self.objs is None:
                 self.objs = []
-
             self.objs += [linked_obj_id]
-
 
     def readonly(self):
         return self.FakePipe()
 
-def fakebus(): return Fakebus()
-
 def create_fake_entity(cls, entity_name, idx, **kwargs):
-    return cls(bus=fakebus(), id="%s:[%s]" % (entity_name, idx), **kwargs)
-
+    return cls(bus=Fakebus(), id="%s:[%s]" % (entity_name, idx), **kwargs)
 
 def assert_data_object_cls(testcase, cls):
     created = create_fake_entity(cls, 'Object', 0, testfield1='testvalue1', testfield2='testvalue2')

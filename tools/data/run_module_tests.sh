@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if $(test coverage); then
+if $(command -v coverage); then
   coverage erase && coverage run --branch --source . test.py
   coverage report -m --skip-covered
 else
