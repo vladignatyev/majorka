@@ -5,7 +5,23 @@ from reporting import *
 from ..types import *
 
 
-def fakebus(): return 'fakebus'
+class Fakebus(object):
+    class FakePipe(object):
+        def __init__(self):
+            self.objs = []
+        def execute(self):
+            return self.objs
+        def by_id(linked_obj_id):
+            if self.objs is None:
+                self.objs = []
+
+            self.objs += [linked_obj_id]
+
+
+    def readonly(self):
+        return self.FakePipe()
+
+def fakebus(): return Fakebus()
 
 def create_fake_entity(cls, entity_name, idx, **kwargs):
     return cls(bus=fakebus(), id="%s:[%s]" % (entity_name, idx), **kwargs)
@@ -18,7 +34,7 @@ def assert_data_object_cls(testcase, cls):
     testcase.assertEqual(created._id, 'Object:[0]')
     testcase.assertEqual(created._entity, 'Object')
     testcase.assertEqual(created._idx, 0)
-    testcase.assertEqual(created._connection, 'fakebus')
+    testcase.assertEqual(type(created._connection), Fakebus)
     testcase.assertEqual(created.testfield1, 'testvalue1')
     testcase.assertEqual(created.testfield2, 'testvalue2')
 
@@ -39,23 +55,5 @@ def assert_reporting_object_instance(testcase, obj):
     testcase.assertIn('date_added', dict(columns).keys())
     testcase.assertEqual(dict(columns)['date_added'], ModelTypes.DATE)
 
-
-
-
-    # def into_db_columns(self):
-    #     obj_keys = sorted(filter(lambda k: k != 'id', self.__dict__.keys()))
-    #     public_self_attrs = filter(lambda a: not a.startswith('_'), obj_keys)
-    #     return [('id', ModelTypes.INTEGER)] + map(lambda k: (k, ModelTypes.STRING), public_self_attrs)
-    #
-    # def into_db_row(self, required_columns=None):
-    #     if required_columns is None:
-    #         db_columns = self.into_db_columns()
-    #     else:
-    #         db_columns = required_columns
-    #
-    #     db_row = [None] * len(db_columns)
-    #     for i, (name, db_type) in enumerate(db_columns):
-    #         raw_val = getattr(self, name)
-    #         db_row[i] = (name, factory_into_db_type(db_type)(raw_val))
-    #
-    #     return dict(db_row)
+    rows = obj.into_db_row()
+    print rows

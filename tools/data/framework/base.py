@@ -9,6 +9,10 @@ class ReportingObject(object):
     # todo: extract class ReportingDataObject
     ''' Default implementation '''
 
+    @property
+    def date_added(self):
+        return datetime.now()
+
     @classmethod
     def into_db_columns(self):
         obj_keys = sorted(filter(lambda k: k != 'id', self.__dict__.keys()))
@@ -16,6 +20,7 @@ class ReportingObject(object):
         return [('id', ModelTypes.IDX), ('date_added', ModelTypes.DATE)] + map(lambda k: (k, ModelTypes.STRING), public_self_attrs)
 
     def into_db_row(self):
+        db_columns = self.into_db_columns()
         db_row = [None] * len(db_columns)
         for i, (name, db_type) in enumerate(db_columns):
             raw_val = getattr(self, name)
