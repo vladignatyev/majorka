@@ -15,15 +15,30 @@ class DbError(Exception):
         message = """
 
         Database responded with error when tried to execute SQL statement.
-        SQL statement: %s
-          DB response: %s
-        """ % (query_string, error_string)
+
+        SQL statement: {sql}
+          DB response: {response}
+        """.format(sql=query_string, response=error_string)
         super(DbError, self).__init__(message)
 
 
 class DbTypeError(Exception):
-    def __init__(self, msg='', columns_def=None, response_def=None):
-        super(DbTypeError, self).__init__("")
+    def __init__(self, query, reason, response, columns):
+        truncate = lambda s, l: (s[:l] + '..') if len(s) > l else s
+        message = """
+
+        Type error has occured, the response cannot be parsed type-safe.
+        The reason is: {reason}
+
+        If the column definition of response is unknown, try re-run this request
+        without `columns` provided, or investigate columns definition
+        using `get_columns_for_query` before.
+
+        SQL statement: {sql}
+          DB response: {response}
+     Expected columns: {columns}
+        """.format(sql=query, reason=reason, response=truncate(response, 100), columns=columns)
+        super(DbTypeError, self).__init__(message)
 
 
 class SQLGenerator(object):
@@ -109,8 +124,8 @@ class Database(SQLGenerator):
         return self.read(sql=self.sql_describe(table, from_db=db),
                          columns=(('name', ModelTypes.STRING), ('type', ModelTypes.STRING)))
 
-    def describe_query(self, query):
-        return self.read(sql=self.sql_describe_query(query),
+    def describe_query(self, sql):
+        return self.read(sql=self.sql_describe_query(sql),
                          columns=(('name', ModelTypes.STRING), ('type', ModelTypes.STRING)))
 
     # todo: type checker that checks that response contains same set of columns as provided
@@ -142,8 +157,8 @@ class Database(SQLGenerator):
         db = db or self._db
         return map(lambda (o, i, l): (o['name'], o['type']), self.describe(table=table, db=db))
 
-    def get_columns_for_query(self, query):
-        return map(lambda (o, i, l): (o['name'], o['type']), self.describe_query(query=query))
+    def get_columns_for_query(self, sql):
+        return map(lambda (o, i, l): (o['name'], o['type']), self.describe_query(sql=sql))
 
     def _divide(self, s):
         try:
@@ -180,7 +195,7 @@ class Database(SQLGenerator):
                 type_factories = map(lambda db_type: factory_from_db_type(db_type), field_types)
             else:
                 type_factories = field_types
-            return self._typed_dict_from_result(rows, field_names, type_factories)
+            return self._typed_dict_from_result(rows, field_names, type_factories, columns_def=columns, query=query)
         except:
             # if columns is (name1, name2...) tuple
             field_names = columns
@@ -192,7 +207,7 @@ class Database(SQLGenerator):
             fields = s.split('\t')
             yield list(map(str, fields)), i, total
 
-    def _typed_dict_from_result(self, row_strings, field_names, type_factories):
+    def _typed_dict_from_result(self, row_strings, field_names, type_factories, columns_def=None, query=None):
         total = len(row_strings)
         for i, s in enumerate(row_strings):
             fields = s.split('\t')
