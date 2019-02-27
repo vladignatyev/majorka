@@ -204,6 +204,8 @@ class ReportingDbTestCase(unittest.TestCase):
             ['baz', datetime.now(), 321, [3,2,1]]
         ]
 
+
+
         columns = (('name', ModelTypes.STRING),
                    ('date_added', ModelTypes.DATE),
                    ('value', ModelTypes.INTEGER),
@@ -211,6 +213,7 @@ class ReportingDbTestCase(unittest.TestCase):
 
         db = self.report_db.connected()
 
+        self.maxDiff = None
         self.assertTrue(db.write(db.sql.create_table(table='testtable',
                                                      date_column='date_added',
                                                      index=('name',),
@@ -219,6 +222,16 @@ class ReportingDbTestCase(unittest.TestCase):
         self.assertTrue(db.write(db.sql.insert_values(table='testtable',
                                                       values=rows,
                                                       columns=columns)))
+
+        from_db = list(db.read(sql="SELECT * FROM test.testtable", columns=columns))
+        self.assertEqual(len(from_db), len(rows))
+
+        rows_as_dicts = map(lambda row: {'name': row[0], 'date_added': row[1], 'value': row[2], 'set': row[3]}, rows)
+        rows_as_dicts_from_db = map(lambda (row, i, total): row, from_db)
+
+        # todo: assert and compare
+        # print rows_as_dicts
+        # print rows_as_dicts_from_db
 
 
 class TabSeparatedTestCase(unittest.TestCase):
