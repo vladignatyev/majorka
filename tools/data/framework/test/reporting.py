@@ -204,8 +204,6 @@ class ReportingDbTestCase(unittest.TestCase):
             ['baz', datetime.now(), 321, [3,2,1]]
         ]
 
-
-
         columns = (('name', ModelTypes.STRING),
                    ('date_added', ModelTypes.DATE),
                    ('value', ModelTypes.INTEGER),
