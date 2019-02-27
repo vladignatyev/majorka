@@ -27,6 +27,9 @@ def assert_reporting_object_cls(testcase, cls):
     testcase.assertIsNotNone(getattr(cls, 'into_db_row'))
 
 def assert_reporting_object_instance(testcase, obj):
+    testcase.assertIsNotNone(getattr(obj, 'into_db_columns'))
+    testcase.assertIsNotNone(getattr(obj, 'into_db_row'))
+
     columns = obj.into_db_columns()
     # columns required by reporting
     testcase.assertIn('id', dict(columns).keys())
