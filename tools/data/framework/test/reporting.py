@@ -5,7 +5,7 @@ import unittest
 from ipaddr import IPAddress, IPv4Address
 from decimal import Decimal
 
-from ..reporting import Database, SQLGenerator, DbError, DbTypeError, ConnectionError
+from ..reporting import Database, SQLGenerator, DbError, ConnectionError
 from ..tsv import TabSeparated, TabSeparatedError
 from ..base import ReportingObject
 from ..types import *
@@ -197,6 +197,8 @@ class ReportingDbTestCase(unittest.TestCase):
 
         pass
 
+    def test_data_insert_and_sql_generator(self):
+        pass
 
 class TabSeparatedTestCase(unittest.TestCase):
     def test_trivial(self):
@@ -220,24 +222,46 @@ class TabSeparatedTestCase(unittest.TestCase):
 class SQLGeneratorTestCase(unittest.TestCase):
     def test_hello(self):
         gen = SQLGenerator(db_name='test')
-        self.assertEqual(gen.sql_hello(), "SELECT 1;")
+        self.assertEqual(gen.hello(), "SELECT 1;")
 
     def test_describe(self):
         gen = SQLGenerator(db_name='test')
-        self.assertEqual(gen.sql_describe('sometable', from_db='test'), "DESCRIBE TABLE test.sometable;")
-        self.assertEqual(gen.sql_describe('sometable'), "DESCRIBE TABLE test.sometable;")
-        self.assertEqual(gen.sql_describe('processes', from_db='system'), "DESCRIBE TABLE system.processes;")
+        self.assertEqual(gen.describe('sometable', from_db='test'), "DESCRIBE TABLE test.sometable;")
+        self.assertEqual(gen.describe('sometable'), "DESCRIBE TABLE test.sometable;")
+        self.assertEqual(gen.describe('processes', from_db='system'), "DESCRIBE TABLE system.processes;")
 
     def test_describe_query(self):
         gen = SQLGenerator(db_name='test')
-        self.assertEqual(gen.sql_describe_query("SELECT 2*2 as result"), "DESCRIBE (SELECT 2*2 as result);")
-        self.assertEqual(gen.sql_describe_query("SELECT 2*2 as result;"), "DESCRIBE (SELECT 2*2 as result);")
+        self.assertEqual(gen.describe_query("SELECT 2*2 as result"), "DESCRIBE (SELECT 2*2 as result);")
+        self.assertEqual(gen.describe_query("SELECT 2*2 as result;"), "DESCRIBE (SELECT 2*2 as result);")
 
     def test_create_database(self):
         gen = SQLGenerator(db_name='test')
-        self.assertEqual(gen.sql_create_database(), "CREATE DATABASE IF NOT EXISTS \"test\";")
+        self.assertEqual(gen.create_database(), "CREATE DATABASE IF NOT EXISTS \"test\";")
         gen = SQLGenerator(db_name='another')
-        self.assertEqual(gen.sql_create_database(), "CREATE DATABASE IF NOT EXISTS \"another\";")
+        self.assertEqual(gen.create_database(), "CREATE DATABASE IF NOT EXISTS \"another\";")
+
+    def test_insert_values_extended_col_def(self):
+        gen = SQLGenerator(db_name='test')
+
+        rows = [
+            ['foo', 123, '[1,2,3]'],
+            ['bar', 666, '[6,6,6]'],
+            ['baz', 321, '[3,2,1]']
+        ]
+
+        columns = (('name', ModelTypes.STRING),
+                   ('value', ModelTypes.INTEGER),
+                   ('set', ModelTypes.ARRAY_OF_IDX))
+
+        sql = gen.insert_values(table='sometable',
+                                    values=rows,
+                                    columns=columns)
+        expected = """INSERT INTO test.sometable (('name', 'value', 'set')) FORMAT TabSeparated
+foo\t123\t[1,2,3]
+bar\t666\t[6,6,6]
+baz\t321\t[3,2,1]"""
+        self.assertMultiLineEqual(sql, expected)
 
     def test_create_table_for_entity(self):
         gen = SQLGenerator(db_name='test')
@@ -256,7 +280,7 @@ class SQLGeneratorTestCase(unittest.TestCase):
                                        slicing_attrs=['someattr'])
 
         self.maxDiff = None
-        self.assertMultiLineEqual(gen.sql_create_table_for_reporting_object(fake_entity), \
+        self.assertMultiLineEqual(gen.create_table_for_reporting_object(fake_entity), \
         """
         CREATE TABLE IF NOT EXISTS test.fakeentity
         (
