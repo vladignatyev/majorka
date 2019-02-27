@@ -20,75 +20,10 @@ class DbError(Exception):
         """ % (query_string, error_string)
         super(DbError, self).__init__(message)
 
+
 class DbTypeError(Exception):
-    # def __init__
-
-class TabSeparatedError(Exception):
-    def __init__(self, msg='', col=0, row=0, val=''):
-        self.col = col
-        self.row = row
-        self.msg = msg
-        self.val = val
-
-        message = """
-
-        Cannot convert into tab separated data.
-        Error has occured at ({col}:{row}): {msg}!
-        The corresponding data: {val}
-        """
-        super(TabSeparatedError, self).__init__(message.format(col=self.col,
-                                                                 row=self.row,
-                                                                 val=self.val,
-                                                                 msg=self.msg))
-
-def _tab_separated_escape_vals(enumeration):
-    col, value = enumeration
-    # According to IANA TSV format definition,
-    # TAB chars are disallowed within field values
-    # https://www.iana.org/assignments/media-types/text/tab-separated-values
-    val = unicode(value)
-
-    try:
-        val.index('\t')
-        raise TabSeparatedError(msg='TAB char is disallowed within field values',
-                                col=col)
-    except ValueError:
-        return val
-
-
-
-def _tab_separated_row_func(dims):
-    def row_func(enumeration):
-        row, row_content = enumeration
-        # check dimensions
-        if len(row_content) != dims:
-            raise TabSeparatedError(msg='dimensions for every row '
-                                        'should match dimension of '
-                                        'first row in data',
-                                    row=row,
-                                    val=row_content)
-        try:
-            row_tab_separated = '\t'.join(map(_tab_separated_escape_vals, enumerate(row_content)))
-        except TabSeparatedError as e:
-            raise TabSeparatedError(msg=e.msg, row=row, col=e.col, val=row_content)
-
-        return row_tab_separated
-    return row_func
-
-class TabSeparated(object):
-    def __init__(self, data):
-        self.data = data
-        assert type(data) == list or type(data) == tuple
-
-    def generate(self):
-        # trivial case
-        if len(self.data) == 0:
-            return ""
-
-        output = ""
-        dims = len(self.data[0])
-
-        return '\n'.join(map(_tab_separated_row_func(dims), enumerate(self.data)))
+    def __init__(self, msg='', columns_def=None, response_def=None):
+        super(DbTypeError, self).__init__("")
 
 
 class SQLGenerator(object):
@@ -141,12 +76,15 @@ class SQLGenerator(object):
 
 
 class Database(SQLGenerator):
-    def __init__(self, url, db):
+    def __init__(self, url, db, connection_timeout=2, data_read_timeout=2):
         super(Database, self).__init__(db_name=db)
         self._url = furl(url)
         self._db = db
         self._db_is_created = None  # Unknown
+
+        self.connection_timeout, self.data_read_timeout = connection_timeout, data_read_timeout
         self.ping()
+
 
     def ping(self):
         try:
@@ -172,9 +110,9 @@ class Database(SQLGenerator):
 
         if len(head_foot) == 2: # if SQL is multiline
             head, foot = head_foot
-            response = requests.request("GET", self._query_url(head), data=foot)
+            response = requests.request("GET", self._query_url(head), data=foot, timeout=(self.connection_timeout, self.data_read_timeout))
         else:
-            response = requests.request("GET", self._query_url(head_foot))
+            response = requests.request("GET", self._query_url(head_foot), timeout=(self.connection_timeout, self.data_read_timeout))
 
         if simple:
             return self._parsed_result_simple(sql, response)
@@ -185,9 +123,9 @@ class Database(SQLGenerator):
         head_foot = self._divide(sql)
         if len(head_foot) == 2: # if SQL is multiline
             head, foot = head_foot
-            response = requests.request("POST", self._query_url(head), data=foot)
+            response = requests.request("POST", self._query_url(head), data=foot, timeout=(self.connection_timeout, self.data_read_timeout))
         else:
-            response = requests.request("POST", self._query_url(head_foot))
+            response = requests.request("POST", self._query_url(head_foot), timeout=(self.connection_timeout, self.data_read_timeout))
 
         return self._parsed_result_simple(sql, response)
 

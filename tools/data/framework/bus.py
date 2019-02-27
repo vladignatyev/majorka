@@ -4,7 +4,7 @@ from redis import Redis
 
 # todo: remove this dependency
 # extract ENTITIES as paramter. ENTITIES is a dict that maps entity names in Databus into domain object classes
-from ..model import *
+from model import *
 
 
 class ConnectionError(Exception): pass

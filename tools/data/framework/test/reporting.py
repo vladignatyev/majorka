@@ -5,7 +5,8 @@ import unittest
 from ipaddr import IPAddress, IPv4Address
 from decimal import Decimal
 
-from ..reporting import Database, SQLGenerator, DbError, ConnectionError, TabSeparated, TabSeparatedError
+from ..reporting import Database, SQLGenerator, DbError, ConnectionError
+from ..tsv import TabSeparated, TabSeparatedError
 from ..base import ReportingObject
 from ..types import *
 from asserts import create_fake_entity
@@ -180,6 +181,18 @@ class ReportingDbTestCase(unittest.TestCase):
             self.assertTrue(row['http_method'])
             break
 
+    def test_response_type_checker(self):
+        pass
+#         column_names = ['user', 'address', 'elapsed', 'memory_usage']
+#         columns = filter(lambda (column_name, column_type): column_name in , d.get_columns_for_table('processes', db='system'))
+#
+# header = zip(*columns)[0]
+# pt.field_names = header
+#
+# for row, i, total in (d.read(sql="SELECT user, address, elapsed, memory_usage FROM system.processes", columns=columns)):
+#     pt.add_row(map(lambda k: row[k], header))
+#     # print row
+# #
 
 class TabSeparatedTestCase(unittest.TestCase):
     def test_trivial(self):
