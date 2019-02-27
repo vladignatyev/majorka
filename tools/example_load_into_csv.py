@@ -1,6 +1,7 @@
+from data.model import ENTITIES
 from data.framework.bus import Connection
 
-bus = Connection(url='redis://localhost:6380/0')
+bus = Connection(url='redis://localhost:6380/0', entities_meta=ENTITIES)
 
 hits_table = [['id', 'cost', 'time', 'destination', 'campaign', 'external_id']]
 conversions_table = [['id', 'revenue', 'time', 'external_id']]

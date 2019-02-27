@@ -5,6 +5,7 @@ import os
 
 
 from ..bus import Connection
+from ..base import *
 
 from redis_fixture import fixture_data
 
@@ -14,6 +15,25 @@ def import_fixture(redis_instance, data):
     for k, v in data.items():
         redis_instance.set(k, v)
 
+
+
+class FakeEntity1(DataObject): pass
+class FakeEntity2(DataObject):
+    @property
+    @linked('campaign_id')
+    def campaign(self):
+        pass
+
+    @property
+    @linked('destination_id')
+    def destination(self):
+        pass
+
+
+_ENTITIES = {
+    'Offer': FakeEntity1,
+    'Hits': FakeEntity2
+}
 
 class DatabusTestCase(unittest.TestCase):
     @classmethod
@@ -25,7 +45,7 @@ class DatabusTestCase(unittest.TestCase):
 
     def setUp(self):
         self.redis = Redis.from_url(os.environ['TEST_REDIS_URL'])
-        self.bus = Connection(redis=self.redis)
+        self.bus = Connection(redis=self.redis, entities_meta=_ENTITIES)
 
         import_fixture(self.redis, fixture_data)
 
@@ -33,7 +53,7 @@ class DatabusTestCase(unittest.TestCase):
         self.redis.flushdb()
 
     def test_sanity(self):
-        bus = Connection(url=os.environ['TEST_REDIS_URL'])
+        bus = Connection(url=os.environ['TEST_REDIS_URL'], entities_meta=_ENTITIES)
         self.assertTrue(True)
 
     def test_multiread(self):
