@@ -3,7 +3,6 @@ import unittest
 import sys
 import os
 
-print sys.path
 
 from ..bus import Connection
 
@@ -17,15 +16,14 @@ def import_fixture(redis_instance, data):
 
 
 class DatabusTestCase(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         if not os.environ.get('TEST_REDIS_URL', None):
-            raise Exception("""
+            raise Exception("\n\nFor safety reason, framework tests are running "
+                            "only on test database instance.\nSet the"
+                            "'TEST_REDIS_URL' environmental variable to proper Redis URL.\n")
 
-For safety reason, framework tests are running only on test database instance.
-Set the 'TEST_REDIS_URL' environmental variable to proper Redis URL.
-            """)
-            return # just in case
-
+    def setUp(self):
         self.redis = Redis.from_url(os.environ['TEST_REDIS_URL'])
         self.bus = Connection(redis=self.redis)
 

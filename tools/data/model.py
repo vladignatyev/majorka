@@ -3,6 +3,8 @@ from framework.types import ModelTypes, _db_type_into_money, _db_type_into_linke
 
 
 class Campaign(DataObject, ReportingObject):
+    TABLE_NAME = 'campaigns'
+
     @property
     @linked('offers')
     def offers(self):
@@ -14,11 +16,9 @@ class Campaign(DataObject, ReportingObject):
         pass
 
     @classmethod
-    def into_db_columns(self):
-        return \
-        (('id', ModelTypes.IDX),
-         ('date_added', ModelTypes.DATE),
-         ('name', ModelTypes.STRING),
+    def into_db_columns(cls):
+        return cls.default_columns() + \
+        [('name', ModelTypes.STRING),
          ('alias', ModelTypes.STRING),
 
          ('offers', ModelTypes.ARRAY_OF_IDX),
@@ -27,14 +27,17 @@ class Campaign(DataObject, ReportingObject):
          ('optimize', ModelTypes.BOOLEAN),
          ('optimization_paused', ModelTypes.BOOLEAN),
          ('hit_limit_for_optimization', ModelTypes.INTEGER),
-         ('slicing_attrs', ModelTypes.ARRAY_OF_STRINGS))
+         ('slicing_attrs', ModelTypes.ARRAY_OF_STRINGS)]
+
 
 
 class Offer(DataObject, ReportingObject):
-    pass  # default implementation
+    TABLE_NAME = 'offers'
 
 
 class Conversion(DataObject, ReportingObject):
+    TABLE_NAME = 'conversions'
+
     @property
     @time('time')
     def time(self):
@@ -46,16 +49,17 @@ class Conversion(DataObject, ReportingObject):
         pass
 
     @classmethod
-    def into_db_columns(self):
-        return  (('id', ModelTypes.IDX),
-                 ('date_added', ModelTypes.DATE),
-                 ('external_id', ModelTypes.STRING),
-                 ('revenue', (ModelTypes.MONEY, _db_type_into_money)),
-                 ('status', ModelTypes.STRING),
-                 ('time', ModelTypes.DATETIME))
+    def into_db_columns(cls):
+        return cls.default_columns() + \
+        [('external_id', ModelTypes.STRING),
+         ('revenue', (ModelTypes.MONEY, _db_type_into_money)),
+         ('status', ModelTypes.STRING),
+         ('time', ModelTypes.DATETIME)]
 
 
 class Hit(DataObject, ReportingObject):
+    TABLE_NAME = 'hits'
+
     @property
     @linked('campaign_id')
     def campaign(self):
@@ -77,10 +81,8 @@ class Hit(DataObject, ReportingObject):
         pass
 
     def into_db_columns(self):
-        return \
-        [('id', ModelTypes.IDX),
-         ('date_added', ModelTypes.DATE),
-         ('campaign', (ModelTypes.IDX, _db_type_into_linked)),
+        return self.default_columns() + \
+        [('campaign', (ModelTypes.IDX, _db_type_into_linked)),
          ('destination', (ModelTypes.IDX, _db_type_into_linked)),
          ('cost', (ModelTypes.MONEY, _db_type_into_money)),
          ('time', ModelTypes.DATETIME)] + \

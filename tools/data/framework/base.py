@@ -6,18 +6,25 @@ from types import ModelTypes, factory_into_db_type
 
 
 class ReportingObject(object):
-    # todo: extract class ReportingDataObject
     ''' Default implementation '''
+    TABLE_NAME = None
+
+    INDEX = ('id', 'date_added',)
+    @classmethod
+    def default_columns(cls):
+        return [('id', ModelTypes.IDX), ('date_added', ModelTypes.DATE)]
+
+    @classmethod
+    def into_db_columns(cls):
+        default_cols = cls.default_columns()
+        default_cols_names = dict(cls.default_columns()).keys()
+        obj_keys = sorted(filter(lambda k: k not in default_cols_names, cls.__dict__.keys()))
+        public_self_attrs = filter(lambda a: not a.startswith('_'), obj_keys)
+        return default_cols + map(lambda k: (k, ModelTypes.STRING), public_self_attrs)
 
     @property
     def date_added(self):
         return datetime.now()
-
-    @classmethod
-    def into_db_columns(self):
-        obj_keys = sorted(filter(lambda k: k != 'id', self.__dict__.keys()))
-        public_self_attrs = filter(lambda a: not a.startswith('_'), obj_keys)
-        return [('id', ModelTypes.IDX), ('date_added', ModelTypes.DATE)] + map(lambda k: (k, ModelTypes.STRING), public_self_attrs)
 
     def into_db_row(self):
         db_columns = self.into_db_columns()
@@ -27,6 +34,9 @@ class ReportingObject(object):
             db_row[i] = (name, factory_into_db_type(db_type)(raw_val))
 
         return dict(db_row)
+
+    def __init__(self, **kwargs):
+        self.__dict__.update(**kwargs)
 
 
 class DataObject(object):

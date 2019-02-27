@@ -13,7 +13,8 @@ def diff(source, complement):
 
     ordered = sorted(union)
 
-    # we cannot represent/describe such diff
+    # we cannot represent/describe such diff,
+    # because we only have 'after' clause to represent diff in Clickhouse
     if ordered[0] != source[0]:
         return None
 

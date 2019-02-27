@@ -21,8 +21,43 @@ class DbError(Exception):
         super(DbError, self).__init__(message)
 
 
-class Database(object):
+class SQLGenerator(object):
+    def __init__(self, db_name):
+        self._db_name = db_name
+
+    def sql_hello(self):
+        return "SELECT 1;"
+
+    def sql_drop(self):
+        return "DROP DATABASE %s;" % self._db_name
+
+    def sql_describe(self, table_name, from_db=None):
+        return "DESCRIBE TABLE %s.%s;" % (from_db or self._db_name, table_name)
+
+    def sql_create_table_for_reporting_object(self, reporting_obj):
+        default_fields = [('id', ModelTypes.IDX),
+                          ('date_added', ModelTypes.DATE, "DEFAULT today")]
+        default_fields_names = ['id', 'date_added']
+        reporting_obj_columns = filter(lambda k: k[0] not in default_fields_names, reporting_obj.into_db_columns())
+        field_declaration = default_fields + reporting_obj_columns
+        field_declaration_fmt = ",\n".join(map(lambda t: "            " + " ".join(t), field_declaration))
+        sql = """
+        CREATE TABLE IF NOT EXISTS {db}.{table_name}
+        (\n{field_declaration}
+        ) ENGINE = MergeTree({index})""".format(db=self._db_name,
+                   table_name=reporting_obj.TABLE_NAME,
+                   field_declaration=field_declaration_fmt,
+                   index="\'%s\'" % '\',\''.join(reporting_obj.INDEX))
+
+        return sql
+
+    def sql_create_database(self):
+        return "CREATE DATABASE IF NOT EXISTS \"%s\";" % self._db_name
+
+
+class Database(SQLGenerator):
     def __init__(self, url, db):
+        super(Database, self).__init__(db_name=db)
         self._url = furl(url)
         self._db = db
         self._db_is_created = None  # Unknown
@@ -30,7 +65,7 @@ class Database(object):
 
     def ping(self):
         try:
-            self.read(sql="SELECT 1;", simple=True)
+            self.read(sql=self.sql_hello(), simple=True)
         except DbError:
             raise ConnectionError("Connection is not available.")
 
@@ -39,11 +74,11 @@ class Database(object):
         return self
 
     def drop(self):
-        self.write("DROP DATABASE %s;" % self._db)
+        self.write(self.sql_drop())
 
     def describe(self, table, db=None):
         db = db or self._db
-        return self.read(sql="DESCRIBE TABLE %s.%s;" % (db, table),
+        return self.read(sql=self.sql_describe(table, from_db=db),
                          columns=(('name', ModelTypes.STRING), ('type', ModelTypes.STRING)))
 
     def read(self, sql, columns=(), simple=False):
@@ -70,6 +105,8 @@ class Database(object):
 
         return self._parsed_result_simple(sql, response)
 
+
+
     def get_columns_for_table(self, table, db=None):
         db = db or self._db
         return map(lambda (o, i, l): (o['name'], o['type']), self.describe(table=table, db=db))
@@ -84,7 +121,7 @@ class Database(object):
 
     def _create_database(self):
         if self._db_is_created is None:
-            self._db_is_created = self.write(sql="CREATE DATABASE IF NOT EXISTS \"%s\";" % self._db)
+            self._db_is_created = self.write(sql=self.sql_create_database())
 
     def _parsed_result_simple(self, query, response):
         if response.status_code != 200:

@@ -4,23 +4,64 @@ import unittest
 from ipaddr import IPAddress, IPv4Address
 from decimal import Decimal
 
-from ..reporting import Database
+from ..reporting import Database, SQLGenerator, DbError, ConnectionError
+from ..base import ReportingObject
+from ..types import *
+from asserts import create_fake_entity
+
+
+class FakeEntity(ReportingObject):
+    TABLE_NAME = 'fakeentity'
+    @classmethod
+    def into_db_columns(cls):
+        return cls.default_columns() + \
+        [('name', ModelTypes.STRING),
+         ('alias', ModelTypes.STRING),
+
+         ('offers', ModelTypes.ARRAY_OF_IDX),
+         ('paused_offers', ModelTypes.ARRAY_OF_IDX),
+
+         ('optimize', ModelTypes.BOOLEAN),
+         ('hit_limit_for_optimization', ModelTypes.INTEGER),
+         ('slicing_attrs', ModelTypes.ARRAY_OF_STRINGS)]
+
 
 
 class ReportingDbTestCase(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         if not os.environ.get('TEST_CLICKHOUSE_URL', None):
-            raise Exception("""
+            raise Exception("\n\nFor safety reason, framework tests"
+                            " are running only on test database instance.\n"
+                            "Set the 'TEST_CLICKHOUSE_URL' environmental"
+                            " variable to proper Clickhouse URL.\n")
 
-For safety reason, framework tests are running only on test database instance.
-Set the 'TEST_CLICKHOUSE_URL' environmental variable to proper Clickhouse URL.
-            """)
-            return # just in case
-
+    def setUp(self):
         self.report_db = Database(url=os.environ['TEST_CLICKHOUSE_URL'], db='test')
+        self.report_db.connected()
 
     def tearDown(self):
         self.report_db.drop()
+
+    def test_raises_connection_error(self):
+        with self.assertRaises(ConnectionError):
+            db = Database(url='http://example.com/nonexisting', db='nonexistingdb')
+
+    def test_raises_db_error(self):
+        db = self.report_db.connected()
+
+        read_query = "invalid select * from system.processes;"
+        write_query = "create table;"
+
+        with self.assertRaises(DbError):
+            db.read(sql=read_query, columns=())
+
+        with self.assertRaises(DbError):
+            db.write(sql=write_query)
+
+    def test_read_simple_result(self):
+        db = self.report_db.connected()
+        self.assertEqual(db.read(sql="SELECT 2+2;", columns=(('result', ModelTypes.INTEGER),), simple=True), True)
 
     def test_read_with_type_factories_trivial_one_result(self):
         db = self.report_db.connected()
@@ -118,3 +159,55 @@ Set the 'TEST_CLICKHOUSE_URL' environmental variable to proper Clickhouse URL.
             self.assertEqual(type(row['http_method']), bool)
             self.assertTrue(row['http_method'])
             break
+
+
+
+
+class SQLGeneratorTestCase(unittest.TestCase):
+    def test_hello(self):
+        gen = SQLGenerator(db_name='test')
+        self.assertEqual(gen.sql_hello(), "SELECT 1;")
+
+    def test_describe(self):
+        gen = SQLGenerator(db_name='test')
+        self.assertEqual(gen.sql_describe('sometable', from_db='test'), "DESCRIBE TABLE test.sometable;")
+        self.assertEqual(gen.sql_describe('sometable'), "DESCRIBE TABLE test.sometable;")
+        self.assertEqual(gen.sql_describe('processes', from_db='system'), "DESCRIBE TABLE system.processes;")
+
+    def test_create_database(self):
+        gen = SQLGenerator(db_name='test')
+        self.assertEqual(gen.sql_create_database(), "CREATE DATABASE IF NOT EXISTS \"test\";")
+        gen = SQLGenerator(db_name='another')
+        self.assertEqual(gen.sql_create_database(), "CREATE DATABASE IF NOT EXISTS \"another\";")
+
+    def test_create_table_for_entity(self):
+        gen = SQLGenerator(db_name='test')
+
+        fake_entity = create_fake_entity(FakeEntity,
+                                       entity_name='Fake',
+                                       idx=12,
+
+                                       name='Some fake name',
+                                       alias='fake alias',
+                                       paused_offers=[1,2,3],
+                                       offers=[0,1,2,3],
+
+                                       optimize=False,
+                                       hit_limit_for_optimization=50,
+                                       slicing_attrs=['someattr'])
+
+        self.maxDiff = None
+        self.assertMultiLineEqual(gen.sql_create_table_for_reporting_object(fake_entity), \
+        """
+        CREATE TABLE IF NOT EXISTS test.fakeentity
+        (
+            id UInt64,
+            date_added Date DEFAULT today,
+            name String,
+            alias String,
+            offers Array(UInt64),
+            paused_offers Array(UInt64),
+            optimize UInt8,
+            hit_limit_for_optimization Int64,
+            slicing_attrs Array(String)
+        ) ENGINE = MergeTree('id','date_added')""")
