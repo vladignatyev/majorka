@@ -9,7 +9,7 @@ logger = logging.getLogger('propellerads')
 logger.setLevel(logging.DEBUG)
 
 # * Initializing API *
-propeller = PropellerAds(credentials['username'], credentials['password'], logger=logger)
+p = propeller = PropellerAds(credentials['username'], credentials['password'], logger=logger)
 
 # * Querying *
 # Authorization
@@ -30,7 +30,7 @@ for stat in propeller.authorized().get_statistics(campaign_ids=(1791408,),
 
 # Getting / setting include/exclude zones
 # print propeller.authorized().campaign_set_include_zones(campaign_id=1791408, zones=[634917, 762488])
-print propeller.authorized().campaign_get_exclude_zones(campaign_id=1791408, zones=[634917, 762488])
+print propeller.authorized().campaign_get_exclude_zones(campaign_id=1791408)
 
 
 # Getting all campaigns
