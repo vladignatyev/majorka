@@ -80,6 +80,10 @@ class Hit(DataObject, ReportingObject):
     def time(self):
         pass
 
+    @property
+    def external_id(self):
+        return self.__dict__.get('external_id')
+
     def into_db_columns(self):
         return self.default_columns() + \
         [('campaign', (ModelTypes.IDX, _db_type_into_linked)),

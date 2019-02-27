@@ -20,6 +20,8 @@ class DbError(Exception):
         """ % (query_string, error_string)
         super(DbError, self).__init__(message)
 
+class DbTypeError(Exception):
+    # def __init__
 
 class TabSeparatedError(Exception):
     def __init__(self, msg='', col=0, row=0, val=''):
@@ -164,6 +166,7 @@ class Database(SQLGenerator):
         return self.read(sql=self.sql_describe(table, from_db=db),
                          columns=(('name', ModelTypes.STRING), ('type', ModelTypes.STRING)))
 
+    # todo: type checker that checks that response contains same set of columns as provided
     def read(self, sql, columns=(), simple=False):
         head_foot = self._divide(sql)
 
