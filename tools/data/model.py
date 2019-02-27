@@ -13,9 +13,11 @@ class Campaign(DataObject, ReportingObject):
     def paused_offers(self):
         pass
 
+    @classmethod
     def into_db_columns(self):
         return \
-        (('id', ModelTypes.INTEGER),
+        (('id', ModelTypes.IDX),
+         ('date_added', ModelTypes.DATE),
          ('name', ModelTypes.STRING),
          ('alias', ModelTypes.STRING),
 
@@ -43,8 +45,10 @@ class Conversion(DataObject, ReportingObject):
     def revenue(self):
         pass
 
+    @classmethod
     def into_db_columns(self):
-        return  (('id', ModelTypes.INTEGER),
+        return  (('id', ModelTypes.IDX),
+                 ('date_added', ModelTypes.DATE),
                  ('external_id', ModelTypes.STRING),
                  ('revenue', (ModelTypes.MONEY, _db_type_into_money)),
                  ('status', ModelTypes.STRING),
@@ -74,16 +78,16 @@ class Hit(DataObject, ReportingObject):
 
     def into_db_columns(self):
         return \
-        [('id', ModelTypes.INTEGER),
+        [('id', ModelTypes.IDX),
+         ('date_added', ModelTypes.DATE),
          ('campaign', (ModelTypes.IDX, _db_type_into_linked)),
          ('destination', (ModelTypes.IDX, _db_type_into_linked)),
          ('cost', (ModelTypes.MONEY, _db_type_into_money)),
          ('time', ModelTypes.DATETIME)] + \
          sorted(map(lambda dim: ("dim_%s" % dim, ModelTypes.STRING) , self.__dict__['dimensions'].keys()))
 
-    def into_db_row(self, required_columns=None):
-        if required_columns is None:
-            required_columns = self.into_db_columns()
+    def into_db_row(self):
+        required_columns = self.into_db_columns()
 
         fields = dict(
             [('id', self.id),

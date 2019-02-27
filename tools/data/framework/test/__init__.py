@@ -2,16 +2,25 @@ from bus import *
 from utils import *
 from reporting import *
 
+from ..types import *
+
+
+def fakebus(): return 'fakebus'
+
+def create_fake_entity(cls, entity_name, idx, **kwargs):
+    return cls(bus=fakebus(), id="%s:[%s]" % (entity_name, idx), **kwargs)
+
 
 def assert_data_object_cls(testcase, cls):
-    created = cls(bus='fakebus', id='Object:[0]', testfield1='testvalue1', testfield2='testvalue2')
+    created = create_fake_entity(cls, 'Object', 0, testfield1='testvalue1', testfield2='testvalue2')
 
-    testcase.assertEqual(created._connection, 'fakebus')
-    testcase.assertEqual(created.testfield1, 'testvalue1')
-    testcase.assertEqual(created.testfield2, 'testvalue2')
+    # checking base object state
     testcase.assertEqual(created._id, 'Object:[0]')
     testcase.assertEqual(created._entity, 'Object')
     testcase.assertEqual(created._idx, 0)
+    testcase.assertEqual(created._connection, 'fakebus')
+    testcase.assertEqual(created.testfield1, 'testvalue1')
+    testcase.assertEqual(created.testfield2, 'testvalue2')
 
 def assert_reporting_object_cls(testcase, cls):
     testcase.assertIsNotNone(getattr(cls, 'into_db_columns'))
@@ -19,13 +28,14 @@ def assert_reporting_object_cls(testcase, cls):
 
 def assert_reporting_object_instance(testcase, obj):
     columns = obj.into_db_columns()
+    # columns required by reporting
     testcase.assertIn('id', dict(columns).keys())
+    testcase.assertEqual(dict(columns)['id'], ModelTypes.IDX)
 
-def fakebus():
-    return 'fakebus'
+    # columns required by Clickhouse
+    testcase.assertIn('date_added', dict(columns).keys())
+    testcase.assertEqual(dict(columns)['date_added'], ModelTypes.DATE)
 
-def create_fake_entity(cls, entity_name, idx, **kwargs):
-    return cls(bus=fakebus(), id="%s:[%s]" % (entity_name, idx), **kwargs)
 
 
 

@@ -8,24 +8,21 @@ from types import ModelTypes, factory_into_db_type
 class ReportingObject(object):
     # todo: extract class ReportingDataObject
     ''' Default implementation '''
+
+    @classmethod
     def into_db_columns(self):
         obj_keys = sorted(filter(lambda k: k != 'id', self.__dict__.keys()))
         public_self_attrs = filter(lambda a: not a.startswith('_'), obj_keys)
-        return [('id', ModelTypes.INTEGER)] + map(lambda k: (k, ModelTypes.STRING), public_self_attrs)
+        return [('id', ModelTypes.IDX), ('date_added', ModelTypes.DATE)] + map(lambda k: (k, ModelTypes.STRING), public_self_attrs)
 
-    def into_db_row(self, required_columns=None):
-        if required_columns is None:
-            db_columns = self.into_db_columns()
-        else:
-            db_columns = required_columns
-
+    def into_db_row(self):
         db_row = [None] * len(db_columns)
         for i, (name, db_type) in enumerate(db_columns):
             raw_val = getattr(self, name)
             db_row[i] = (name, factory_into_db_type(db_type)(raw_val))
 
         return dict(db_row)
-    
+
 
 class DataObject(object):
     MONEY_DECIMAL_SHIFT = 100000  # see core/src/campaigns/currency/mod.rs

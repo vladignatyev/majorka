@@ -22,7 +22,7 @@ class ModelTestcase(unittest.TestCase):
         assert_reporting_object_instance(self, create_fake_entity(Campaign, entity_name='Campaign', idx=0))
         assert_reporting_object_instance(self, create_fake_entity(Offer, entity_name='Offer', idx=0))
         assert_reporting_object_instance(self, create_fake_entity(Conversion, entity_name='Conversions', idx=0))
-        assert_reporting_object_instance(self, create_fake_entity(Hit, entity_name='Hits', idx=0, dimensions={}))
+        assert_reporting_object_instance(self, create_fake_entity(Hit, entity_name='Hits', idx=0, dimensions={'test_dimension': 'dimension_value'}))
 
 
 if __name__ == '__main__':
