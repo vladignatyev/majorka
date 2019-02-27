@@ -39,6 +39,11 @@ class SQLGenerator(object):
     def sql_describe(self, table_name, from_db=None):
         return "DESCRIBE TABLE %s.%s;" % (from_db or self._db_name, table_name)
 
+    def sql_describe_query(self, sql_query):
+        if sql_query.endswith(';'):
+            sql_query = sql_query[0:-1]
+        return "DESCRIBE (%s);" % sql_query
+
     def sql_create_database(self):
         return "CREATE DATABASE IF NOT EXISTS \"%s\";" % self._db_name
 
@@ -104,6 +109,10 @@ class Database(SQLGenerator):
         return self.read(sql=self.sql_describe(table, from_db=db),
                          columns=(('name', ModelTypes.STRING), ('type', ModelTypes.STRING)))
 
+    def describe_query(self, query):
+        return self.read(sql=self.sql_describe_query(query),
+                         columns=(('name', ModelTypes.STRING), ('type', ModelTypes.STRING)))
+
     # todo: type checker that checks that response contains same set of columns as provided
     def read(self, sql, columns=(), simple=False):
         head_foot = self._divide(sql)
@@ -129,11 +138,12 @@ class Database(SQLGenerator):
 
         return self._parsed_result_simple(sql, response)
 
-
-
     def get_columns_for_table(self, table, db=None):
         db = db or self._db
         return map(lambda (o, i, l): (o['name'], o['type']), self.describe(table=table, db=db))
+
+    def get_columns_for_query(self, query):
+        return map(lambda (o, i, l): (o['name'], o['type']), self.describe_query(query=query))
 
     def _divide(self, s):
         try:

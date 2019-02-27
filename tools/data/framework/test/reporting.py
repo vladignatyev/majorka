@@ -224,6 +224,11 @@ class SQLGeneratorTestCase(unittest.TestCase):
         self.assertEqual(gen.sql_describe('sometable'), "DESCRIBE TABLE test.sometable;")
         self.assertEqual(gen.sql_describe('processes', from_db='system'), "DESCRIBE TABLE system.processes;")
 
+    def test_describe_query(self):
+        gen = SQLGenerator(db_name='test')
+        self.assertEqual(gen.sql_describe_query("SELECT 2*2 as result"), "DESCRIBE (SELECT 2*2 as result);")
+        self.assertEqual(gen.sql_describe_query("SELECT 2*2 as result;"), "DESCRIBE (SELECT 2*2 as result);")
+
     def test_create_database(self):
         gen = SQLGenerator(db_name='test')
         self.assertEqual(gen.sql_create_database(), "CREATE DATABASE IF NOT EXISTS \"test\";")
