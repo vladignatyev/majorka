@@ -11,7 +11,7 @@ class TabSeparatedError(Exception):
 
         Cannot convert into tab separated data.
         Error has occured at ({col}:{row}): {msg}!
-        The corresponding data: {val}
+        Error first occured in this sample: {val}
         """
         super(TabSeparatedError, self).__init__(message.format(col=self.col,
                                                                  row=self.row,

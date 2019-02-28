@@ -2,6 +2,8 @@
 import os
 import unittest
 
+from datetime import datetime, timedelta
+
 from ipaddr import IPAddress, IPv4Address
 from decimal import Decimal
 
@@ -44,6 +46,11 @@ class ReportingDbTestCase(unittest.TestCase):
 
     def tearDown(self):
         self.report_db.drop()
+
+    def test_with_custom_sqlgen(self):
+        gen = SQLGenerator('test2')
+        db = Database(url=os.environ['TEST_CLICKHOUSE_URL'], db='test2', sqlgen=gen)
+        self.assertEqual(db.sql, gen)
 
     def test_raises_connection_error(self):
         with self.assertRaises(ConnectionError):
@@ -118,6 +125,20 @@ class ReportingDbTestCase(unittest.TestCase):
             self.assertEqual(type(row['memory_usage']), int)
             self.assertEqual(type(row['elapsed']), Decimal)
 
+    def test_multiline_read_with_type_factories_win_endline_separator(self):
+        db = self.report_db.connected()
+
+        multiline_sql = "\r\n/* SQL comment */\r\nSELECT user,address,\r\nelapsed,\r\nmemory_usage\r\nFROM\r\nsystem.processes;\r\n"
+        for row, i, total in db.read(sql=multiline_sql,
+                                     columns=(('user', str), ('address', IPAddress), ('elapsed', Decimal), ('memory_usage', int))):
+            self.assertEqual(total, 1)
+            self.assertEqual(i, 0)
+            self.assertEqual(type(row), dict)
+            self.assertEqual(type(row['user']), str)
+            self.assertEqual(type(row['address']), IPv4Address)
+            self.assertEqual(type(row['memory_usage']), int)
+            self.assertEqual(type(row['elapsed']), Decimal)
+
     def test_multiline_write(self):
         db = self.report_db.connected()
 
@@ -150,6 +171,18 @@ class ReportingDbTestCase(unittest.TestCase):
             self.assertEqual(type(row['memory_usage']), int)
             self.assertEqual(type(row['elapsed']), Decimal)
 
+    def test_read_with_db_type_names_simple_columns_declaration(self):
+        db = self.report_db.connected()
+        for row, i, total in db.read(sql="SELECT user, address, elapsed, memory_usage FROM system.processes;",
+                                     columns=('user', 'address', 'elapsed', 'memory_usage')):
+            self.assertEqual(total, 1)
+            self.assertEqual(i, 0)
+            self.assertEqual(type(row), dict)
+            self.assertEqual(type(row['user']), unicode)
+            self.assertEqual(type(row['address']), unicode)
+            self.assertEqual(type(row['memory_usage']), unicode)
+            self.assertEqual(type(row['elapsed']), unicode)
+
     def test_read_list(self):
         db = self.report_db.connected()
         for row, i, total in db.read(sql="SELECT user, address, elapsed, memory_usage FROM system.processes;"):
@@ -165,6 +198,13 @@ class ReportingDbTestCase(unittest.TestCase):
         self.assertEqual(len(schema_rows), 35)
         self.assertIn({'type': 'Int64', 'name': 'memory_usage'}, zip(*schema_rows)[0])
 
+    def test_describe_query(self):
+        db = self.report_db.connected()
+        for o, i, l in db.describe_query("SELECT 2+2 AS result;"):
+            self.assertEqual(l, 1)
+            self.assertIn(o['type'], 'UInt16')
+            self.assertIn(o['name'], 'result')
+
     def test_use_get_columns_for_table_for_typed_reading_from_table_with_unknown_schema(self):
         db = self.report_db.connected()
 
@@ -179,7 +219,6 @@ class ReportingDbTestCase(unittest.TestCase):
             self.assertTrue(all(map(lambda item: type(item) == int, row['ProfileEvents.Values'])))
             self.assertEqual(type(row['http_method']), bool)
             self.assertTrue(row['http_method'])
-            break
 
     def test_response_type_checking_issue_10(self):
         db = self.report_db.connected()
@@ -187,10 +226,12 @@ class ReportingDbTestCase(unittest.TestCase):
         column_names = ['user', 'address', 'elapsed', 'memory_usage']
         columns = filter(lambda (column_name, column_type): column_name in column_names, db.get_columns_for_table('processes', db='system'))
         with self.assertRaises(KeyError):
-            # result of request is a tuple
+            # result of request is a tuple (user, address, elapsed, memory_usage)
+            # so when we try to access by key from column_names, we got KeyError
             for row, i, total in (db.read(sql="SELECT (user, address, elapsed, memory_usage) FROM system.processes", columns=columns)):
                 list(map(lambda k: row[k], column_names))
 
+        # but if we investigate a query first, using get_columns_for_query
         better_columns = db.get_columns_for_query(sql="SELECT (user, address, elapsed, memory_usage) FROM system.processes")
         for row, i, total in (db.read(sql="SELECT (user, address, elapsed, memory_usage) FROM system.processes", columns=better_columns)):
             list(row)
@@ -198,10 +239,12 @@ class ReportingDbTestCase(unittest.TestCase):
         pass
 
     def test_data_create_and_insert(self):
+        now = datetime.now()
+
         rows = [
-            ['foo', datetime.now(), 123, [1,2,3]],
-            ['bar', datetime.now(), 666, [6,6,6]],
-            ['baz', datetime.now(), 321, [3,2,1]]
+            ['foo', now, 123, [1,2,3]],
+            ['bar', now, 666, [6,6,6]],
+            ['baz', now, 321, [3,2,1]]
         ]
 
         columns = (('name', ModelTypes.STRING),
@@ -222,14 +265,98 @@ class ReportingDbTestCase(unittest.TestCase):
                                                       columns=columns)))
 
         from_db = list(db.read(sql="SELECT * FROM test.testtable", columns=columns))
-        self.assertEqual(len(from_db), len(rows))
+        self.assertEqual(len(from_db), 3)
 
-        rows_as_dicts = map(lambda row: {'name': row[0], 'date_added': row[1], 'value': row[2], 'set': row[3]}, rows)
         rows_as_dicts_from_db = map(lambda (row, i, total): row, from_db)
+        
+        date_added = datetime(now.year, now.month, now.day)
+        for row in rows_as_dicts_from_db:
+            if row['name'] == 'foo':
+                self.assertEqual(row['value'], 123)
+                self.assertEqual(row['set'], [1,2,3])
+                self.assertEqual(row['date_added'], date_added)
+            elif row['name'] == 'bar':
+                self.assertEqual(row['value'], 666)
+                self.assertEqual(row['set'], [6,6,6])
+                self.assertEqual(row['date_added'], date_added)
+            elif row['name'] == 'baz':
+                self.assertEqual(row['value'], 321)
+                self.assertEqual(row['set'], [3,2,1])
+                self.assertEqual(row['date_added'], date_added)
+            else:
+                self.fail("unexpected row result")
 
-        # todo: assert and compare
-        # print rows_as_dicts
-        # print rows_as_dicts_from_db
+    def test_data_create_and_insert_with_improper_dimensions(self):
+        now = datetime.now()
+
+        rows = [
+            ['foo', now, 123, [1,2,3]],
+            ['bar', now, 666],
+            ['baz', now]
+        ]
+
+        columns = (('name', ModelTypes.STRING),
+                   ('date_added', ModelTypes.DATE),
+                   ('value', ModelTypes.INTEGER),
+                   ('set', ModelTypes.ARRAY_OF_IDX))
+
+        columns_invalid = (('name', ModelTypes.STRING),
+                           ('date_added', ModelTypes.DATE))
+
+        db = self.report_db.connected()
+
+        self.maxDiff = None
+        self.assertTrue(db.write(db.sql.create_table(table='testtable_improper_dimensions',
+                                                     date_column='date_added',
+                                                     index=('name',),
+                                                     columns=columns)))
+
+        with self.assertRaises(TabSeparatedError) as context:
+            db.write(db.sql.insert_values(table='testtable',
+                                          values=rows,
+                                          columns=columns))
+        self.assertIn('dimensions for every row should match dimension', context.exception.message)
+
+        with self.assertRaises(Exception) as context:
+            db.write(db.sql.insert_values(table='testtable',
+                                          values=rows,
+                                          columns=columns_invalid))
+
+        self.assertIn('Dimensions of `values` and `columns` definition should match', context.exception.message)
+
+        self.assertEqual(len(list(db.read(sql='SELECT * FROM test.testtable_improper_dimensions'))), 0, "should not alter data in table")
+
+
+    def test_data_create_and_insert_with_simple_column_declaration(self):
+        now = datetime.now()
+
+        rows = [
+            ['foo', '2018-02-28', 123, '[1,2,3]'],
+            ['bar', '2018-02-28', 666, '[6,6,6]'],
+            ['baz', '2018-02-28', 321, '[3,2,1]']
+        ]
+
+        columns = ('name', 'date_added', 'value', 'set')
+
+        columns_spec_for_table_create = (('name', ModelTypes.STRING),
+                                           ('date_added', ModelTypes.DATE),
+                                           ('value', ModelTypes.INTEGER),
+                                           ('set', ModelTypes.ARRAY_OF_IDX))
+
+        db = self.report_db.connected()
+
+        self.maxDiff = None
+        self.assertTrue(db.write(db.sql.create_table(table='testtable_insert_with_simple_column_declaration',
+                                                     date_column='date_added',
+                                                     index=('name',),
+                                                     columns=columns_spec_for_table_create)))
+
+        self.assertTrue(db.write(db.sql.insert_values(table='testtable_insert_with_simple_column_declaration',
+                                                      values=rows,
+                                                      columns=columns)))
+
+        self.assertEqual(len(list(db.read(sql='SELECT * FROM test.testtable_insert_with_simple_column_declaration'))), 3, "should not alter data in table")
+
 
 
 class TabSeparatedTestCase(unittest.TestCase):
@@ -239,16 +366,21 @@ class TabSeparatedTestCase(unittest.TestCase):
 
     def test_normal(self):
         ts = TabSeparated(data=(('Petya', 22), ('Masha', 19), (u'Василий', 34)))
-        self.assertMultiLineEqual(ts.generate(), u"Petya\t22\nMasha\t19\nВасилий\t34")
+        self.assertMultiLineEqual(ts.generate(), u"Petya\t22\nMasha\t19\nВасилий\t34", "should normally generate tab separated output")
 
     def test_with_tabs(self):
         ts = TabSeparated(data=(('Petya', 22), ('H\tacker\t', 19), (u'Василий', 34)))
-        with self.assertRaises(TabSeparatedError):
+        with self.assertRaises(TabSeparatedError) as context:
             ts.generate()
 
+        self.assertIn("TAB char is disallowed", context.exception.message)
+
         ts_dims = TabSeparated(data=(('Petya', 22), ('Hacker',), (u'Василий', 34)))
-        with self.assertRaises(TabSeparatedError):
+        with self.assertRaises(TabSeparatedError) as context:
             ts_dims.generate()
+
+        self.assertIn("dimensions for every row should match", context.exception.message)
+
 
 
 class SQLGeneratorTestCase(unittest.TestCase):
