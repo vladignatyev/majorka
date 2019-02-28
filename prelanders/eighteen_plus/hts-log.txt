@@ -1,0 +1,14 @@
+HTTrack3.49-2 launched on Thu, 28 Feb 2019 19:28:20 at https://j9gyl.tvnewtop.pro/age-check?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwMTYzMiwid2lkIjo3NTI1LCJzcmMiOjJ9eyJ&bbr=1&i=9
+(httrack https://j9gyl.tvnewtop.pro/age-check?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwMTYzMiwid2lkIjo3NTI1LCJzcmMiOjJ9eyJ&bbr=1&i=9 )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+19:28:32	Error: 	"No Content" (204) at link https://j9gyl.tvnewtop.pro/GET (from https://j9gyl.tvnewtop.pro/age-check?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwMTYzMiwid2lkIjo3NTI1LCJzcmMiOjJ9eyJ&bbr=1&i=9)
+19:28:45	Error: 	"No Content" (204) at link https://j9gyl.tvnewtop.pro/test (from https://j9gyl.tvnewtop.pro/age-check?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwMTYzMiwid2lkIjo3NTI1LCJzcmMiOjJ9eyJ&bbr=1&i=9)
+19:28:45	Error: 	"No Content" (204) at link https://j9gyl.tvnewtop.pro/OPR/ (from https://j9gyl.tvnewtop.pro/age-check?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwMTYzMiwid2lkIjo3NTI1LCJzcmMiOjJ9eyJ&bbr=1&i=9)
+
+HTTrack Website Copier/3.49-2 mirror complete in 25 seconds : 6 links scanned, 2 files written (11208 bytes overall) [7256 bytes received at 290 bytes/sec], 10561 bytes transferred using HTTP compression in 2 files, ratio 48%, 1.5 requests per connection
+(3 errors, 0 warnings, 0 messages)
