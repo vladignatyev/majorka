@@ -7,7 +7,7 @@ import os
 from ..bus import Connection
 from ..base import *
 
-from redis_fixture import fixture_data
+from fixtures.redis_fixture import fixture_data
 
 def import_fixture(redis_instance, data):
     redis_instance.flushdb()
@@ -35,6 +35,7 @@ _ENTITIES = {
     'Hits': FakeEntity2
 }
 
+
 class DatabusTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -42,15 +43,16 @@ class DatabusTestCase(unittest.TestCase):
             raise Exception("\n\nFor safety reason, framework tests are running "
                             "only on test database instance.\nSet the"
                             "'TEST_REDIS_URL' environmental variable to proper Redis URL.\n")
+        cls._redis = Redis.from_url(os.environ['TEST_REDIS_URL'])
+        import_fixture(cls._redis, fixture_data)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._redis.flushdb()
 
     def setUp(self):
-        self.redis = Redis.from_url(os.environ['TEST_REDIS_URL'])
+        self.redis = DatabusTestCase._redis
         self.bus = Connection(redis=self.redis, entities_meta=_ENTITIES)
-
-        import_fixture(self.redis, fixture_data)
-
-    def tearDown(self):
-        self.redis.flushdb()
 
     def test_sanity(self):
         bus = Connection(url=os.environ['TEST_REDIS_URL'], entities_meta=_ENTITIES)

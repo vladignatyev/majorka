@@ -32,6 +32,7 @@ class FakeEntity(ReportingObject):
 
 
 class ReportingDbTestCase(unittest.TestCase):
+    # pragma: no cover
     @classmethod
     def setUpClass(cls):
         if not os.environ.get('TEST_CLICKHOUSE_URL', None):
@@ -41,7 +42,7 @@ class ReportingDbTestCase(unittest.TestCase):
                             " variable to proper Clickhouse URL.\n")
 
     def setUp(self):
-        self.report_db = Database(url=os.environ['TEST_CLICKHOUSE_URL'], db='test')
+        self.report_db = Database(url=os.environ['TEST_CLICKHOUSE_URL'], db='test', connection_timeout=1, data_read_timeout=1)
         self.report_db.connected()
 
     def tearDown(self):
@@ -268,7 +269,7 @@ class ReportingDbTestCase(unittest.TestCase):
         self.assertEqual(len(from_db), 3)
 
         rows_as_dicts_from_db = map(lambda (row, i, total): row, from_db)
-        
+
         date_added = datetime(now.year, now.month, now.day)
         for row in rows_as_dicts_from_db:
             if row['name'] == 'foo':
