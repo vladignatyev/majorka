@@ -1,4 +1,5 @@
 from framework.base import *
+from framework.reporting import *
 from framework.types import ModelTypes, _db_type_into_money, _db_type_into_linked, _db_type_into_datetime
 
 
@@ -52,7 +53,7 @@ class Conversion(DataObject, ReportingObject):
     def into_db_columns(cls):
         return cls.default_columns() + \
         [('external_id', ModelTypes.STRING),
-         ('revenue', (ModelTypes.MONEY, _db_type_into_money)),
+         ('revenue', ModelTypes.MONEY),
          ('status', ModelTypes.STRING),
          ('time', ModelTypes.DATETIME)]
 
@@ -88,7 +89,7 @@ class Hit(DataObject, ReportingObject):
         return self.default_columns() + \
         [('campaign', (ModelTypes.IDX, _db_type_into_linked)),
          ('destination', (ModelTypes.IDX, _db_type_into_linked)),
-         ('cost', (ModelTypes.MONEY, _db_type_into_money)),
+         ('cost', ModelTypes.MONEY),
          ('time', ModelTypes.DATETIME)] + \
          sorted(map(lambda dim: ("dim_%s" % dim, ModelTypes.STRING) , self.__dict__['dimensions'].keys()))
 
@@ -124,3 +125,60 @@ ENTITIES = {
     'Conversions': Conversion,
     'Hits': Hit
 }
+
+
+
+class DataImport(object):
+    def __init__(self, bus, report_db):
+        self.bus = bus
+        self.reporting = report_db
+        # todo:
+        self.reporting.drop()
+
+    def get_entity_last_idx(self, entity_cls):
+        db_name = self.reporting.name
+        table_name = entity_cls.TABLE_NAME
+        sql = "SELECT MAX(id) AS last_idx FROM {db}.{table}".format(db=db_name, table=table_name)
+
+        try:
+            for o, i, l in self.reporting.connected().read(sql=sql, columns=(('last_idx', 'UInt64'))):
+                return o['last_idx']
+        except DbError as e:
+            return 0
+
+    def init_entity(self, entity_name):
+        entity = ENTITIES[entity_name]
+        result = self.reporting.connected().write(sql=self.reporting.sql.create_table_for_reporting_object(entity))
+        if not result:
+            raise Exception("Unable to initialize entity table.")
+
+    def load_entity(self, entity_name):
+        entity = ENTITIES[entity_name]
+        last_id = self.get_entity_last_idx(entity)
+        if last_id == 0:
+            self.init_entity(entity_name)
+
+        return list(self.bus.multiread(entity_name, start=last_id))
+
+    def import_entity(self, entity_name, entity_objs):
+        if len(entity_objs) == 0:
+            print "All `%s` are already imported! Skipping." % entity_name  # todo: log
+            return
+
+        entity = ENTITIES[entity_name]
+        columns = entity.into_db_columns()
+        column_names = zip(*columns)[0]
+        objects_as_db_values = map(lambda o: o.into_db_values(columns=columns), entity_objs)
+        sql = self.reporting.sql.insert_values(table=entity.TABLE_NAME,
+                                               values=objects_as_db_values,
+                                               columns=column_names)
+        result = self.reporting.connected().write(sql=sql)
+        if not result:
+            raise Exception("Unable to import entity `{entity_name}`".format(entity_name=entity_name))
+
+    def load_simple_entities(self):
+        simple = ['Campaign', 'Offer', 'Conversions']
+        for entity_name in simple:
+            print "Importing entity %s" % entity_name # todo add logging
+            objects_to_import = self.load_entity(entity_name)
+            self.import_entity(entity_name=entity_name, entity_objs=objects_to_import)

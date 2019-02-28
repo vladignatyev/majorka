@@ -69,6 +69,8 @@ class SQLGenerator(object):
         reporting_obj_columns = filter(lambda k: k[0] not in default_fields_names, reporting_obj.into_db_columns())
         field_declaration = default_fields + reporting_obj_columns
 
+        field_declaration = map(lambda decl: decl if decl[1] != 'Decimal' else (decl[0], 'Decimal64(5)'), field_declaration)
+
         return self.create_table(table=reporting_obj.TABLE_NAME,
                                      date_column='date_added',
                                      columns=field_declaration,
@@ -81,10 +83,13 @@ class SQLGenerator(object):
         # check dimensions
         if len(values[0]) != len(columns):
             raise Exception("Dimensions of `values` and `columns` definition should match.")
+
         if type(columns[0]) is tuple:
             unzipped = zip(*columns)
             column_names = unzipped[0]
-            column_factories = map(lambda type_name: factory_into_db_type(type_name), unzipped[1])
+            column_types = unzipped[1]
+            column_factories = map(lambda type_name: factory_into_db_type(type_name), column_types)
+
             db_typed_values = [None] * len(values)
             for row, row_values in enumerate(values):
                 db_typed_values[row] = map(lambda (f, v): f(v), zip(column_factories, row_values))
@@ -117,6 +122,10 @@ class Database(object):
         self.connection_timeout, self.data_read_timeout = connection_timeout, data_read_timeout
         self.ping()
 
+    @property
+    def name(self):
+        return self._db
+
     def ping(self):
         try:
             self.read(sql=self.sql.hello(), simple=True)
@@ -129,6 +138,7 @@ class Database(object):
 
     def drop(self):
         self.write(self.sql.drop())
+        self._db_is_created = None
 
     def describe(self, table, db=None):
         db = db or self._db

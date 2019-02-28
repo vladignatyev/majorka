@@ -35,6 +35,19 @@ class ReportingObject(object):
 
         return dict(db_row)
 
+    def into_db_values(self, columns):
+        if type(columns[0]) is list or type(columns[0]) is tuple:
+            column_names = zip(*columns)[0]
+        else:
+            column_names = columns
+
+        db_row = self.into_db_row()
+
+        values = [None] * len(column_names)
+        for i, k in enumerate(column_names):
+            values[i] = db_row[k]
+        return values
+
     def __init__(self, **kwargs):
         self.__dict__.update(**kwargs)
 

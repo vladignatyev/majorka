@@ -48,6 +48,9 @@ class ReportingDbTestCase(unittest.TestCase):
     def tearDown(self):
         self.report_db.drop()
 
+    def test_make_typecasting_code_explicit(self):
+        self.fail('Not implemented yet.')
+
     def test_with_custom_sqlgen(self):
         gen = SQLGenerator('test2')
         db = Database(url=os.environ['TEST_CLICKHOUSE_URL'], db='test2', sqlgen=gen)
@@ -405,6 +408,15 @@ class SQLGeneratorTestCase(unittest.TestCase):
         self.assertEqual(gen.create_database(), "CREATE DATABASE IF NOT EXISTS \"test\";")
         gen = SQLGenerator(db_name='another')
         self.assertEqual(gen.create_database(), "CREATE DATABASE IF NOT EXISTS \"another\";")
+
+    def test_db_error_decimal_data_type_must_have_precision_and_scale(self):
+        self.fail('Not implemented yet.')
+
+    def test_insert_query_should_prepare_dicts_at_his_own_not_expecting_the_plain_list_of_values_if_columns_have_necessary_declarations(self):
+        self.fail('Not implemented yet.')
+
+    def test_insert_query_should_support_providing_custom_type_factories_in_column_declaration(self):
+        self.fail('Not implemented yet.')
 
     def test_insert_values_extended_col_def(self):
         gen = SQLGenerator(db_name='test')

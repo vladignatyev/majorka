@@ -24,7 +24,6 @@ def factory_into_db_type(db_type):
         return db_type[1]
     return INTO_DB_TYPES.get(db_type, INTO_DB_TYPES['UNKNOWN'])
 
-
 def _db_type_bool(db_val):
     return int(db_val) == 1
 
@@ -83,6 +82,8 @@ def _db_type_into_int(obj_val):
     return obj_val
 
 def _db_type_into_decimal(obj_val):
+    if type(obj_val) is tuple:
+        return str(Decimal(obj_val[0]))
     return str(Decimal(obj_val))
 
 def _db_type_into_string(obj_val):
@@ -102,7 +103,7 @@ def _db_type_into_array(t):
             # use value._idx as value, instead of str(value)
             return "[%s]" % (','.join(map(lambda v: str(v._idx), obj_val)))
         else:                           # if array of primitive types
-            if type(obj_val) is str:
+            if type(obj_val[0]) is str or type(obj_val[0]) is unicode:
                 return "['%s']" % ('\',\''.join(map(lambda v: str(v), obj_val)))
             else:
                 return "[%s]" % (','.join(map(lambda v: str(v), obj_val)))
