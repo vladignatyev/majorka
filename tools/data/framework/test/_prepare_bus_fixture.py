@@ -23,6 +23,7 @@ for key in connection.scan_iter():
         sys.stderr.write("...wrong type, skipping.\n")
 
 
+sys.stdout.write("# pragma: no cover\n")
 sys.stdout.write("fixture_data = {}\n")
 sys.stdout.write('\n'.join(map(lambda k: "fixture_data['%s'] = '%s'" % (k, escape(key_values[k])), sorted(key_values.keys()))))
 sys.stdout.flush()

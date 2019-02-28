@@ -60,16 +60,16 @@ class DatabusTestCase(unittest.TestCase):
         some_random_index = 153
         for destination in self.bus.multiread('Offer'):
             self.assertEqual(destination._idx, 0, "First entry will have idx = 0")
-            self.assertEqual(destination.url_template, 'http://google.com/?utm_source={zone}&subid={external_id}', "First entry should have proper field value.")
+            self.assertEqual(destination.url_template, 'https://jaunithuw.com/?h=9dad9c9097a736ce162988dc28d0dda60810115f&pci={external_id}&ppi={zone}')
             break
 
-        self.assertEqual(len(list(self.bus.multiread('Offer'))), 2, "Should load all entries.")
+        self.assertEqual(len(list(self.bus.multiread('Offer'))), 12)
 
         for hit in self.bus.multiread('Hits', start=some_random_index):
-            self.assertEqual(hit._idx, some_random_index, "Should have proper idx value")
-            self.assertEqual(hit.click_id, '43', "Access to object field")
-            self.assertEqual(hit.destination._idx, 0, "Access to linked object's _idx")
-            self.assertEqual(hit.destination.url_template, 'http://google.com/?utm_source={zone}&subid={external_id}', "Access to linked object's field")
+            self.assertEqual(hit._idx, some_random_index)
+            self.assertEqual(hit.click_id, '121427560658636800')
+            self.assertEqual(hit.destination._idx, 7)
+            self.assertEqual(hit.destination.url_template, 'https://jaunithuw.com/?h=f1b5821ac37e8e5104ede686ae9e3263edcfc6e6&pci={external_id}&ppi={zone}')
             break
 
         hits = list(self.bus.multiread('Hits', start=some_random_index, end=some_random_index + 100))
@@ -81,5 +81,5 @@ class DatabusTestCase(unittest.TestCase):
         self.assertEqual(offer1._idx, 0)
         self.assertEqual(offer2._idx, 1)
 
-        self.assertEqual(offer1.url_template, 'http://google.com/?utm_source={zone}&subid={external_id}')
-        self.assertEqual(offer2.url_template, 'http://yandex.ru/?utm_source={zone}&subid={external_id}')
+        self.assertEqual(offer1.url_template, 'https://jaunithuw.com/?h=9dad9c9097a736ce162988dc28d0dda60810115f&pci={external_id}&ppi={zone}')
+        self.assertEqual(offer2.url_template, 'https://jaunithuw.com/?h=0c6a4ddb2e8336632cf8de86770852dbb3a32560&pci={external_id}&ppi={zone}')
