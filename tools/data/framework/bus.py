@@ -95,7 +95,7 @@ class Connection(object):
 
         if start > last_idx:
             return # there is no objects to read, returning empty iterator
-        if end is None:
+        if end is None or end > last_idx:
             end = last_idx
 
         n = start

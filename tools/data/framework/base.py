@@ -32,9 +32,9 @@ class ReportingObject(object):
         for i, (name, db_type) in enumerate(db_columns):
             if hasattr(self, name):
                 raw_val = getattr(self, name)
-                db_row[i] = (name, db_type.into_db_value(py_value=raw_val, column_name=name))
+                db_row[i] = (name, db_type.into_db_value(context=self, py_value=raw_val, column_name=name))
             else:
-                db_row[i] = (name, db_type.into_db_value(py_value=None, column_name=name))
+                db_row[i] = (name, db_type.into_db_value(context=self, py_value=None, column_name=name))
 
         return dict(db_row)
 
@@ -48,7 +48,7 @@ class ReportingObject(object):
 
         values = [None] * len(column_names)
         for i, k in enumerate(column_names):
-            values[i] = db_row.get(k, columns[i][1].into_db_value(columns[i][1].default_py_value(), column_name=column_names[i]))
+            values[i] = db_row.get(k, columns[i][1].into_db_value(context=self, py_value=columns[i][1].default_py_value(), column_name=column_names[i]))
         return values
 
     def __init__(self, **kwargs):

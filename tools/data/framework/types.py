@@ -9,7 +9,7 @@ class Typecast(object):
     def __init__(self):
         pass
 
-    def into_db_value(self, py_value=None, column_name=None):
+    def into_db_value(self, context=None, py_value=None, column_name=None):
         return None
 
     def into_db_type(self):
@@ -34,7 +34,7 @@ class Type(object):
     class Undefined(Typecast): pass
 
     class Default(Typecast):
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             return u"{v}".format(v=unicode(py_value))
         def into_db_type(self): return 'String'
         def from_db_value(self, db_value, column_name=None):
@@ -46,12 +46,12 @@ class Type(object):
     class UUID(Default):
         def __init__(self): self.value = UUID(int=random.getrandbits(128))
         def from_db_value(self, db_value, column_name=None): return UUID(db_value)
-        def into_db_value(self, py_value=None, column_name=None): return str(py_value)
+        def into_db_value(self, context=None, py_value=None, column_name=None): return str(py_value)
         def default_py_value(self): return self.value
         def into_db_type(self): return 'UUID'
 
     class Bool(Typecast):
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             if py_value is True:
                 return 1
             else:
@@ -73,7 +73,7 @@ class Type(object):
             self.bits = bits
             self.unsigned = unsigned
 
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             return '{val}'.format(val=int(py_value))
 
         def into_db_type(self):
@@ -92,7 +92,7 @@ class Type(object):
 
     class Idx(Integer):
         @classmethod
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             if type(py_value) is int:
                 _idx = py_value
             elif hasattr(py_value, '_idx'):
@@ -148,7 +148,7 @@ class Type(object):
 
     class String(Default):
         def into_db_type(self): return 'String'
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             return u"{v}".format(v=unicode(py_value))
         def from_db_value(self, db_value, column_name=None):
             return str(db_value)
@@ -162,13 +162,13 @@ class Type(object):
         def __init__(self, items):
             self._items_type = items
 
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             if type(py_value) is not list and type(py_value) is not tuple:
                 raise Exception("Improper `py_value` passed. \n"
                                 "Expected list or tuple, got `{t}`".format(t=type(py_value)))
             if len(py_value) == 0:
                 return '[]'
-            iter_func = lambda item: self._items_type.into_db_value(item, column_name=column_name)
+            iter_func = lambda item: self._items_type.into_db_value(py_value=item, context=context, column_name=column_name)
             if type(self._items_type) is Type.String:
                 return "['{v}']".format(v=','.join(map(iter_func, py_value)))
             else:
@@ -198,7 +198,7 @@ class Type(object):
             return None
 
     class LinkedObjects(Typecast):
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             print py_value
             if (type(py_value) is not list) and (type(py_value) is not tuple):
                 raise Exception("Invalid value.")
@@ -223,7 +223,7 @@ class Type(object):
             assert scale >= 0 and scale <= precision
             self.precision = precision
             self.scale = scale
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             return "{v}".format(v=str(py_value))
         def into_db_type(self):
             return 'Decimal({p},{s})'.format(p=self.precision, s=self.scale)
@@ -259,15 +259,15 @@ class Type(object):
     class Money(Decimal64):
         def __init__(self): super(Type.Decimal64, self).__init__(scale=5)
 
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             value, currency = py_value or self.default_py_value()
-            return super(Type.Decimal64, self).into_db_value(value)
+            return super(Type.Decimal64, self).into_db_value(py_value=value, context=context)
         def from_db_value(self, db_value, column_name=None):
             return (super(Type.Decimal64, self).from_db_value(value), 'Unknown')
         def default_py_value(self): return (Decimal(0.0), 'Unknown')
 
     class Float32(Typecast):
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             return "{v}".format(v=str(py_value))
         def into_db_type(self): return 'Float32'
         def from_db_value(self, db_value, column_name=None): return float(db_value)
@@ -275,7 +275,7 @@ class Type(object):
         def default_db_value(self): return None
 
     class Float64(Typecast):
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             return "{v}".format(v=str(py_value))
         def into_db_type(self): return 'Float64'
         def from_db_value(self, db_value, column_name=None): return float(db_value)
@@ -283,7 +283,7 @@ class Type(object):
         def default_db_value(self): return None
 
     class IPAddress(Typecast):
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             return "{v}".format(v=str(py_value))
         def into_db_type(self): return 'String'
         def from_db_value(self, db_value, column_name=None):
@@ -292,7 +292,7 @@ class Type(object):
         def default_db_value(self): return None
 
     class Date(Typecast):
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             value = py_value or self.default_py_value
             assert type(py_value) is datetime
             return datetime.strftime(value, '%Y-%m-%d')
@@ -309,7 +309,7 @@ class Type(object):
             return None
 
     class DateTime(Typecast):
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             value = py_value or self.default_py_value()
             assert type(py_value) is datetime
             return datetime.strftime(py_value, '%Y-%m-%d %H:%M:%S')

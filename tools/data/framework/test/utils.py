@@ -127,3 +127,35 @@ class DiffApplyTuplesTestCase(unittest.TestCase):
         b = [('1', 'a'), ('2', 'b'), ('4', 'bar'), ('5', 'baz')]
         self.assertIsNotNone(diff(a,b))
         self.assertEqual(diff_apply(a, diff(a, b)), (('1', 'a'), ('2', 'b'), ('3', 'foo'), ('4', 'bar'), ('5', 'baz')))
+
+
+class DiffApplyCustomObjectTestCase(unittest.TestCase):
+    class ComparableColumn(object):
+        def __init__(self, name, type):
+            self.name = name
+            self.type = type
+
+        def __eq__(self, other):
+            return (other is not None) and (self.name == other.name) # and type(self.type) is type(other.type)
+
+        def __cmp__(self, other):
+            if other is None: return 1
+            if self.name < other.name: return -1
+            if self.name > other.name: return 1
+            if self.name == other.name: return 0
+
+        def __repr__(self):
+            return "{name} : {type}".format(name=self.name,type=type(self.type))
+
+    def test(self):
+        c1 = self.ComparableColumn('id', str)
+        c2 = self.ComparableColumn('date_added', str)
+
+        c3 = self.ComparableColumn('campaign', str)
+        c31 = self.ComparableColumn('campaign', str)
+
+        def custom_sorted(columns):
+            return sorted(columns, key=lambda i: i.name, reverse=True)
+
+        print diff([c1, c2], [c1, c2, c3], custom_sorted=custom_sorted)
+        # self.assertEqual(diff([c1, c2], [c1, c2, c3], custom_sorted=custom_sorted), (c3, c2))

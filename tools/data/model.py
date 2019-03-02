@@ -6,6 +6,9 @@ from framework.types import *
 from framework.utils import diff, diff_apply
 
 
+REPORTING_DB = 'majorka'
+
+
 class Campaign(DataObject, ReportingObject):
     TABLE_NAME = 'campaigns'
 
@@ -63,13 +66,11 @@ class Conversion(DataObject, ReportingObject):
 
 class Hit(DataObject, ReportingObject):
     class Dimension(Typecast):
-        def __init__(self, obj):
-            self.hit = obj
         def _dimension_name_from_column_name(self, column_name):
             return column_name.split("dim_")[1]
-        def into_db_value(self, py_value=None, column_name=None):
+        def into_db_value(self, context=None, py_value=None, column_name=None):
             dim_name = self._dimension_name_from_column_name(column_name)
-            return u"{v}".format(v=unicode(self.hit.__dict__['dimensions'].get(dim_name, "")))
+            return u"{v}".format(v=unicode(context.__dict__['dimensions'].get(dim_name, "")))
         def into_db_type(self): return 'String'  # todo: typed dimensions
         def from_db_value(self, db_value, column_name=None):
             return str(db_value)
@@ -103,12 +104,16 @@ class Hit(DataObject, ReportingObject):
         return self.__dict__.get('external_id')
 
     def into_db_columns(self):
-        return self.default_columns() + \
+        return self.static_columns() + \
+         list(map(lambda dim: ("dim_%s" % dim, Hit.Dimension()) , self.__dict__['dimensions'].keys()))
+
+    @classmethod
+    def static_columns(cls):
+        return cls.default_columns() + \
         [('campaign', Type.Idx()),
          ('destination', Type.Idx()),
          ('cost', Type.Money()),
-         ('time', Type.DateTime())] + \
-         list(map(lambda dim: ("dim_%s" % dim, Hit.Dimension(obj=self)) , self.__dict__['dimensions'].keys()))
+         ('time', Type.DateTime())]
 
 
 # see entity names in core/src/campaigns/model.rs
@@ -120,13 +125,27 @@ ENTITIES = {
 }
 
 
-def _custom_diff_sorting(columns):
-    l = list(columns)
-    l2 = sorted(filter(lambda col: col.name != 'id' and col.name != 'date_added', l))
-    id_col = filter(lambda col: col.name == 'id', l)
-    date_added_col = filter(lambda col: col.name == 'date_added', l)
+# _custom_diff_sorting maintains a stable order to keep 'diff' working and to build correct schema update
+def _custom_diff_sorting(comparable_columns):
 
-    return id_col + date_added_col + l2
+    static_columns_names = map(lambda col: col[0], Hit.static_columns())
+    l = list(comparable_columns)
+    l2 = sorted(list(filter(lambda col: not (col.name in static_columns_names), l)))
+
+    comparable_static_columns = {}
+
+    static_columns = filter(lambda col: col.name in static_columns_names, l)
+
+    # don't know why, but static_columns are randomly sorted now,
+    # so we just map them back into order provided by Hit.static_columns()
+    for static_col in static_columns:
+        comparable_static_columns[static_col.name] = static_col
+    static_columns = [None] * len(static_columns)
+    for i, name in enumerate(static_columns_names):
+        static_columns[i] = comparable_static_columns[name]
+
+    result = static_columns + l2
+    return result
 
 
 # TODO: 1) we already have ColumnsDef class.
@@ -135,13 +154,20 @@ def _custom_diff_sorting(columns):
 #          checkings and such ugly stuff.
 #          Furthemore, it's necessary for implementing migrations and computing
 #          diffs for schema.
+#       2) dynamic objects is well-defineable model, since we have a `context`
+#          for every `into_db_value` call, so probably extract something into
+#          base framework classes, i.e. calculating columns diff
+#          and automigrating
 class ComparableColumn(object):
-    def __init__(self, *args):
-        self.name = args[0]
-        self.type = args[1]
+    def __init__(self, name, type):
+        self.name = name
+        self.type = type
 
     def __eq__(self, other):
-        return self.name == other.name and type(self.type) is type(other.type)
+        return self.name == other.name # and type(self.type) is type(other.type)
+
+    def __hash__(self):
+        return self.name.__hash__()
 
     def __cmp__(self, other):
         if other is None: return 1
@@ -150,22 +176,26 @@ class ComparableColumn(object):
         if self.name == other.name: return 0
 
     def __repr__(self):
-        return "{name} : {type}".format(name=self.name,type=type(self.type))
+        return "{name}".format(name=self.name)
 
 
 def wrap_comparable(columns):
-    return [ComparableColumn(*c) for c in columns]
+    return [ComparableColumn(name=name, type=type) for name, type in columns]
 
 def unwrap_comparable_into_raw_columns(comparable):
     return [(c.name, c.type) for c in comparable]
 
+def safe_dynamic_fields(columns):
+    return [(c[0], Hit.Dimension() if 'dim_' in c[0] else c[1]) for c in columns]
+
 class DataImport(object):
-    def __init__(self, bus, report_db, logger=logging.getLogger('dataimport')):
+    LOGGER = 'dataimport'
+
+    def __init__(self, bus, report_db, logger=logging.getLogger(LOGGER)):
         self.log = logger
         self.bus = bus
         self.reporting = report_db
-        # todo:
-        self.reporting.drop()
+        # report_db.drop()  # todo: remove after making tests
 
     def get_entity_last_idx(self, name, entity):
         db_name = self.reporting.name
@@ -175,11 +205,11 @@ class DataImport(object):
 
         try:
             for o, i, l in self.reporting.connected().read(sql=sql, columns=(('last_idx', 'UInt64'), ('count', 'UInt64'))):
-                print "We have {count} `{entities}` in reporting storage. The last one has index id={id}".format(
+                self.log.info("We have {count} `{entities}` in reporting storage. The last one has index id={id}".format(
                     id=o['last_idx'],
                     count=o['count'],
                     entities=name
-                )
+                ))
                 return o['last_idx']
         except DbError as e:
             return 0
@@ -195,6 +225,7 @@ class DataImport(object):
             self.init_entity(name, entity)
 
         return list(self.bus.multiread(name, start=last_id))
+        # return list(self.bus.multiread(name, start=last_id, end=2)) # todo: remove after making tests
 
     def import_entity(self, name, table_name, objs, columns):
         column_names = zip(*columns)[0]
@@ -206,10 +237,11 @@ class DataImport(object):
         result = self.reporting.connected().write(sql=sql)
         if not result:
             raise Exception("Unable to import entity `{name}`".format(name=name))
+        self.log.info("Entity `{name}` has been imported succesfully".format(name=name))
 
     def load_simple_entities(self, entities=('Campaign', 'Offer', 'Conversions')):
         for name in entities:
-            print "Importing entity {name}".format(name=name) # todo add logging
+            self.log.info("Importing entity {name}".format(name=name)) # todo add logging
 
             entity = ENTITIES[name]
             objects_to_import = self.load_entity(name, entity)
@@ -224,11 +256,11 @@ class DataImport(object):
         if len(objs) > 0:
             return True
 
-        print "All `{name}` are already imported! Skipping.".format(name=name)  # todo: log
+        self.log.info("All `{name}` are already imported! Skipping.".format(name=name))  # todo: log
         return False
 
     def load_hits(self):
-        print "Loading hits..." # todo logging
+        self.log.info("Loading hits...")
 
         name = 'Hits'
         entity = ENTITIES[name]
@@ -239,11 +271,11 @@ class DataImport(object):
         if not self.do_we_need_to_import(name, objects_to_import):
             return
 
-        print "Calculating migration..."
+        self.log.info("Calculating migration...")
 
         # todo: we need one mutable and one immutable variables for computing diff
-        existing_columns = wrap_comparable(self.reporting.connected().describe(table_name))
-        source_columns = wrap_comparable(self.reporting.connected().describe(table_name))
+        existing_columns = wrap_comparable(safe_dynamic_fields(self.reporting.connected().describe(table_name)))
+        source_columns = wrap_comparable(safe_dynamic_fields(self.reporting.connected().describe(table_name)))
 
         for o in objects_to_import:
             delta = diff(existing_columns, wrap_comparable(o.into_db_columns()), custom_sorted=_custom_diff_sorting)
@@ -252,14 +284,14 @@ class DataImport(object):
 
         new_after_list = diff(source_columns, existing_columns, custom_sorted=_custom_diff_sorting)
 
-        if len(new_after_list) > 0:
-            print "We need to add {count} more columns.".format(count=len(new_after_list))
-            print "Samples:"
+        if new_after_list is not None and len(new_after_list) > 0:
+            self.log.info("We need to add {count} more columns.".format(count=len(new_after_list)))
+            self.log.info("Samples:")
             for i in range(0, len(new_after_list) if len(new_after_list) < 3 else 3):
-                print "\t%s: %s" % (new_after_list[i][0].name, type(new_after_list[i][0].type))
+                self.log.info("\t%s: %s" % (new_after_list[i][0].name, new_after_list[i][0].type))
             if len(new_after_list) > 3:
-                print "\t..."
-            print "Applying new scheme"
+                self.log.info("\t...")
+            self.log.info("Applying new scheme")
 
             for new, after in new_after_list:
                 sql = "ALTER TABLE {db}.{table} ADD COLUMN {new_name} {new_type} AFTER {after_name};".format(
@@ -269,26 +301,24 @@ class DataImport(object):
                     new_type=new.type.into_db_type(),
                     after_name=after.name)
 
-                print "\t Creating a column `{column}` with type `{type}` after `{after}`".format(
+                self.log.info("\t Creating a column `{column}` with type `{type}` after `{after}`".format(
                     column=new.name,
                     type=new.type.into_db_type(),
                     after=after.name
-                )
+                ))
 
                 result = self.reporting.connected().write(sql)
                 if not result:
                     raise Exception("Error has occured while applying scheme.")
         else:
-            print "\t We don't need any migrations! Just loading objects into storage."
+            self.log.info("\t We don't need any migrations! Just loading objects into storage.")
 
-        # computing current `columns`, because we cannot infer it using `describe` (remember Hits.Dimension "dynamic" type)
-        applied_diff = diff_apply(source_columns, new_after_list)
-        columns = unwrap_comparable_into_raw_columns(applied_diff)
+        columns = safe_dynamic_fields(self.reporting.connected().describe(table_name))
 
         self.import_entity(name=name, table_name=table_name,
                            objs=objects_to_import, columns=columns)
 
-        print "Successfully imported {count} new hits into table `{table_name}`".format(
+        self.log.info("Successfully imported {count} new hits into table `{table_name}`".format(
             count=len(objects_to_import),
             table_name=table_name
-        )
+        ))
