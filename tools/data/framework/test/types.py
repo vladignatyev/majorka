@@ -41,7 +41,7 @@ class TypesTestCase(unittest.TestCase):
             safe_py_value = type_factory.default_py_value()
 
             self.assertEqualDbType(type_factory.into_db_type(), db_type_name, db_type_name)
-            conv_result = type_factory.from_db_value(type_factory.into_db_value(safe_py_value))
+            conv_result = type_factory.from_db_value(type_factory.into_db_value(py_value=safe_py_value))
             self.assertEqualByTypeAndValue(conv_result, safe_py_value, db_type_name)
 
     def test_array_types_integer(self):
@@ -49,29 +49,29 @@ class TypesTestCase(unittest.TestCase):
             some_array = [KNOWN_DB_TYPES[item_type].default_py_value()] * 3
             type_factory = Type.Array(items=KNOWN_DB_TYPES[item_type])
             self.assertEqual(type_factory.into_db_type(), 'Array({t})'.format(t=item_type))
-            self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(some_array)), some_array)
+            self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(py_value=some_array)), some_array)
 
     def test_string_type(self):
         type_factory = Type.String()
         s = 'somestring'
         s2 = u'Строка'
         self.assertEqual(type_factory.into_db_type(), 'String')
-        self.assertEqual(type_factory.into_db_value(s), "somestring")
-        self.assertEqual(type_factory.into_db_value(s2), u"Строка")
+        self.assertEqual(type_factory.into_db_value(py_value=s), "somestring")
+        self.assertEqual(type_factory.into_db_value(py_value=s2), u"Строка")
 
     def test_decimal_type(self):
         type_factory = Type.Decimal32(5)
         self.assertEqual(type_factory.into_db_type(), 'Decimal32(5)')
-        self.assertEqual(type_factory.into_db_value(Decimal('3.5555')), '3.5555')
-        self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(Decimal('3.5555'))), Decimal('3.5555'))
+        self.assertEqual(type_factory.into_db_value(py_value=Decimal('3.5555')), '3.5555')
+        self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(py_value=Decimal('3.5555'))), Decimal('3.5555'))
         type_factory = Type.Decimal64(5)
         self.assertEqual(type_factory.into_db_type(), 'Decimal64(5)')
-        self.assertEqual(type_factory.into_db_value(Decimal('3.5555')), '3.5555')
-        self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(Decimal('3.5555'))), Decimal('3.5555'))
+        self.assertEqual(type_factory.into_db_value(py_value=Decimal('3.5555')), '3.5555')
+        self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(py_value=Decimal('3.5555'))), Decimal('3.5555'))
         type_factory = Type.Decimal128(5)
         self.assertEqual(type_factory.into_db_type(), 'Decimal128(5)')
-        self.assertEqual(type_factory.into_db_value(Decimal('3.5555')), '3.5555')
-        self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(Decimal('3.5555'))), Decimal('3.5555'))
+        self.assertEqual(type_factory.into_db_value(py_value=Decimal('3.5555')), '3.5555')
+        self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(py_value=Decimal('3.5555'))), Decimal('3.5555'))
 
     def test_type_inferring(self):
         self.assertTrue(type(factory_from_db_type('UInt8')) is Type.UInt8)
@@ -103,5 +103,5 @@ class TypesTestCase(unittest.TestCase):
     def test_type_ipaddress(self):
         type_factory = Type.IPAddress()
         self.assertEqual(type_factory.into_db_type(), 'String')
-        self.assertEqual(type_factory.into_db_value(IPAddress('192.168.9.40')), "192.168.9.40")
-        self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(IPAddress('192.168.9.40'))), IPAddress('192.168.9.40'))
+        self.assertEqual(type_factory.into_db_value(py_value=IPAddress('192.168.9.40')), "192.168.9.40")
+        self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(py_value=IPAddress('192.168.9.40'))), IPAddress('192.168.9.40'))

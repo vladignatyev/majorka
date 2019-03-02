@@ -157,5 +157,4 @@ class DiffApplyCustomObjectTestCase(unittest.TestCase):
         def custom_sorted(columns):
             return sorted(columns, key=lambda i: i.name, reverse=True)
 
-        print diff([c1, c2], [c1, c2, c3], custom_sorted=custom_sorted)
-        # self.assertEqual(diff([c1, c2], [c1, c2, c3], custom_sorted=custom_sorted), (c3, c2))
+        self.assertEqual(diff([c1, c2], [c1, c2, c3], custom_sorted=custom_sorted), ((c3, c2),))

@@ -199,7 +199,6 @@ class Type(object):
 
     class LinkedObjects(Typecast):
         def into_db_value(self, context=None, py_value=None, column_name=None):
-            print py_value
             if (type(py_value) is not list) and (type(py_value) is not tuple):
                 raise Exception("Invalid value.")
             if len(py_value) == 0:
