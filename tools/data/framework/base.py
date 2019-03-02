@@ -12,7 +12,7 @@ class ReportingObject(object):
     INDEX = ('id', 'date_added',)
     @classmethod
     def default_columns(cls):
-        return [('id', Type.Idx()), ('date_added', Type.Date())]
+        return [('id', Type.UInt64()), ('date_added', Type.Date())]
 
     @classmethod
     def into_db_columns(cls):
@@ -30,8 +30,11 @@ class ReportingObject(object):
         db_columns = self.into_db_columns()
         db_row = [None] * len(db_columns)
         for i, (name, db_type) in enumerate(db_columns):
-            raw_val = getattr(self, name)
-            db_row[i] = (name, db_type.into_db_value(py_value=raw_val))
+            if hasattr(self, name):
+                raw_val = getattr(self, name)
+                db_row[i] = (name, db_type.into_db_value(py_value=raw_val, column_name=name))
+            else:
+                db_row[i] = (name, db_type.into_db_value(py_value=None, column_name=name))
 
         return dict(db_row)
 
@@ -45,7 +48,7 @@ class ReportingObject(object):
 
         values = [None] * len(column_names)
         for i, k in enumerate(column_names):
-            values[i] = db_row[k]
+            values[i] = db_row.get(k, columns[i][1].into_db_value(columns[i][1].default_py_value(), column_name=column_names[i]))
         return values
 
     def __init__(self, **kwargs):

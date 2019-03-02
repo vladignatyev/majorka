@@ -71,7 +71,13 @@ class SQLGenerator(object):
         default_fields = [('id', Type.Idx()),
                           ('date_added', Type.Date())] #, "DEFAULT today()")]
 
-        reporting_obj_columns = filter(lambda k: k[0] not in default_fields_names, reporting_obj.into_db_columns())
+        # works only if `into_db_columns` defined per class
+        try:
+            reporting_obj_columns = filter(lambda k: k[0] not in default_fields_names, reporting_obj.into_db_columns())
+        except TypeError:
+            # user should make additional scheme columns at his own.
+            reporting_obj_columns = []
+
         field_declaration = default_fields + reporting_obj_columns
 
         return self.create_table(table=reporting_obj.TABLE_NAME,
@@ -90,7 +96,7 @@ class SQLGenerator(object):
 
         db_typed_values = [None] * len(values)
         for row, row_values in enumerate(values):
-            db_typed_values[row] = map(lambda (f, v): f.into_db_value(py_value=v), zip(column_factories, row_values))
+            db_typed_values[row] = map(lambda (c, f, v): f.into_db_value(py_value=v, column_name=c), zip(column_names, column_factories, row_values))
 
         tab_separated_data = TabSeparated(data=db_typed_values)
 
@@ -222,9 +228,6 @@ class Database(object):
         for i, s in enumerate(row_strings):
             db_values = s.split('\t')
             yield (ColumnsDef.parse_into_typed_dict(columns_def, *db_values)), i, total
-
-    def _typed(self, type_factories, db_values):
-        return map(lambda (t, v): t.from_db_value(v), zip(type_factories, db_values))
 
     def _dict_from_result(self, row_strings, field_names):
         total = len(row_strings)

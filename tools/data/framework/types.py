@@ -15,7 +15,7 @@ class Typecast(object):
     def into_db_type(self):
         return None
 
-    def from_db_value(self, db_value):
+    def from_db_value(self, db_value, column_name=None):
         return None
 
     def default_py_value(self):
@@ -24,6 +24,12 @@ class Typecast(object):
     def default_db_value(self):
         return None
 
+    def __repr__(self):
+        return self.into_db_type()
+
+    def __str__(self):
+        return self.into_db_type()
+
 class Type(object):
     class Undefined(Typecast): pass
 
@@ -31,7 +37,7 @@ class Type(object):
         def into_db_value(self, py_value=None, column_name=None):
             return u"{v}".format(v=unicode(py_value))
         def into_db_type(self): return 'String'
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             return str(db_value)
             # return str(db_value.split("'")[1])
         def default_py_value(self): return ''
@@ -39,7 +45,7 @@ class Type(object):
 
     class UUID(Default):
         def __init__(self): self.value = UUID(int=random.getrandbits(128))
-        def from_db_value(self, db_value): return UUID(db_value)
+        def from_db_value(self, db_value, column_name=None): return UUID(db_value)
         def into_db_value(self, py_value=None, column_name=None): return str(py_value)
         def default_py_value(self): return self.value
         def into_db_type(self): return 'UUID'
@@ -52,7 +58,7 @@ class Type(object):
                 return 0
 
         def into_db_type(self): return 'UInt8'
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             if int(db_value) == 1:
                 return True
             else:
@@ -76,7 +82,7 @@ class Type(object):
             else:
                 return 'Int{b}'.format(b=self.bits)
 
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             if db_value == '':
                 return None
             return int(db_value)
@@ -99,7 +105,7 @@ class Type(object):
         def into_db_type(self):
             return 'UInt64'
         @classmethod
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             return int(db_value)
         @classmethod
         def default_py_value(self): return 0  # need a safe value
@@ -144,7 +150,7 @@ class Type(object):
         def into_db_type(self): return 'String'
         def into_db_value(self, py_value=None, column_name=None):
             return u"{v}".format(v=unicode(py_value))
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             return str(db_value)
 
     class Enum8(Default):
@@ -162,7 +168,7 @@ class Type(object):
                                 "Expected list or tuple, got `{t}`".format(t=type(py_value)))
             if len(py_value) == 0:
                 return '[]'
-            iter_func = lambda item: self._items_type.into_db_value(item)
+            iter_func = lambda item: self._items_type.into_db_value(item, column_name=column_name)
             if type(self._items_type) is Type.String:
                 return "['{v}']".format(v=','.join(map(iter_func, py_value)))
             else:
@@ -171,7 +177,7 @@ class Type(object):
         def into_db_type(self):
             return 'Array({items_type})'.format(items_type=self._items_type.into_db_type())
 
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             return self.__class__.from_db_value_with_item_type(db_value, self._items_type)
 
         @classmethod
@@ -193,7 +199,8 @@ class Type(object):
 
     class LinkedObjects(Typecast):
         def into_db_value(self, py_value=None, column_name=None):
-            if type(py_value) is not list and type(py_value) is not tuple:
+            print py_value
+            if (type(py_value) is not list) and (type(py_value) is not tuple):
                 raise Exception("Invalid value.")
             if len(py_value) == 0:
                 return '[]'
@@ -207,7 +214,7 @@ class Type(object):
             return ','.join(map(iter_func, py_value))
 
         def into_db_type(self): return 'Array(UInt64)'
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             return Array.from_db_value_with_item_type(db_value, item_type=Idx)
 
     class Decimal(Typecast):
@@ -220,7 +227,7 @@ class Type(object):
             return "{v}".format(v=str(py_value))
         def into_db_type(self):
             return 'Decimal({p},{s})'.format(p=self.precision, s=self.scale)
-        def from_db_value(self, db_value): return Decimal(db_value)
+        def from_db_value(self, db_value, column_name=None): return Decimal(db_value)
         def default_py_value(self): return Decimal(0.0)
         def default_db_value(self): return None
 
@@ -255,7 +262,7 @@ class Type(object):
         def into_db_value(self, py_value=None, column_name=None):
             value, currency = py_value or self.default_py_value()
             return super(Type.Decimal64, self).into_db_value(value)
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             return (super(Type.Decimal64, self).from_db_value(value), 'Unknown')
         def default_py_value(self): return (Decimal(0.0), 'Unknown')
 
@@ -263,7 +270,7 @@ class Type(object):
         def into_db_value(self, py_value=None, column_name=None):
             return "{v}".format(v=str(py_value))
         def into_db_type(self): return 'Float32'
-        def from_db_value(self, db_value): return float(db_value)
+        def from_db_value(self, db_value, column_name=None): return float(db_value)
         def default_py_value(self): return 0.0
         def default_db_value(self): return None
 
@@ -271,7 +278,7 @@ class Type(object):
         def into_db_value(self, py_value=None, column_name=None):
             return "{v}".format(v=str(py_value))
         def into_db_type(self): return 'Float64'
-        def from_db_value(self, db_value): return float(db_value)
+        def from_db_value(self, db_value, column_name=None): return float(db_value)
         def default_py_value(self): return 0.0
         def default_db_value(self): return None
 
@@ -279,7 +286,7 @@ class Type(object):
         def into_db_value(self, py_value=None, column_name=None):
             return "{v}".format(v=str(py_value))
         def into_db_type(self): return 'String'
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             return IPAddress(db_value)
         def default_py_value(self): return IPAddress('127.0.0.1')
         def default_db_value(self): return None
@@ -291,7 +298,7 @@ class Type(object):
             return datetime.strftime(value, '%Y-%m-%d')
 
         def into_db_type(self): return 'Date'
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             return datetime.strptime(db_value, '%Y-%m-%d')
 
         def default_py_value(self):
@@ -308,7 +315,7 @@ class Type(object):
             return datetime.strftime(py_value, '%Y-%m-%d %H:%M:%S')
 
         def into_db_type(self): return 'DateTime'
-        def from_db_value(self, db_value):
+        def from_db_value(self, db_value, column_name=None):
             return datetime.strptime(db_value, '%Y-%m-%d %H:%M:%S')
 
         def default_py_value(self):
@@ -409,6 +416,6 @@ class ColumnsDef(object):
     @classmethod
     def parse_into_typed_dict(cls, columns, *db_values):
         if type(columns[0]) is str:
-            return dict(map(lambda (c, f, v): (c, f.from_db_value(v)), zip(columns, cls.column_type_factories(columns), db_values)))
+            return dict(map(lambda (c, f, v): (c, f.from_db_value(v, column_name=c)), zip(columns, cls.column_type_factories(columns), db_values)))
         elif type(columns[0]) is tuple:
-            return dict(map(lambda (c, f, v): (c[0], f.from_db_value(v)), zip(columns, cls.column_type_factories(columns), db_values)))
+            return dict(map(lambda (c, f, v): (c[0], f.from_db_value(v, column_name=c)), zip(columns, cls.column_type_factories(columns), db_values)))

@@ -3,7 +3,7 @@
 '''
 source and complement are ordered in default order
 '''
-def diff(source, complement):
+def diff(source, complement, custom_sorted=sorted):
     # union (in terms of `sets theory`) of source and complement iterators
     union = set(source + complement)
 
@@ -11,11 +11,11 @@ def diff(source, complement):
         # diff is empty.
         return ()
 
-    ordered = sorted(union)
+    ordered = custom_sorted(union)
 
     # we cannot represent/describe such diff,
     # because we only have 'after' clause to represent diff in Clickhouse
-    if ordered[0] != source[0]:
+    if not ordered[0] == source[0]:
         return None
 
     output = []
