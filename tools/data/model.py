@@ -210,9 +210,9 @@ class DataImport(object):
                     count=o['count'],
                     entities=name
                 ))
-                return o['last_idx']
+                return o['last_idx'], o['count']
         except DbError as e:
-            return 0
+            return 0, 0
 
     def init_entity(self, name, entity):
         result = self.reporting.connected().write(sql=self.reporting.sql.create_table_for_reporting_object(entity))
@@ -220,11 +220,11 @@ class DataImport(object):
             raise Exception("Unable to initialize entity table for `{entity}`.".format(entity=name))
 
     def load_entity(self, name, entity):
-        last_id = self.get_entity_last_idx(name, entity)
-        if last_id == 0:
+        last_id, count = self.get_entity_last_idx(name, entity)
+        if count == 0:
             self.init_entity(name, entity)
 
-        return list(self.bus.multiread(name, start=last_id))
+        return list(self.bus.multiread(name, start=last_id+1))
         # return list(self.bus.multiread(name, start=last_id, end=2)) # todo: remove after making tests
 
     def import_entity(self, name, table_name, objs, columns):

@@ -11,8 +11,6 @@ from decimal import Decimal
 
 
 if __name__ == '__main__':
-
-    # sys.exit()
     redis_url = os.environ.get('REDIS_URL', None)
     clickhouse_url = os.environ.get('CLICKHOUSE_URL', None)
 
