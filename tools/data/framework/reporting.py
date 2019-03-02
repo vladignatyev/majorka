@@ -3,7 +3,7 @@ import re
 from furl import furl
 import requests
 
-from types import ModelTypes, factory_from_db_type, factory_into_db_type
+from types import *
 from tsv import TabSeparated
 
 class ConnectionError(Exception):
@@ -30,24 +30,28 @@ class SQLGenerator(object):
         return "SELECT 1;"
 
     def drop(self):
-        return "DROP DATABASE %s;" % self._db_name
+        return "DROP DATABASE {db};".format(db=self._db_name)
 
     def describe(self, table_name, from_db=None):
-        return "DESCRIBE TABLE %s.%s;" % (from_db or self._db_name, table_name)
+        return "DESCRIBE TABLE {db}.{table};".format(db=from_db or self._db_name, table=table_name)
 
     def describe_query(self, sql_query):
         if sql_query.endswith(';'):
             sql_query = sql_query[0:-1]
-        return "DESCRIBE (%s);" % sql_query
+        return "DESCRIBE ({query});".format(query=sql_query)
 
     def create_database(self):
-        return "CREATE DATABASE IF NOT EXISTS \"%s\";" % self._db_name
+        return "CREATE DATABASE IF NOT EXISTS \"{db}\";".format(db=self._db_name)
 
     def create_table(self, table, date_column, index, columns, granularity=8192,
                      engine='MergeTree', if_not_exists=True):
 
-        field_declaration = columns
-        field_declaration_fmt = ",\n".join(map(lambda t: "            " + " ".join(t), field_declaration))
+
+        field_declaration = zip(ColumnsDef.column_names(columns), ColumnsDef.column_type_factories(columns))
+
+        field_declaration_fmt = ",\n".join(
+                map(lambda (name, type_factory): "            {name} {type}".format(name=name, type=type_factory.into_db_type()), field_declaration)
+            )
 
         sql = """
         CREATE TABLE IF NOT EXISTS {db}.{table_name}
@@ -63,13 +67,12 @@ class SQLGenerator(object):
 
     # todo: extract into importing domain
     def create_table_for_reporting_object(self, reporting_obj):
-        default_fields = [('id', ModelTypes.IDX),
-                          ('date_added', ModelTypes.DATE, "DEFAULT today()")]
-        default_fields_names = ['id', 'date_added']
+        default_fields_names = ('id', 'date_added')
+        default_fields = [('id', Type.Idx()),
+                          ('date_added', Type.Date())] #, "DEFAULT today()")]
+
         reporting_obj_columns = filter(lambda k: k[0] not in default_fields_names, reporting_obj.into_db_columns())
         field_declaration = default_fields + reporting_obj_columns
-
-        field_declaration = map(lambda decl: decl if decl[1] != 'Decimal' else (decl[0], 'Decimal64(5)'), field_declaration)
 
         return self.create_table(table=reporting_obj.TABLE_NAME,
                                      date_column='date_added',
@@ -78,29 +81,20 @@ class SQLGenerator(object):
 
 
     def insert_values(self, table, values, columns):
-        column_names = map(lambda k: k[0], columns)
-
         # check dimensions
         if len(values[0]) != len(columns):
             raise Exception("Dimensions of `values` and `columns` definition should match.")
 
-        if type(columns[0]) is tuple:
-            unzipped = zip(*columns)
-            column_names = unzipped[0]
-            column_types = unzipped[1]
-            column_factories = map(lambda type_name: factory_into_db_type(type_name), column_types)
+        column_names = ColumnsDef.column_names(columns)
+        column_factories = ColumnsDef.column_type_factories(columns)
 
-            db_typed_values = [None] * len(values)
-            for row, row_values in enumerate(values):
-                db_typed_values[row] = map(lambda (f, v): f(v), zip(column_factories, row_values))
-        else:
-            column_names = columns
-            db_typed_values = values  # we expect that values are already db typed
-
+        db_typed_values = [None] * len(values)
+        for row, row_values in enumerate(values):
+            db_typed_values[row] = map(lambda (f, v): f.into_db_value(py_value=v), zip(column_factories, row_values))
 
         tab_separated_data = TabSeparated(data=db_typed_values)
 
-        column_names_fmt = ', '.join( map(lambda n: str(n), column_names))
+        column_names_fmt = ', '.join(column_names)
 
         sql = "INSERT INTO {db}.{table_name} ({column_names}) "\
               "FORMAT TabSeparated\n{tab_separated_data}".format(db=self._db_name,
@@ -142,12 +136,19 @@ class Database(object):
 
     def describe(self, table, db=None):
         db = db or self._db
-        return self.read(sql=self.sql.describe(table, from_db=db),
-                         columns=(('name', ModelTypes.STRING), ('type', ModelTypes.STRING)))
+        result = self.read(sql=self.sql.describe(table, from_db=db),
+                         columns=(('name', Type.String()), ('type', Type.String())))
+
+        return map(lambda (o, i, l): (o['name'], factory_from_db_type(o['type'])), result)
 
     def describe_query(self, sql):
-        return self.read(sql=self.sql.describe_query(sql),
-                         columns=(('name', ModelTypes.STRING), ('type', ModelTypes.STRING)))
+        result = self.read(sql=self.sql.describe_query(sql),
+                            columns=(('name', Type.String()), ('type', Type.String())))
+
+        columns = map(lambda (o, i, l): (o['name'], factory_from_db_type(o['type'])), result)
+        return columns
+
+
 
     # todo: type checker that checks that response contains same set of columns as provided
     def read(self, sql, columns=(), simple=False):
@@ -173,13 +174,13 @@ class Database(object):
             response = requests.request("POST", self._query_url(head_foot), timeout=(self.connection_timeout, self.data_read_timeout))
 
         return self._parsed_result_simple(sql, response)
-
-    def get_columns_for_table(self, table, db=None):
-        db = db or self._db
-        return map(lambda (o, i, l): (o['name'], o['type']), self.describe(table=table, db=db))
-
-    def get_columns_for_query(self, sql):
-        return map(lambda (o, i, l): (o['name'], o['type']), self.describe_query(sql=sql))
+    #
+    # def get_columns_for_table(self, table, db=None):
+    #     db = db or self._db
+    #     return map(lambda (o, i, l): (o['name'], o['type']), self.describe(table=table, db=db))
+    #
+    # def get_columns_for_query(self, sql):
+    #     return map(lambda (o, i, l): (o['name'], o['type']), self.describe_query(sql=sql))
 
     def _divide(self, s):
         try:
@@ -208,19 +209,7 @@ class Database(object):
         if not columns:
             return self._list_from_result(rows)
 
-        try:
-            # if columns is ((name1, type1), (name2, type2)...) tuple
-            field_names, field_types = zip(*columns)
-
-            if type(field_types[0]) is str:
-                type_factories = map(lambda db_type: factory_from_db_type(db_type), field_types)
-            else:
-                type_factories = field_types
-            return self._typed_dict_from_result(rows, field_names, type_factories, columns_def=columns, query=query)
-        except:
-            # if columns is (name1, name2...) tuple
-            field_names = columns
-            return self._dict_from_result(rows, field_names)
+        return self._typed_dict_from_result(rows, columns_def=columns, query=query)
 
     def _list_from_result(self, row_strings):
         total = len(row_strings)
@@ -228,14 +217,14 @@ class Database(object):
             fields = s.split('\t')
             yield list(map(str, fields)), i, total
 
-    def _typed_dict_from_result(self, row_strings, field_names, type_factories, columns_def=None, query=None):
+    def _typed_dict_from_result(self, row_strings, columns_def=None, query=None):
         total = len(row_strings)
         for i, s in enumerate(row_strings):
-            fields = s.split('\t')
-            yield dict(zip(field_names, self._typed(type_factories, fields))), i, total
+            db_values = s.split('\t')
+            yield (ColumnsDef.parse_into_typed_dict(columns_def, *db_values)), i, total
 
-    def _typed(self, type_factories, vals):
-        return map(lambda (t, v): t(v), zip(type_factories, vals))
+    def _typed(self, type_factories, db_values):
+        return map(lambda (t, v): t.from_db_value(v), zip(type_factories, db_values))
 
     def _dict_from_result(self, row_strings, field_names):
         total = len(row_strings)

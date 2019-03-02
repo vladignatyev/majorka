@@ -19,15 +19,15 @@ class FakeEntity(ReportingObject):
     @classmethod
     def into_db_columns(cls):
         return cls.default_columns() + \
-        [('name', ModelTypes.STRING),
-         ('alias', ModelTypes.STRING),
+        [('name', Type.String()),
+         ('alias', Type.String()),
 
-         ('offers', ModelTypes.ARRAY_OF_IDX),
-         ('paused_offers', ModelTypes.ARRAY_OF_IDX),
+         ('offers', Type.Array(items=Type.Idx())),
+         ('paused_offers', Type.Array(items=Type.Idx())),
 
-         ('optimize', ModelTypes.BOOLEAN),
-         ('hit_limit_for_optimization', ModelTypes.INTEGER),
-         ('slicing_attrs', ModelTypes.ARRAY_OF_STRINGS)]
+         ('optimize', Type.Bool()),
+         ('hit_limit_for_optimization', Type.Int64()),
+         ('slicing_attrs', Type.Array(items=Type.String()))]
 
 
 
@@ -47,9 +47,6 @@ class ReportingDbTestCase(unittest.TestCase):
 
     def tearDown(self):
         self.report_db.drop()
-
-    def test_make_typecasting_code_explicit(self):
-        self.fail('Not implemented yet.')
 
     def test_with_custom_sqlgen(self):
         gen = SQLGenerator('test2')
@@ -74,12 +71,12 @@ class ReportingDbTestCase(unittest.TestCase):
 
     def test_read_simple_result(self):
         db = self.report_db.connected()
-        self.assertTrue(db.read(sql="SELECT 2+2;", columns=(('result', ModelTypes.INTEGER),), simple=True))
+        self.assertTrue(db.read(sql="SELECT 2+2;", columns=(('result', Type.Int32()),), simple=True))
 
     def test_read_with_type_factories_trivial_one_result(self):
         db = self.report_db.connected()
         for row, i, total in db.read(sql="SELECT 3 * 4 AS result;",
-                                     columns=(('result', int),)):
+                                     columns=(('result', Type.Int32()),)):
             self.assertEqual(total, 1)
             self.assertEqual(i, 0)
             self.assertEqual(type(row), dict)
@@ -88,7 +85,7 @@ class ReportingDbTestCase(unittest.TestCase):
     def test_read_with_type_factories_trivial_multi_result(self):
         db = self.report_db.connected()
         for row, i, total in db.read(sql="SELECT 3 * 4 AS result, 2 + 2 as foo;",
-                                     columns=(('result', int), ('foo', str))):
+                                     columns=(('result', Type.Int64()), ('foo', Type.String()))):
             self.assertEqual(total, 1)
             self.assertEqual(i, 0)
             self.assertEqual(type(row), dict)
@@ -98,7 +95,7 @@ class ReportingDbTestCase(unittest.TestCase):
     def test_read_with_type_factories(self):
         db = self.report_db.connected()
         for row, i, total in db.read(sql="SELECT user, address, elapsed, memory_usage FROM system.processes;",
-                                     columns=(('user', str), ('address', IPAddress), ('elapsed', Decimal), ('memory_usage', int))):
+                                     columns=(('user', Type.String()), ('address', Type.IPAddress()), ('elapsed', Type.Decimal64(5)), ('memory_usage', Type.Int64()))):
             self.assertEqual(total, 1)
             self.assertEqual(i, 0)
             self.assertEqual(type(row), dict)
@@ -120,7 +117,7 @@ class ReportingDbTestCase(unittest.TestCase):
                system.processes;
         """
         for row, i, total in db.read(sql=multiline_sql,
-                                     columns=(('user', str), ('address', IPAddress), ('elapsed', Decimal), ('memory_usage', int))):
+                                     columns=(('user', Type.String()), ('address', Type.IPAddress()), ('elapsed', Type.Decimal64(5)), ('memory_usage', Type.Int64()))):
             self.assertEqual(total, 1)
             self.assertEqual(i, 0)
             self.assertEqual(type(row), dict)
@@ -134,7 +131,7 @@ class ReportingDbTestCase(unittest.TestCase):
 
         multiline_sql = "\r\n/* SQL comment */\r\nSELECT user,address,\r\nelapsed,\r\nmemory_usage\r\nFROM\r\nsystem.processes;\r\n"
         for row, i, total in db.read(sql=multiline_sql,
-                                     columns=(('user', str), ('address', IPAddress), ('elapsed', Decimal), ('memory_usage', int))):
+                                     columns=(('user', Type.String()), ('address', Type.IPAddress()), ('elapsed', Type.Decimal64(5)), ('memory_usage', Type.Int64()))):
             self.assertEqual(total, 1)
             self.assertEqual(i, 0)
             self.assertEqual(type(row), dict)
@@ -166,7 +163,7 @@ class ReportingDbTestCase(unittest.TestCase):
     def test_read_with_db_type_names(self):
         db = self.report_db.connected()
         for row, i, total in db.read(sql="SELECT user, address, elapsed, memory_usage FROM system.processes;",
-                                     columns=(('user', 'String'), ('address', 'IPAddress'), ('elapsed', 'Decimal'), ('memory_usage', 'UInt64'))):
+                                     columns=(('user', 'String'), ('address', 'IPAddress'), ('elapsed', 'Decimal64(5)'), ('memory_usage', 'UInt64'))):
             self.assertEqual(total, 1)
             self.assertEqual(i, 0)
             self.assertEqual(type(row), dict)
@@ -182,10 +179,10 @@ class ReportingDbTestCase(unittest.TestCase):
             self.assertEqual(total, 1)
             self.assertEqual(i, 0)
             self.assertEqual(type(row), dict)
-            self.assertEqual(type(row['user']), unicode)
-            self.assertEqual(type(row['address']), unicode)
-            self.assertEqual(type(row['memory_usage']), unicode)
-            self.assertEqual(type(row['elapsed']), unicode)
+            self.assertEqual(type(row['user']), str)
+            self.assertEqual(type(row['address']), str)
+            self.assertEqual(type(row['memory_usage']), str)
+            self.assertEqual(type(row['elapsed']), str)
 
     def test_read_list(self):
         db = self.report_db.connected()
@@ -198,22 +195,23 @@ class ReportingDbTestCase(unittest.TestCase):
 
     def test_describe(self):
         db = self.report_db.connected()
-        schema_rows = list(db.describe(db='system', table='processes'))
-        self.assertEqual(len(schema_rows), 35)
-        self.assertIn({'type': 'Int64', 'name': 'memory_usage'}, zip(*schema_rows)[0])
+        columns = db.describe(db='system', table='processes')
+        d = dict(columns)
+        self.assertEqual(len(columns), 35)
+        self.assertTrue(type(d['memory_usage']) is Type.Int64)
 
     def test_describe_query(self):
         db = self.report_db.connected()
-        for o, i, l in db.describe_query("SELECT 2+2 AS result;"):
-            self.assertEqual(l, 1)
-            self.assertIn(o['type'], 'UInt16')
-            self.assertIn(o['name'], 'result')
+        columns = db.describe_query("SELECT 2+2 AS result;")
+        d = dict(columns)
+        self.assertEqual(len(columns), 1)
+        self.assertTrue(type(d['result']) is Type.UInt16)
 
-    def test_use_get_columns_for_table_for_typed_reading_from_table_with_unknown_schema(self):
+    def test_use_describe_for_typed_reading_from_table_with_unknown_schema(self):
         db = self.report_db.connected()
 
         query = "select * from system.processes;"
-        schema = db.get_columns_for_table(db='system', table='processes')
+        schema = db.describe(db='system', table='processes')
 
         for row, i, l in db.read(sql=query, columns=schema):
             self.assertEqual(l, 1)
@@ -221,22 +219,22 @@ class ReportingDbTestCase(unittest.TestCase):
             self.assertEqual(type(row['Settings.Values']), list)
             self.assertEqual(type(row['ProfileEvents.Values']), list)
             self.assertTrue(all(map(lambda item: type(item) == int, row['ProfileEvents.Values'])))
-            self.assertEqual(type(row['http_method']), bool)
+            self.assertTrue(type(row['http_method']) == int)
             self.assertTrue(row['http_method'])
 
     def test_response_type_checking_issue_10(self):
         db = self.report_db.connected()
 
         column_names = ['user', 'address', 'elapsed', 'memory_usage']
-        columns = filter(lambda (column_name, column_type): column_name in column_names, db.get_columns_for_table('processes', db='system'))
+        columns = filter(lambda (column_name, column_type): column_name in column_names, db.describe('processes', db='system'))
         with self.assertRaises(KeyError):
             # result of request is a tuple (user, address, elapsed, memory_usage)
             # so when we try to access by key from column_names, we got KeyError
             for row, i, total in (db.read(sql="SELECT (user, address, elapsed, memory_usage) FROM system.processes", columns=columns)):
                 list(map(lambda k: row[k], column_names))
 
-        # but if we investigate a query first, using get_columns_for_query
-        better_columns = db.get_columns_for_query(sql="SELECT (user, address, elapsed, memory_usage) FROM system.processes")
+        # but if we investigate a query first, using describe_query
+        better_columns = db.describe_query(sql="SELECT (user, address, elapsed, memory_usage) FROM system.processes")
         for row, i, total in (db.read(sql="SELECT (user, address, elapsed, memory_usage) FROM system.processes", columns=better_columns)):
             list(row)
 
@@ -251,10 +249,10 @@ class ReportingDbTestCase(unittest.TestCase):
             ['baz', now, 321, [3,2,1]]
         ]
 
-        columns = (('name', ModelTypes.STRING),
-                   ('date_added', ModelTypes.DATE),
-                   ('value', ModelTypes.INTEGER),
-                   ('set', ModelTypes.ARRAY_OF_IDX))
+        columns = (('name', Type.String()),
+                   ('date_added', Type.Date()),
+                   ('value', Type.Int32()),
+                   ('set', Type.Array(items=Type.Int32())))
 
         db = self.report_db.connected()
 
@@ -299,13 +297,13 @@ class ReportingDbTestCase(unittest.TestCase):
             ['baz', now]
         ]
 
-        columns = (('name', ModelTypes.STRING),
-                   ('date_added', ModelTypes.DATE),
-                   ('value', ModelTypes.INTEGER),
-                   ('set', ModelTypes.ARRAY_OF_IDX))
+        columns = (('name', Type.String()),
+                   ('date_added', Type.Date()),
+                   ('value', Type.Int32()),
+                   ('set', Type.Array(items=Type.Int32())))
 
-        columns_invalid = (('name', ModelTypes.STRING),
-                           ('date_added', ModelTypes.DATE))
+        columns_invalid = (('name', Type.String()),
+                           ('date_added', Type.Date()))
 
         db = self.report_db.connected()
 
@@ -342,10 +340,10 @@ class ReportingDbTestCase(unittest.TestCase):
 
         columns = ('name', 'date_added', 'value', 'set')
 
-        columns_spec_for_table_create = (('name', ModelTypes.STRING),
-                                           ('date_added', ModelTypes.DATE),
-                                           ('value', ModelTypes.INTEGER),
-                                           ('set', ModelTypes.ARRAY_OF_IDX))
+        columns_spec_for_table_create = (('name', Type.String()),
+                                           ('date_added', Type.Date()),
+                                           ('value', Type.Int32()),
+                                           ('set', Type.Array(items=Type.Int32())))
 
         db = self.report_db.connected()
 
@@ -409,14 +407,14 @@ class SQLGeneratorTestCase(unittest.TestCase):
         gen = SQLGenerator(db_name='another')
         self.assertEqual(gen.create_database(), "CREATE DATABASE IF NOT EXISTS \"another\";")
 
-    def test_db_error_decimal_data_type_must_have_precision_and_scale(self):
-        self.fail('Not implemented yet.')
-
-    def test_insert_query_should_prepare_dicts_at_his_own_not_expecting_the_plain_list_of_values_if_columns_have_necessary_declarations(self):
-        self.fail('Not implemented yet.')
-
-    def test_insert_query_should_support_providing_custom_type_factories_in_column_declaration(self):
-        self.fail('Not implemented yet.')
+    # def test_db_error_decimal_data_type_must_have_precision_and_scale(self):
+    #     self.fail('Not implemented yet.')
+    #
+    # def test_insert_query_should_prepare_dicts_at_his_own_not_expecting_the_plain_list_of_values_if_columns_have_necessary_declarations(self):
+    #     self.fail('Not implemented yet.')
+    #
+    # def test_insert_query_should_support_providing_custom_type_factories_in_column_declaration(self):
+    #     self.fail('Not implemented yet.')
 
     def test_insert_values_extended_col_def(self):
         gen = SQLGenerator(db_name='test')
@@ -427,9 +425,9 @@ class SQLGeneratorTestCase(unittest.TestCase):
             ['baz', 321, [3,2,1]]
         ]
 
-        columns = (('name', ModelTypes.STRING),
-                   ('value', ModelTypes.INTEGER),
-                   ('set', ModelTypes.ARRAY_OF_IDX))
+        columns = (('name', Type.String()),
+                   ('value', Type.Int64()),
+                   ('set', Type.Array(items=Type.Int32())))
 
         sql = gen.insert_values(table='sometable',
                                     values=rows,
@@ -462,7 +460,7 @@ baz\t321\t[3,2,1]"""
         CREATE TABLE IF NOT EXISTS test.fakeentity
         (
             id UInt64,
-            date_added Date DEFAULT today(),
+            date_added Date,
             name String,
             alias String,
             offers Array(UInt64),

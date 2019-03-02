@@ -1,6 +1,6 @@
 from framework.base import *
 from framework.reporting import *
-from framework.types import ModelTypes, _db_type_into_money, _db_type_into_linked, _db_type_into_datetime
+from framework.types import *
 
 
 class Campaign(DataObject, ReportingObject):
@@ -19,16 +19,16 @@ class Campaign(DataObject, ReportingObject):
     @classmethod
     def into_db_columns(cls):
         return cls.default_columns() + \
-        [('name', ModelTypes.STRING),
-         ('alias', ModelTypes.STRING),
+        [('name', Type.String()),
+         ('alias', Type.String()),
 
-         ('offers', ModelTypes.ARRAY_OF_IDX),
-         ('paused_offers', ModelTypes.ARRAY_OF_IDX),
+         ('offers', Type.Array(items=Type.Idx())),
+         ('paused_offers', Type.Array(items=Type.Idx())),
 
-         ('optimize', ModelTypes.BOOLEAN),
-         ('optimization_paused', ModelTypes.BOOLEAN),
-         ('hit_limit_for_optimization', ModelTypes.INTEGER),
-         ('slicing_attrs', ModelTypes.ARRAY_OF_STRINGS)]
+         ('optimize', Type.Bool()),
+         ('optimization_paused', Type.Bool()),
+         ('hit_limit_for_optimization', Type.Int32()),
+         ('slicing_attrs', Type.Array(items=Type.String()))]
 
 
 
@@ -52,10 +52,10 @@ class Conversion(DataObject, ReportingObject):
     @classmethod
     def into_db_columns(cls):
         return cls.default_columns() + \
-        [('external_id', ModelTypes.STRING),
-         ('revenue', ModelTypes.MONEY),
-         ('status', ModelTypes.STRING),
-         ('time', ModelTypes.DATETIME)]
+        [('external_id', Type.String()),
+         ('revenue', Type.Money()),
+         ('status', Type.String()),
+         ('time', Type.DateTime())]
 
 
 class Hit(DataObject, ReportingObject):
@@ -87,11 +87,11 @@ class Hit(DataObject, ReportingObject):
 
     def into_db_columns(self):
         return self.default_columns() + \
-        [('campaign', (ModelTypes.IDX, _db_type_into_linked)),
-         ('destination', (ModelTypes.IDX, _db_type_into_linked)),
-         ('cost', ModelTypes.MONEY),
-         ('time', ModelTypes.DATETIME)] + \
-         sorted(map(lambda dim: ("dim_%s" % dim, ModelTypes.STRING) , self.__dict__['dimensions'].keys()))
+        [('campaign', (Type.Idx(), _db_type_into_linked)),
+         ('destination', (Type.Idx(), _db_type_into_linked)),
+         ('cost', Type.Money()),
+         ('time', Type.DateTime())] + \
+         sorted(map(lambda dim: ("dim_%s" % dim, Type.String()) , self.__dict__['dimensions'].keys()))
 
     def into_db_row(self):
         required_columns = self.into_db_columns()

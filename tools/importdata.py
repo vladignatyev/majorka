@@ -7,7 +7,7 @@ from ipaddr import IPAddress
 from decimal import Decimal
 
 bus = BusConnection(host='localhost', port='6379', db=0)
-report_db = Database(url='http://192.168.9.40:8123', db='majorka')
+report_db = Database(url='http://192.168.9.38:8123', db='majorka')
 
 data_import = DataImport(bus=bus, report_db=report_db)
 

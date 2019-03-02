@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import *
 from functools import wraps
 
-from types import ModelTypes, factory_into_db_type
+from types import *
 
 
 class ReportingObject(object):
@@ -12,7 +12,7 @@ class ReportingObject(object):
     INDEX = ('id', 'date_added',)
     @classmethod
     def default_columns(cls):
-        return [('id', ModelTypes.IDX), ('date_added', ModelTypes.DATE)]
+        return [('id', Type.Idx()), ('date_added', Type.Date())]
 
     @classmethod
     def into_db_columns(cls):
@@ -20,7 +20,7 @@ class ReportingObject(object):
         default_cols_names = dict(cls.default_columns()).keys()
         obj_keys = sorted(filter(lambda k: k not in default_cols_names, cls.__dict__.keys()))
         public_self_attrs = filter(lambda a: not a.startswith('_'), obj_keys)
-        return default_cols + map(lambda k: (k, ModelTypes.STRING), public_self_attrs)
+        return default_cols + map(lambda k: (k, Type.String()), public_self_attrs)
 
     @property
     def date_added(self):
@@ -31,7 +31,7 @@ class ReportingObject(object):
         db_row = [None] * len(db_columns)
         for i, (name, db_type) in enumerate(db_columns):
             raw_val = getattr(self, name)
-            db_row[i] = (name, factory_into_db_type(db_type)(raw_val))
+            db_row[i] = (name, db_type.into_db_value(py_value=raw_val))
 
         return dict(db_row)
 
