@@ -41,6 +41,14 @@ class Campaign(DataObject, ReportingObject):
 class Offer(DataObject, ReportingObject):
     TABLE_NAME = 'offers'
 
+    @property
+    def name(self):
+        return self.__dict__['name']
+
+    @property
+    def url_template(self):
+        return self.__dict__['url_template']
+
 
 class Conversion(DataObject, ReportingObject):
     TABLE_NAME = 'conversions'
@@ -195,9 +203,8 @@ class DataImport(object):
         self.log = logger
         self.bus = bus
         self.reporting = report_db
-        # report_db.drop()  # todo: remove after making tests
 
-    def get_entity_last_idx(self, name, entity):
+    def get_idx_of_latest_saved_entity(self, name, entity):
         db_name = self.reporting.name
         table_name = entity.TABLE_NAME
 
@@ -211,7 +218,7 @@ class DataImport(object):
                     entities=name
                 ))
                 return o['last_idx'], o['count']
-        except DbError as e:
+        except DbError as e: #  Entity does not exist!
             return 0, 0
 
     def init_entity(self, name, entity):
@@ -220,12 +227,15 @@ class DataImport(object):
             raise Exception("Unable to initialize entity table for `{entity}`.".format(entity=name))
 
     def load_entity(self, name, entity):
-        last_id, count = self.get_entity_last_idx(name, entity)
-        if count == 0:
+        last_id, count = self.get_idx_of_latest_saved_entity(name, entity)
+
+        if last_id == 0 and count == 0: # Entity does not exist!
             self.init_entity(name, entity)
 
-        return list(self.bus.multiread(name, start=last_id+1))
-        # return list(self.bus.multiread(name, start=last_id, end=2)) # todo: remove after making tests
+        if count == 0:
+            return list(self.bus.multiread(name, start=0))
+        else:
+            return list(self.bus.multiread(name, start=last_id+1))
 
     def import_entity(self, name, table_name, objs, columns):
         column_names = zip(*columns)[0]

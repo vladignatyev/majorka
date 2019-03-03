@@ -46,12 +46,10 @@ def assert_reporting_object_instance(testcase, obj):
     testcase.assertIsNotNone(getattr(obj, 'into_db_row'))
 
     columns = obj.into_db_columns()
-    # columns required by reporting
-    testcase.assertIn('id', dict(columns).keys())
-    testcase.assertEqual(dict(columns)['id'], ModelTypes.IDX)
-
     # columns required by Clickhouse
+    testcase.assertIn('id', dict(columns).keys())
+    testcase.assertEqual(type(dict(columns)['id']), type(Type.Int64()))
     testcase.assertIn('date_added', dict(columns).keys())
-    testcase.assertEqual(dict(columns)['date_added'], ModelTypes.DATE)
+    testcase.assertEqual(type(dict(columns)['date_added']), type(Type.Date()))
 
     rows = obj.into_db_row()

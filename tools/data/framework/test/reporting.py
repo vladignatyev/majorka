@@ -459,12 +459,12 @@ baz\t321\t[3,2,1]"""
         """
         CREATE TABLE IF NOT EXISTS test.fakeentity
         (
-            id UInt64,
+            id Int64,
             date_added Date,
             name String,
             alias String,
-            offers Array(UInt64),
-            paused_offers Array(UInt64),
+            offers Array(Int64),
+            paused_offers Array(Int64),
             optimize UInt8,
             hit_limit_for_optimization Int64,
             slicing_attrs Array(String)

@@ -93,7 +93,9 @@ class Type(object):
     class Idx(Integer):
         @classmethod
         def into_db_value(self, context=None, py_value=None, column_name=None):
-            if type(py_value) is int:
+            if py_value is None:
+                return '-1'
+            elif type(py_value) is int:
                 _idx = py_value
             elif hasattr(py_value, '_idx'):
                 _idx = getattr(py_value, '_idx')
@@ -103,12 +105,12 @@ class Type(object):
 
         @classmethod
         def into_db_type(self):
-            return 'UInt64'
+            return 'Int64'
         @classmethod
         def from_db_value(self, db_value, column_name=None):
             return int(db_value)
         @classmethod
-        def default_py_value(self): return 0  # need a safe value
+        def default_py_value(self): return -1
         @classmethod
         def default_db_value(self): return None
 
@@ -170,9 +172,11 @@ class Type(object):
                 return '[]'
             iter_func = lambda item: self._items_type.into_db_value(py_value=item, context=context, column_name=column_name)
             if type(self._items_type) is Type.String:
-                return "['{v}']".format(v=','.join(map(iter_func, py_value)))
+                array_formatted_for_db = "['{v}']".format(v='\',\''.join(map(iter_func, py_value)))
             else:
-                return "[{v}]".format(v=','.join(map(iter_func, py_value)))
+                array_formatted_for_db = "[{v}]".format(v=','.join(map(iter_func, py_value)))
+
+            return array_formatted_for_db
 
         def into_db_type(self):
             return 'Array({items_type})'.format(items_type=self._items_type.into_db_type())

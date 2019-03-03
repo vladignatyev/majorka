@@ -105,3 +105,7 @@ class TypesTestCase(unittest.TestCase):
         self.assertEqual(type_factory.into_db_type(), 'String')
         self.assertEqual(type_factory.into_db_value(py_value=IPAddress('192.168.9.40')), "192.168.9.40")
         self.assertEqual(type_factory.from_db_value(type_factory.into_db_value(py_value=IPAddress('192.168.9.40'))), IPAddress('192.168.9.40'))
+
+    def test_type_array_of_strings_doesnt_eat_value(self):
+        type_factory = Type.Array(items=Type.String())
+        self.assertEqual(type_factory.into_db_value(py_value=['some', 'other']), "['some','other']")

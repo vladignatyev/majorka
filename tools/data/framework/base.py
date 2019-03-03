@@ -12,14 +12,14 @@ class ReportingObject(object):
     INDEX = ('id', 'date_added',)
     @classmethod
     def default_columns(cls):
-        return [('id', Type.UInt64()), ('date_added', Type.Date())]
+        return [('id', Type.Int64()), ('date_added', Type.Date())]
 
     @classmethod
     def into_db_columns(cls):
         default_cols = cls.default_columns()
         default_cols_names = dict(cls.default_columns()).keys()
         obj_keys = sorted(filter(lambda k: k not in default_cols_names, cls.__dict__.keys()))
-        public_self_attrs = filter(lambda a: not a.startswith('_'), obj_keys)
+        public_self_attrs = filter(lambda a: (not a.startswith('_')) and (a != 'TABLE_NAME'), obj_keys)
         return default_cols + map(lambda k: (k, Type.String()), public_self_attrs)
 
     @property
