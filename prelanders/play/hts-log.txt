@@ -1,0 +1,14 @@
+HTTrack3.49-2 launched on Tue, 05 Mar 2019 00:38:46 at https://tvnewtop.pro/play?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNywid2lkIjo3Njg4LCJzcmMiOjJ9eyJ&bbr=1&si1=&si2=
+(httrack -O play https://tvnewtop.pro/play?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNywid2lkIjo3Njg4LCJzcmMiOjJ9eyJ&bbr=1&si1=&si2= )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+00:38:56	Error: 	"No Content" (204) at link https://tvnewtop.pro/GET (from https://tvnewtop.pro/play?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNywid2lkIjo3Njg4LCJzcmMiOjJ9eyJ&bbr=1&si1=&si2=)
+00:39:16	Error: 	"No Content" (204) at link https://tvnewtop.pro/test (from https://tvnewtop.pro/play?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNywid2lkIjo3Njg4LCJzcmMiOjJ9eyJ&bbr=1&si1=&si2=)
+00:39:16	Error: 	"No Content" (204) at link https://tvnewtop.pro/OPR/ (from https://tvnewtop.pro/play?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNywid2lkIjo3Njg4LCJzcmMiOjJ9eyJ&bbr=1&si1=&si2=)
+
+HTTrack Website Copier/3.49-2 mirror complete in 30 seconds : 7 links scanned, 3 files written (22502 bytes overall) [18897 bytes received at 629 bytes/sec], 10840 bytes transferred using HTTP compression in 2 files, ratio 50%, 2.3 requests per connection
+(3 errors, 0 warnings, 0 messages)

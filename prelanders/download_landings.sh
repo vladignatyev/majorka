@@ -6,4 +6,4 @@ do
     mkdir -p $dirname
     echo DIRNANE $dirname
     httrack -O $dirname $url > $dirname/httrack_command_log.txt
-done <"urls_github.txt"
+done <"urls.txt"
