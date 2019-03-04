@@ -120,6 +120,7 @@ class Hit(DataObject, ReportingObject):
         return cls.default_columns() + \
         [('campaign', Type.Idx()),
          ('destination', Type.Idx()),
+         ('click_id', Type.String()),
          ('cost', Type.Money()),
          ('time', Type.DateTime())]
 
