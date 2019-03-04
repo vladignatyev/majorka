@@ -15,6 +15,7 @@ from test.fixtures.add_hits import fixture_data as add_hits_fixture
 from test.fixtures.add_hits_with_automigration import fixture_data as add_hits_with_automigration_fixture
 from test.fixtures.add_hits_with_missed_fields import fixture_data as add_hits_with_missed_fields_fixture
 from test.fixtures.add_conversions import fixture_data as add_conversions
+from test.fixtures.missed_objects import fixture_data as missed_objects
 
 def create_fake_campaign(idx=0):
     return create_fake_entity(Campaign,
@@ -371,8 +372,24 @@ class ImportingTestcase(unittest.TestCase):
         self.assertEqual(stored_hits[24]['dim_another_dimension'], '')
         self.assertEqual(stored_hits[25]['dim_new_dimension'], '')
 
-    def test_import_with_missed_objects(self):
-        pass
+    def test_import_hits_with_missed_objects(self):
+        self.data_import = data_import = DataImport(bus=self.bus, report_db=self.report_db)
+
+        self.import_redis_fixture(missed_objects)
+        data_import.load_hits()
+
+        stored_hits = zip(*list(self.report_db.connected().read(sql="select * from test.hits;",
+                                                                columns=self.report_db.connected().describe(table='hits'))))[0]
+
+        self.assertEqual(len(stored_hits), 7)
+
+    def test_import_simple_objects_with_missed_objects(self):
+        self.data_import = data_import = DataImport(bus=self.bus, report_db=self.report_db)
+
+        self.import_redis_fixture(missed_objects)
+        data_import.load_simple_entities()
+
+
 
 if __name__ == '__main__':
     unittest.main()

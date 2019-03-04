@@ -260,8 +260,22 @@ class DataImport(object):
             if not self.do_we_need_to_import(name, objects_to_import):
                 continue
 
+            last_object = None
+            for i, object in enumerate(objects_to_import):
+                if object is not None:
+                    last_object = object
+                if object is None:
+                    if last_object is None:
+                        self.log.warn("Some objects for `{collection}` collection are missed. "
+                                      "It is a normal case, when data in Redis has been compacted, but could be a bad sign if it hasn't. ")
+                    else:
+                        self.log.warn("Some objects for `{collection}` collection are missed. "
+                                      "It is a normal case, when data in Redis has been compacted, but could be a bad sign if it hasn't. "
+                                      "Missed `{collection}` appeared after {collection} with ID: {id} ".format(id=last_object.id, collection=name))
+
+            objects_to_import_without_missed = filter(lambda i: i is not None, objects_to_import)
             self.import_entity(name=name, table_name=entity.TABLE_NAME,
-                               objs=objects_to_import, columns=objects_to_import[0].into_db_columns())
+                               objs=objects_to_import_without_missed, columns=objects_to_import_without_missed[0].into_db_columns())
 
     def do_we_need_to_import(self, name, objs):
         if len(objs) > 0:
@@ -288,7 +302,15 @@ class DataImport(object):
         existing_columns = wrap_comparable(safe_dynamic_fields(self.reporting.connected().describe(table_name)))
         source_columns = wrap_comparable(safe_dynamic_fields(self.reporting.connected().describe(table_name)))
 
-        for o in objects_to_import:
+        last_hit = None
+        for i, o in enumerate(objects_to_import):
+            if o is not None:
+                last_hit = o
+            if o is None:
+                self.log.warn("Some objects for `hits` collection are missed. "
+                              "It is a normal case, when data in Redis has been compacted, but could be a bad sign if it hasn't. "
+                              "Missed hit appeared after hit with ID: {id} ".format(id=last_hit.id))
+                continue
             delta = diff(existing_columns, wrap_comparable(o.into_db_columns()), custom_sorted=_custom_diff_sorting)
             if delta is not None:
                 existing_columns = list(diff_apply(existing_columns, delta))
@@ -326,8 +348,9 @@ class DataImport(object):
 
         columns = safe_dynamic_fields(self.reporting.connected().describe(table_name))
 
+        objects_to_import_without_missed = filter(lambda i: i is not None, objects_to_import)
         self.import_entity(name=name, table_name=table_name,
-                           objs=objects_to_import, columns=columns)
+                           objs=objects_to_import_without_missed, columns=columns)
 
         self.log.info("Successfully imported {count} new hits into table `{table_name}`".format(
             count=len(objects_to_import),
