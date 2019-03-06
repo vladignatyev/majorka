@@ -15,5 +15,6 @@ do
     rm -rf landers/$dirname/hts*
     rm -rf landers/$dirname/OPR
 
-    mv landers/$dirname/$dirname*.html landers/$dirname/index.html
+    sed -e 's/<!--.*//g' < landers/$dirname/$dirname*.html > landers/$dirname/index.html
+    rm -rf landers/$dirname/$dirname*.html
 done <"urls.txt"
