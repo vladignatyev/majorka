@@ -1,0 +1,4 @@
+# HTTrack Website Copier Cookie File
+# This file format is compatible with Netscape cookies
+newsfresh.pro	TRUE	/	FALSE	1999999999	uuid	2b8a94861e272a4151b557b77c6c5a1ad47b88b5a4a0c93853a0d71306d7e717a%3A2%3A%7Bi%3A0%3Bs%3A4%3A%22uuid%22%3Bi%3A1%3Bs%3A26%3A%22rnd5c7f9877ab3a31.70778759%22%3B%7D
+

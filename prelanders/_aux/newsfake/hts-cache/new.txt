@@ -1,0 +1,4 @@
+date	size'/'remotesize	flags(request:Update,Range state:File response:Modified,Chunked,gZipped)	statuscode	status ('servermsg')	MIME	Etag|Date	URL	localfile	(from URL)
+13:52:56	11436/11436	---MCZ	200	added ('OK')	text/html	date:Wed,%2006%20Mar%202019%2009:52:55%20GMT	https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwMiwid2lkIjo3NjgzLCJzcmMiOjJ9eyJ&bbr=1&si1=&si2=	newsfake/tbd959.html	(from )
+13:52:57	42/42	---MCZ	200	added ('OK')	text/plain	etag:W/%225c7e5e60-16%22	https://newsfresh.pro/robots.txt		(from )
+13:52:57	689/689	---M--	200	added ('OK')	image/png	etag:%225c7e5d80-2b1%22	https://newsfresh.pro/icon.png	newsfake/icon.png	(from https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwMiwid2lkIjo3NjgzLCJzcmMiOjJ9eyJ&bbr=1&si1=&si2=)

