@@ -237,36 +237,8 @@
                         a = "";
                     void 0 !== o && (a = "; domain=" + o), document.cookie = e + "=" + (n || "") + a + i + "; path=/"
                 },
-                l = function(e, n) {
-                    var t = new XMLHttpRequest;
-                    t.addEventListener("readystatechange", function() {
-                        if (2 === this.readyState && void 0 !== n) return n()
-                    }), t.addEventListener("error", function() {
-                        if (void 0 !== n) return n()
-                    }), t.open("GET.html", e, !0), t.responseType = "text", t.send()
-                },
-                s = function(e, n, t) {
-                    null == n && (n = "tracking");
-                    var o = 0;
-                    "tb" === e ? o = 7 : "private" === e && (o = 12);
-                    var r, i, a = u();
-                    null === a && (a = {}), r = void 0 === a.si1 || null === a.si1 ? "" : a.si1, i = void 0 === a.si2 || null === a.si2 ? "" : a.si2, r = r.slice(0, 32), i = i.slice(0, 32);
-                    var s = "https://nativenote.pro/rpe?" + ["a=1", "s=1", "act=" + o, "src=2", "p=1000864", "st=1005525", "wd=7705", "d=tvnewtop.pro", "tpl=25", "rnd=" + Math.random(), "sbid=" + encodeURIComponent(r), "sbid2=" + encodeURIComponent(i)].join("&");
-                    l(s, function() {
-                        if (c(n, "1", 86400, "tvnewtop.pro"), void 0 !== t) return t()
-                    })
-                },
                 d = function(e) {
                     null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
-                },
-                f = function(e, n) {
-                    var t = "https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyNSwid2lkIjo3NzA1LCJzcmMiOjJ9eyJ&amp;bbr=1&amp;si1=&amp;si2=";
-                    if (0 !== t.length) s("tb", null, function() {
-                        d({
-                            a: n ? "success" : "close"
-                        }), location.href = t
-                    });
-                    else if (void 0 !== e) return e(n)
                 },
                 v = {
                     ua: navigator.userAgent,
@@ -324,34 +296,9 @@
                     }
                 },
                 p = v,
-                h = u(),
-                w = {
-                    c: 0,
-                    s: !0,
-                    r: parseInt("0", 10),
-                    next: function() {
-                        var e, n = "?",
-                            r = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-                        r.forEach(function(e, n) {
-                            var t = Math.floor(Math.random() * (n + 1)),
-                                o = [r[t], r[n]];
-                            r[n] = o[0], r[t] = o[1]
-                        }), e = r.slice(0, 5).join(""), w.c++, null === h ? h = {
-                            i: w.c
-                        } : h.i = w.c, Object.keys(h).forEach(function(e) {
-                            null !== h[e] && (n += e + "=" + h[e] + "&")
-                        }), n = n.slice(0, -1), d({
-                            a: "next",
-                            c: w.c
-                        }), location.href = "https://" + e + ".tvnewtop.pro/download-1" + n
-                    },
-                    get can() {
-                        return this.s
-                    }
-                };
-            null !== h && void 0 !== h.i && (w.c = parseInt(h.i, 10)), 0 < w.r && (w.s = w.c < w.r);
-            var g = w,
-                m = function(n) {
+                h = u();
+
+            var m = function(n) {
                     if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return n(!1, "unsupported");
                     p.m(function(e) {
                         return "private" === e ? n(!1, e) : "unknown" === e ? n(!1, e) : n(!0, "supported")
@@ -375,35 +322,10 @@
                 }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector(".w").classList.add("isHide"), document.querySelector(".msg").classList.remove("isHide")
             }
             var P = "convert";
-            if (g.can)
-                if ("firefox" === p.n && 2 === location.hostname.split(".").length) g.next();
-                else if (null !== a(P)) f(S, 1);
-            else {
-                var _ = function() {
-                    window.edPushSDK.push(arguments)
-                };
-                window.edPushSDK = window.edPushSDK || [], _("onGranted", function() {
-                    c(P, "1", 604800, "tvnewtop.pro");
-                    var e = "";
-                    0 !== e.length ? l(e, function() {
-                        f(S, 1)
-                    }) : f(S, 1)
-                }), _("onDenied", function() {
-                    m(function(e) {
-                        e && g.next()
-                    })
-                }), _("onClose", function() {
-                    location.reload()
-                }), _("onSubscribed", function() {
-                    f(S, 1)
-                }), _("onError", function(e) {
-                    console.log(e)
-                });
-                var x = document.createElement("script");
-                x.async = !0, x.src = "https://serviceproworker.com/v1/sdk.js?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyNSwid2lkIjo3NzA1LCJzcmMiOjJ9eyJ&amp;d=tvnewtop.pro&amp;tpl=25", document.head.appendChild(x), m(function(e, n) {
-                    e || ("private" === n ? s(n, null, f(S)) : f(S))
-                })
-            } else f(S);
+
+            if ("firefox" === p.n && 2 === location.hostname.split(".").length) g.next();
+            else if (null !== a(P)) f(S, 1);
+            
             y.set({
                 en: {
                     t: "Your file is ready for download",

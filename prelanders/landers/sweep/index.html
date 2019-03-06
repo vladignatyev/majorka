@@ -406,28 +406,8 @@
                         if (void 0 !== n) return n()
                     }), t.open("GET.html", e, !0), t.responseType = "text", t.send()
                 },
-                s = function(e, n, t) {
-                    null == n && (n = "tracking");
-                    var i = 0;
-                    "tb" === e ? i = 7 : "private" === e && (i = 12);
-                    var r, o, a = u();
-                    null === a && (a = {}), r = void 0 === a.si1 || null === a.si1 ? "" : a.si1, o = void 0 === a.si2 || null === a.si2 ? "" : a.si2, r = r.slice(0, 32), o = o.slice(0, 32);
-                    var s = "https://nativenote.pro/rpe?" + ["a=1", "s=1", "act=" + i, "src=2", "p=1000864", "st=1005521", "wd=7701", "d=tvnewtop.pro", "tpl=17", "rnd=" + Math.random(), "sbid=" + encodeURIComponent(r), "sbid2=" + encodeURIComponent(o)].join("&");
-                    c(s, function() {
-                        if (l(n, "1", 86400, "tvnewtop.pro"), void 0 !== t) return t()
-                    })
-                },
                 d = function(e) {
                     null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
-                },
-                f = function(e, n) {
-                    var t = "https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyMSwid2lkIjo3NzAxLCJzcmMiOjJ9eyJ&amp;bbr=1&amp;si1=&amp;si2=";
-                    if (0 !== t.length) s("tb", null, function() {
-                        d({
-                            a: n ? "success" : "close"
-                        }), location.href = t
-                    });
-                    else if (void 0 !== e) return e(n)
                 },
                 p = {
                     ua: navigator.userAgent,
@@ -485,34 +465,9 @@
                     }
                 },
                 v = p,
-                g = u(),
-                w = {
-                    c: 0,
-                    s: !0,
-                    r: parseInt("0", 10),
-                    next: function() {
-                        var e, n = "?",
-                            r = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-                        r.forEach(function(e, n) {
-                            var t = Math.floor(Math.random() * (n + 1)),
-                                i = [r[t], r[n]];
-                            r[n] = i[0], r[t] = i[1]
-                        }), e = r.slice(0, 5).join(""), w.c++, null === g ? g = {
-                            i: w.c
-                        } : g.i = w.c, Object.keys(g).forEach(function(e) {
-                            null !== g[e] && (n += e + "=" + g[e] + "&")
-                        }), n = n.slice(0, -1), d({
-                            a: "next",
-                            c: w.c
-                        }), location.href = "https://" + e + ".tvnewtop.pro/sweep" + n
-                    },
-                    get can() {
-                        return this.s
-                    }
-                };
-            null !== g && void 0 !== g.i && (w.c = parseInt(g.i, 10)), 0 < w.r && (w.s = w.c < w.r);
-            var m = w,
-                h = function(n) {
+                g = u();
+
+            var h = function(n) {
                     if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return n(!1, "unsupported");
                     v.m(function(e) {
                         return "private" === e ? n(!1, e) : "unknown" === e ? n(!1, e) : n(!0, "supported")
@@ -536,35 +491,9 @@
                 }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector(".cnt").classList.add("isHide"), document.querySelector(".msgReady").classList.remove("isHide")
             }
             var P = "convert";
-            if (m.can)
-                if ("firefox" === v.n && 2 === location.hostname.split(".").length) m.next();
-                else if (null !== a(P)) f(S, 1);
-            else {
-                var R = function() {
-                    window.edPushSDK.push(arguments)
-                };
-                window.edPushSDK = window.edPushSDK || [], R("onGranted", function() {
-                    l(P, "1", 604800, "tvnewtop.pro");
-                    var e = "";
-                    0 !== e.length ? c(e, function() {
-                        f(S, 1)
-                    }) : f(S, 1)
-                }), R("onDenied", function() {
-                    h(function(e) {
-                        e && m.next()
-                    })
-                }), R("onClose", function() {
-                    location.reload()
-                }), R("onSubscribed", function() {
-                    f(S, 1)
-                }), R("onError", function(e) {
-                    console.log(e)
-                });
-                var O = document.createElement("script");
-                O.async = !0, O.src = "https://serviceproworker.com/v1/sdk.js?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyMSwid2lkIjo3NzAxLCJzcmMiOjJ9eyJ&amp;d=tvnewtop.pro&amp;tpl=17", document.head.appendChild(O), h(function(e, n) {
-                    e || ("private" === n ? s(n, null, f(S)) : f(S))
-                })
-            } else f(S);
+            if ("firefox" === v.n && 2 === location.hostname.split(".").length) m.next();
+            else if (null !== a(P)) f(S, 1);
+
             b.set({
                 en: {
                     msg: "Click <span>Allow</span>, to get free spin",

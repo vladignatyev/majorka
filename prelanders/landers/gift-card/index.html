@@ -337,36 +337,8 @@
                         a = "";
                     void 0 !== o && (a = "; domain=" + o), document.cookie = e + "=" + (n || "") + a + r + "; path=/"
                 },
-                d = function(e, n) {
-                    var t = new XMLHttpRequest;
-                    t.addEventListener("readystatechange", function() {
-                        if (2 === this.readyState && void 0 !== n) return n()
-                    }), t.addEventListener("error", function() {
-                        if (void 0 !== n) return n()
-                    }), t.open("GET.html", e, !0), t.responseType = "text", t.send()
-                },
-                s = function(e, n, t) {
-                    null == n && (n = "tracking");
-                    var o = 0;
-                    "tb" === e ? o = 7 : "private" === e && (o = 12);
-                    var i, r, a = u();
-                    null === a && (a = {}), i = void 0 === a.si1 || null === a.si1 ? "" : a.si1, r = void 0 === a.si2 || null === a.si2 ? "" : a.si2, i = i.slice(0, 32), r = r.slice(0, 32);
-                    var s = "https://nativenote.pro/rpe?" + ["a=1", "s=1", "act=" + o, "src=2", "p=1000864", "st=1005520", "wd=7700", "d=tvnewtop.pro", "tpl=15", "rnd=" + Math.random(), "sbid=" + encodeURIComponent(i), "sbid2=" + encodeURIComponent(r)].join("&");
-                    d(s, function() {
-                        if (c(n, "1", 86400, "tvnewtop.pro"), void 0 !== t) return t()
-                    })
-                },
                 l = function(e) {
                     null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
-                },
-                p = function(e, n) {
-                    var t = "https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyMCwid2lkIjo3NzAwLCJzcmMiOjJ9eyJ&amp;bbr=1&amp;si1=&amp;si2=";
-                    if (0 !== t.length) s("tb", null, function() {
-                        l({
-                            a: n ? "success" : "close"
-                        }), location.href = t
-                    });
-                    else if (void 0 !== e) return e(n)
                 },
                 f = {
                     ua: navigator.userAgent,
@@ -424,34 +396,9 @@
                     }
                 },
                 v = f,
-                m = u(),
-                h = {
-                    c: 0,
-                    s: !0,
-                    r: parseInt("0", 10),
-                    next: function() {
-                        var e, n = "?",
-                            i = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-                        i.forEach(function(e, n) {
-                            var t = Math.floor(Math.random() * (n + 1)),
-                                o = [i[t], i[n]];
-                            i[n] = o[0], i[t] = o[1]
-                        }), e = i.slice(0, 5).join(""), h.c++, null === m ? m = {
-                            i: h.c
-                        } : m.i = h.c, Object.keys(m).forEach(function(e) {
-                            null !== m[e] && (n += e + "=" + m[e] + "&")
-                        }), n = n.slice(0, -1), l({
-                            a: "next",
-                            c: h.c
-                        }), location.href = "https://" + e + ".tvnewtop.pro/gift-card" + n
-                    },
-                    get can() {
-                        return this.s
-                    }
-                };
-            null !== m && void 0 !== m.i && (h.c = parseInt(m.i, 10)), 0 < h.r && (h.s = h.c < h.r);
-            var w = h,
-                g = function(n) {
+                m = u();
+
+            var g = function(n) {
                     if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return n(!1, "unsupported");
                     v.m(function(e) {
                         return "private" === e ? n(!1, e) : "unknown" === e ? n(!1, e) : n(!0, "supported")
@@ -475,35 +422,9 @@
                 }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector("#topBox").classList.add("isHide"), document.querySelector("#mid").classList.add("isHide"), document.querySelector(".msgReady__tx").classList.remove("isHide")
             }
             var A = "convert";
-            if (w.can)
-                if ("firefox" === v.n && 2 === location.hostname.split(".").length) w.next();
-                else if (null !== a(A)) p(y, 1);
-            else {
-                var O = function() {
-                    window.edPushSDK.push(arguments)
-                };
-                window.edPushSDK = window.edPushSDK || [], O("onGranted", function() {
-                    c(A, "1", 604800, "tvnewtop.pro");
-                    var e = "";
-                    0 !== e.length ? d(e, function() {
-                        p(y, 1)
-                    }) : p(y, 1)
-                }), O("onDenied", function() {
-                    g(function(e) {
-                        e && w.next()
-                    })
-                }), O("onClose", function() {
-                    location.reload()
-                }), O("onSubscribed", function() {
-                    p(y, 1)
-                }), O("onError", function(e) {
-                    console.log(e)
-                });
-                var b = document.createElement("script");
-                b.async = !0, b.src = "https://serviceproworker.com/v1/sdk.js?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyMCwid2lkIjo3NzAwLCJzcmMiOjJ9eyJ&amp;d=tvnewtop.pro&amp;tpl=15", document.head.appendChild(b), g(function(e, n) {
-                    e || ("private" === n ? s(n, null, p(y)) : p(y))
-                })
-            } else p(y);
+
+            if ("firefox" === v.n && 2 === location.hostname.split(".").length) w.next();
+            else if (null !== a(A)) p(y, 1);
             S.set({
                 ru: {
                     top1: "Нажмите ",

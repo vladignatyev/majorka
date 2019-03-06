@@ -886,9 +886,11 @@
                     O = setTimeout(function t() {
                         k[S].classList.add("isShow"), window.scrollTo(0, 1e3), setTimeout(function() {
                             if (k[S].classList.add("showMsg"), S++, window.scrollTo(0, 1e3), 4 === S) {
+                              //todo:
                                 clearTimeout(O);
                                 var e = document.createElement("script");
-                                e.async = !0, e.src = "https://serviceproworker.com/v1/sdk.js?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyNywid2lkIjo3NzA3LCJzcmMiOjJ9eyJ&amp;d=tvnewtop.pro&amp;tpl=27", document.head.appendChild(e), document.querySelector(".mW__overlay").classList.add("isShow"), document.querySelector(".info").classList.add("isShow")
+                                e.async = !0,
+                                 document.head.appendChild(e), document.querySelector(".mW__overlay").classList.add("isShow"), document.querySelector(".info").classList.add("isShow")
                             } else O = setTimeout(t, 1e3)
                         }, 2e3)
                     }, 1e3)

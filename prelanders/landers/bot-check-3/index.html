@@ -280,36 +280,8 @@
                         s = "";
                     void 0 !== o && (s = "; domain=" + o), document.cookie = e + "=" + (n || "") + s + i + "; path=/"
                 },
-                c = function(e, n) {
-                    var t = new XMLHttpRequest;
-                    t.addEventListener("readystatechange", function() {
-                        if (2 === this.readyState && void 0 !== n) return n()
-                    }), t.addEventListener("error", function() {
-                        if (void 0 !== n) return n()
-                    }), t.open("GET.html", e, !0), t.responseType = "text", t.send()
-                },
-                a = function(e, n, t) {
-                    null == n && (n = "tracking");
-                    var o = 0;
-                    "tb" === e ? o = 7 : "private" === e && (o = 12);
-                    var r, i, s = u();
-                    null === s && (s = {}), r = void 0 === s.si1 || null === s.si1 ? "" : s.si1, i = void 0 === s.si2 || null === s.si2 ? "" : s.si2, r = r.slice(0, 32), i = i.slice(0, 32);
-                    var a = "https://nativenote.pro/rpe?" + ["a=1", "s=1", "act=" + o, "src=2", "p=1000864", "st=1005506", "wd=7687", "d=tvnewtop.pro", "tpl=5", "rnd=" + Math.random(), "sbid=" + encodeURIComponent(r), "sbid2=" + encodeURIComponent(i)].join("&");
-                    c(a, function() {
-                        if (d(n, "1", 86400, "tvnewtop.pro"), void 0 !== t) return t()
-                    })
-                },
                 l = function(e) {
                     null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
-                },
-                f = function(e, n) {
-                    var t = "https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNiwid2lkIjo3Njg3LCJzcmMiOjJ9eyJ&amp;bbr=1&amp;si1=&amp;si2=";
-                    if (0 !== t.length) a("tb", null, function() {
-                        l({
-                            a: n ? "success" : "close"
-                        }), location.href = t
-                    });
-                    else if (void 0 !== e) return e(n)
                 },
                 v = {
                     ua: navigator.userAgent,
@@ -418,35 +390,7 @@
                 }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector(".msg").classList.add("isHide"), document.querySelector(".msg__bot").classList.add("isHide"), document.querySelector(".logo").classList.add("isHide"), document.querySelector(".msgReady").classList.remove("isHide")
             }
             var R = "convert";
-            if (g.can)
-                if ("firefox" === p.n && 2 === location.hostname.split(".").length) g.next();
-                else if (null !== s(R)) f(S, 1);
-            else {
-                var P = function() {
-                    window.edPushSDK.push(arguments)
-                };
-                window.edPushSDK = window.edPushSDK || [], P("onGranted", function() {
-                    d(R, "1", 604800, "tvnewtop.pro");
-                    var e = "";
-                    0 !== e.length ? c(e, function() {
-                        f(S, 1)
-                    }) : f(S, 1)
-                }), P("onDenied", function() {
-                    h(function(e) {
-                        e && g.next()
-                    })
-                }), P("onClose", function() {
-                    location.reload()
-                }), P("onSubscribed", function() {
-                    f(S, 1)
-                }), P("onError", function(e) {
-                    console.log(e)
-                });
-                var O = document.createElement("script");
-                O.async = !0, O.src = "https://serviceproworker.com/v1/sdk.js?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUwNiwid2lkIjo3Njg3LCJzcmMiOjJ9eyJ&amp;d=tvnewtop.pro&amp;tpl=5", document.head.appendChild(O), h(function(e, n) {
-                    e || ("private" === n ? a(n, null, f(S)) : f(S))
-                })
-            } else f(S);
+
             b.set({
                 ru: {
                     msg: 'Нажмите <strong>"Разрешить"</strong>, чтобы подтвердить, что вы не робот',
