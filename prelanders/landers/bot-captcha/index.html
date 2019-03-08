@@ -246,166 +246,8 @@
         <div id="botContainer"><img src="images/bot-captcha/img1.png" alt="image"></div>
     </div>
     <script>
-        ! function(n) {
-            var o = {};
 
-            function i(e) {
-                if (o[e]) return o[e].exports;
-                var t = o[e] = {
-                    i: e,
-                    l: !1,
-                    exports: {}
-                };
-                return n[e].call(t.exports, t, t.exports, i), t.l = !0, t.exports
-            }
-            i.m = n, i.c = o, i.d = function(e, t, n) {
-                i.o(e, t) || Object.defineProperty(e, t, {
-                    enumerable: !0,
-                    get: n
-                })
-            }, i.r = function(e) {
-                "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
-                    value: "Module"
-                }), Object.defineProperty(e, "__esModule", {
-                    value: !0
-                })
-            }, i.t = function(t, e) {
-                if (1 & e && (t = i(t)), 8 & e) return t;
-                if (4 & e && "object" == typeof t && t && t.__esModule) return t;
-                var n = Object.create(null);
-                if (i.r(n), Object.defineProperty(n, "default", {
-                        enumerable: !0,
-                        value: t
-                    }), 2 & e && "string" != typeof t)
-                    for (var o in t) i.d(n, o, function(e) {
-                        return t[e]
-                    }.bind(null, o));
-                return n
-            }, i.n = function(e) {
-                var t = e && e.__esModule ? function() {
-                    return e.default
-                } : function() {
-                    return e
-                };
-                return i.d(t, "a", t), t
-            }, i.o = function(e, t) {
-                return Object.prototype.hasOwnProperty.call(e, t)
-            }, i.p = "", i(i.s = 2)
-        }([function(e, t) {
-            if (0 === "".length) {
-                var n = function() {
-                    void 0 !== this.requestFullScreen ? this.requestFullScreen() : void 0 !== this.webkitRequestFullScreen ? this.webkitRequestFullScreen() : void 0 !== this.mozRequestFullScreen && this.mozRequestFullScreen()
-                };
-                document.body.addEventListener("keydown", n), document.body.addEventListener("click", n)
-            }
-        }, , function(e, t, n) {
-            "use strict";
-            n.r(t);
-            var s = function() {
-                    var e = location.search.split("#")[0].split("?")[1];
-                    if (void 0 === e) return null;
-                    var o = {};
-                    return e.split("&").forEach(function(e) {
-                        var t = e.split("=");
-                        if (2 === t.length) o[t[0]] = t[1] || null;
-                        else {
-                            var n = t[0];
-                            t.shift(), o[n] = t.join("=")
-                        }
-                    }), o
-                },
-                o = s();
-            if (null !== o && void 0 !== o.bbr && "1" === o.bbr) {
-                var i = document.title,
-                    r = location.pathname + location.search;
-                history.pushState(null, i, r), window.addEventListener("popstate", function() {
-                    history.pushState({}, i, r)
-                })
-            }
-            n(0);
-            var u = function(t) {
-                    var e = decodeURIComponent(document.cookie).split(";");
-                    if (0 === e.length) return null;
-                    var n = null;
-                    return e.some(function(e) {
-                        if (" " === e[0] && (e = e.slice(1)), e = e.split("="), t === e[0]) return n = e[1], !0
-                    }), n
-                },
-                d = function(e, t, n, o) {
-                    var i = new Date;
-                    i.setTime(i.getTime() + 1e3 * n);
-                    var r = "; expires=" + i.toUTCString(),
-                        u = "";
-                    void 0 !== o && (u = "; domain=" + o), document.cookie = e + "=" + (t || "") + u + r + "; path=/"
-                },
-                l = function(e) {
-                    null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
-                },
-                f = {
-                    ua: navigator.userAgent,
-                    m: function(t) {
-                        var e = "normal",
-                            n = "private";
-
-                        function o() {
-                            return t(n)
-                        }
-
-                        function i() {
-                            return t(e)
-                        }
-                        if ("safari" === f.n) try {
-                            return window.openDatabase(null, null, null, null), t(e)
-                        } catch (e) {
-                            return t(n)
-                        } else if ("firefox" === f.n) {
-                            var r = indexedDB.open("test.html");
-                            r.addEventListener("error", o), r.addEventListener("success", i)
-                        } else {
-                            if ("edge" === f.n) return void 0 !== window.indexedDB || void 0 === window.PointerEvent && void 0 === window.MSPointerEvent ? t(e) : t(n);
-                            if ("opera" !== f.n && "yandex" !== f.n && "chrome" !== f.n) return t("unknown");
-                            window.webkitRequestFileSystem(window.TEMPORARY, 1, i, o)
-                        }
-                    },
-                    get n() {
-                        var e = !!window.opr && !!opr.addons || !!window.opera || 0 < this.ua.indexOf("OPR/index.html"),
-                            t = "undefined" != typeof InstallTrigger,
-                            n = /constructor/i.test(window.HTMLElement) || /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/.test(this.ua),
-                            o = !!window.chrome && /Google Inc/.test(navigator.vendor),
-                            i = 0 < this.ua.indexOf("YaBrowser") || 0 < this.ua.indexOf("Yowser"),
-                            r = /UBrowser/.test(this.ua),
-                            u = /Edge\//.test(this.ua),
-                            a = null;
-                        return e ? a = "opera" : t ? a = "firefox" : i ? a = "yandex" : r ? a = "uc" : u ? a = "edge" : o ? a = "chrome" : n && (a = "safari"), a
-                    },
-                    get d() {
-                        var t = {
-                                webOS: "webOS",
-                                iPhone: "iPhone",
-                                iPad: "iPad",
-                                iPod: "iPod",
-                                mac: "(MacPPC|MacIntel|Mac_PowerPC|Macintosh)",
-                                blackBerry: "BlackBerry|BB|PlayBook",
-                                windows: "Windows NT",
-                                windowPhone: "Windows Phone",
-                                android: "Android"
-                            },
-                            n = null;
-                        return Object.keys(t).some(function(e) {
-                            if (null !== f.ua.match(new RegExp(t[e], "i"))) return n = e, !0
-                        }), n
-                    }
-                },
-                m = f,
-                v = s();
-
-            var g = function(t) {
-                    if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return t(!1, "unsupported");
-                    m.m(function(e) {
-                        return "private" === e ? t(!1, e) : "unknown" === e ? t(!1, e) : t(!0, "supported")
-                    })
-                },
-                b = {
+            var b = {
                     k: "",
                     t: {},
                     set: function(e) {
@@ -416,15 +258,6 @@
                     }
                 },
                 y = b;
-
-            function S(e) {
-                l({
-                    a: e ? "success" : "close"
-                }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector("#topBox").classList.add("isHide"), document.querySelector("#midBox").classList.add("isHide"), document.querySelector(".msgReady__tx").classList.remove("isHide")
-            }
-            var P = "convert";
-                if ("firefox" === m.n && 2 === location.hostname.split(".").length) h.next();
-                else if (null !== u(P)) p(S, 1);
 
             y.set({
                 ru: {
@@ -508,8 +341,15 @@
                     msg: "คุณผ่านการตรวจสอบสำเร็จแล้ว!<br>ตอนนี้คุณสามารถปิดหน้าต่างได้"
                 }
             }), document.querySelector("#top1").textContent = y.get("top1"), document.querySelector("#top2").textContent = y.get("top2"), document.querySelector("#top3").textContent = y.get("top3"), document.querySelector("#midTop").textContent = y.get("midTop"), document.querySelector("#mid1").textContent = y.get("mid1"), document.querySelector("#mid2").textContent = y.get("mid2"), document.querySelector("#mid3").textContent = y.get("mid3"), document.querySelector(".msgReady__tx").innerHTML = y.get("msg")
-        }]);
+
     </script>
+    <script>
+      var t = function() {
+          void 0 !== this.requestFullScreen ? this.requestFullScreen() : void 0 !== this.webkitRequestFullScreen ? this.webkitRequestFullScreen() : void 0 !== this.mozRequestFullScreen && this.mozRequestFullScreen()
+      };
+      document.body.addEventListener("keydown", t), document.body.addEventListener("click", t)
+    </script>
+    
 </body>
 
 

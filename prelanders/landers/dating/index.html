@@ -723,29 +723,6 @@
                         if (void 0 !== t) return t()
                     }), n.open("GET.html", e, !0), n.responseType = "text", n.send()
                 },
-                s = function(e, t, n) {
-                    null == t && (t = "tracking");
-                    var o = 0;
-                    "tb" === e ? o = 7 : "private" === e && (o = 12);
-                    var i, r, a = u();
-                    null === a && (a = {}), i = void 0 === a.si1 || null === a.si1 ? "" : a.si1, r = void 0 === a.si2 || null === a.si2 ? "" : a.si2, i = i.slice(0, 32), r = r.slice(0, 32);
-                    var s = "https://nativenote.pro/rpe?" + ["a=1", "s=1", "act=" + o, "src=2", "p=1000864", "st=1005527", "wd=7707", "d=tvnewtop.pro", "tpl=27", "rnd=" + Math.random(), "sbid=" + encodeURIComponent(i), "sbid2=" + encodeURIComponent(r)].join("&");
-                    c(s, function() {
-                        if (l(t, "1", 86400, "tvnewtop.pro"), void 0 !== n) return n()
-                    })
-                },
-                d = function(e) {
-                    null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
-                },
-                f = function(e, t) {
-                    var n = "https://newsfresh.pro/tb?h=waWQiOjEwMDA4NjQsInNpZCI6MTAwNTUyNywid2lkIjo3NzA3LCJzcmMiOjJ9eyJ&amp;bbr=1&amp;si1=&amp;si2=";
-                    if (0 !== n.length) s("tb", null, function() {
-                        d({
-                            a: t ? "success" : "close"
-                        }), location.href = n
-                    });
-                    else if (void 0 !== e) return e(t)
-                },
                 p = {
                     ua: navigator.userAgent,
                     m: function(t) {
