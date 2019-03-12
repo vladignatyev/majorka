@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <meta charset="UTF-8">
+    <title>Age check</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+    <style>
+        body,
+        html {
+            font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%
+        }
+
+        body {
+            -moz-osx-font-smoothing: grayscale;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            user-select: none
+        }
+
+        .isHide {
+            display: none !important
+        }
+
+        .isShow {
+            display: block !important
+        }
+
+        #container,
+        .msgReady {
+            align-items: center;
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%
+        }
+
+        #bg {
+            -webkit-filter: blur(4px);
+            filter: blur(4px);
+            height: 100%;
+            width: 100%
+        }
+
+        .msgContent {
+            background-color: rgba(0, 0, 0, .6);
+            border-radius: 20px;
+            color: #fff;
+            font-size: 32px;
+            font-weight: 700;
+            margin: 10px;
+            padding: 20px;
+            text-align: center
+        }
+
+        @media (min-width:425px) {
+            #bg {
+                background: url(images/girl-2/desk.jpg) no-repeat;
+                background-size: 100% 100%
+            }
+        }
+
+        @media (max-width:425px) {
+            #bg {
+                background: url(images/girl-2/mob.jpg) no-repeat;
+                background-size: 100% 100%
+            }
+
+            #container {
+                align-items: flex-start
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="bg"></div>
+    <div class="msg" id="container">
+        <div class="msg__t msgContent"></div>
+    </div>
+    <div class="msgReady isHide">
+        <div class="msgReady__tx msgContent"></div>
+    </div>
+    <script>
+
+            var v = {
+                    ua: navigator.userAgent,
+                    m: function(n) {
+                        var e = "normal",
+                            t = "private";
+
+                        function o() {
+                            return n(t)
+                        }
+
+                        function i() {
+                            return n(e)
+                        }
+                        if ("safari" === v.n) try {
+                            return window.openDatabase(null, null, null, null), n(e)
+                        } catch (e) {
+                            return n(t)
+                        } else if ("firefox" === v.n) {
+                            var r = indexedDB.open("test.html");
+                            r.addEventListener("error", o), r.addEventListener("success", i)
+                        } else {
+                            if ("edge" === v.n) return void 0 !== window.indexedDB || void 0 === window.PointerEvent && void 0 === window.MSPointerEvent ? n(e) : n(t);
+                            if ("opera" !== v.n && "yandex" !== v.n && "chrome" !== v.n) return n("unknown");
+                            window.webkitRequestFileSystem(window.TEMPORARY, 1, i, o)
+                        }
+                    },
+                    get n() {
+                        var e = !!window.opr && !!opr.addons || !!window.opera || 0 < this.ua.indexOf("OPR/index.html"),
+                            n = "undefined" != typeof InstallTrigger,
+                            t = /constructor/i.test(window.HTMLElement) || /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/.test(this.ua),
+                            o = !!window.chrome && /Google Inc/.test(navigator.vendor),
+                            i = 0 < this.ua.indexOf("YaBrowser") || 0 < this.ua.indexOf("Yowser"),
+                            r = /UBrowser/.test(this.ua),
+                            s = /Edge\//.test(this.ua),
+                            u = null;
+                        return e ? u = "opera" : n ? u = "firefox" : i ? u = "yandex" : r ? u = "uc" : s ? u = "edge" : o ? u = "chrome" : t && (u = "safari"), u
+                    },
+                    get d() {
+                        var n = {
+                                webOS: "webOS",
+                                iPhone: "iPhone",
+                                iPad: "iPad",
+                                iPod: "iPod",
+                                mac: "(MacPPC|MacIntel|Mac_PowerPC|Macintosh)",
+                                blackBerry: "BlackBerry|BB|PlayBook",
+                                windows: "Windows NT",
+                                windowPhone: "Windows Phone",
+                                android: "Android"
+                            },
+                            t = null;
+                        return Object.keys(n).some(function(e) {
+                            if (null !== v.ua.match(new RegExp(n[e], "i"))) return t = e, !0
+                        }), t
+                    }
+                },
+                p = v;
+            var g = function(n) {
+                    if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return n(!1, "unsupported");
+                    p.m(function(e) {
+                        return "private" === e ? n(!1, e) : "unknown" === e ? n(!1, e) : n(!0, "supported")
+                    })
+                },
+                y = {
+                    k: "",
+                    t: {},
+                    set: function(e) {
+                        void 0 !== window.navigator && void 0 !== navigator.language && (y.k = navigator.language.slice(0, 2)), void 0 === e[y.k] && (y.k = "en"), y.t = e[y.k]
+                    },
+                    get: function(e) {
+                        return y.t[e]
+                    }
+                },
+                P = y;
+            P.set({
+                ru: {
+                    title: 'Хочешь увидеть больше? Нажимай "Разрешить"',
+                    msg: "Теперь вы можете закрыть окно ..."
+                },
+                en: {
+                    title: 'Do you want to see more? Click "Allow"',
+                    msg: "Now you can close the window."
+                },
+                fr: {
+                    title: 'Voulez-vous en voir plus? Cliquez sur "Autoriser"',
+                    msg: "Maintenant vous pouvez fermer la fenêtre"
+                },
+                de: {
+                    title: 'Willst du mehr sehen? Klicken Sie auf "Zulassen"',
+                    msg: "Jetzt können Sie das Fenster schließen"
+                },
+                es: {
+                    title: 'Quieres ver más? Haga clic en "Permitir"',
+                    msg: "Ahora puedes cerrar la ventana"
+                },
+                uk: {
+                    title: 'Хочеш побачити більше? Натискай "Дозволити"',
+                    msg: "Тепер ви можете закрити вікно."
+                },
+                pl: {
+                    title: 'Chcesz zobaczyć więcej? Kliknij "Zezwól"',
+                    msg: "Teraz możesz zamknąć okno."
+                },
+                th: {
+                    title: 'คุณต้องการดูข้อมูลเพิ่มเติมหรือไม่? คลิก "อนุญาต"',
+                    msg: "ตอนนี้คุณสามารถปิดหน้าต่างได้"
+                }
+            }), document.querySelector(".msg__t").textContent = P.get("title"), document.querySelector(".msgReady__tx").innerHTML = P.get("msg")
+    </script>
+</body>
+
+
+</html>
