@@ -5,3 +5,4 @@ furl==2.0.0
 ipaddr==2.2.0
 prettytable==0.7.2
 Click==7.0
+Pygments==2.3.1
