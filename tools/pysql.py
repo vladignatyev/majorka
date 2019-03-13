@@ -124,7 +124,7 @@ You can provide the parameters using the following syntax:
 @click.option('--ch-url', envvar='CH_URL', required=True, help='Clickhouse URL, i.e. http://192.168.9.39:8123/. You can use CH_URL environmental variable to set this parameter.')
 @click.option('--info', help='Show info about SQL query from file')
 @click.option('--show', help='Do not execute, just output final SQL')
-@click.option('--pretty-print', help='Output final SQL with syntax highlighting')
+@click.option('--pretty-print', help='Output source SQL without parameters substitution with syntax highlighting')
 @click.argument('file', type=click.File(), required=True)
 @click.argument('query-param', required=False, nargs=-1)
 def execute(ch_url, info, show, pretty_print, file, query_param):
