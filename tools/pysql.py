@@ -96,28 +96,28 @@ def help_for_query(query):
     qname = query.meta['name'].upper()
 
     return u"""
-
 {qname}
 {dashes}
 {query_desc}
 
+\t{params_str}
 Author: {author}
-
 """.format(qname=qname,
            dashes='=' * len(qname),
            query_desc=query.meta['description'],
-           author=query.meta['author'])
+           author=query.meta['author'],
+           params_str=u'\t'.join(map(unicode, query.params))
+           )
 
 def print_usage(query, missed_param):
     raise click.UsageError(u"""
 {query_help}
-The following parameters are required to run this script:
-\t{params_str}
+Some of required parameters are missed!
+
 You can provide the parameters using the following syntax:
   pysql filename.py.sql NAME VALUE NAME VALUE NAME VALUE...
 """.format(param=missed_param,
-           query_help=help_for_query(query),
-           params_str=u'\t'.join(map(unicode, query.params))))
+           query_help=help_for_query(query)))
 
 
 @click.command()
@@ -135,21 +135,24 @@ def execute(ch_url, info, show, pretty_print, file, query_param):
     kvs = zip(query_param[0::2], query_param[1::2])
 
     query = parse_from_lines(lines=file.readlines())
+
+    if info:
+        print help_for_query(query)
+        sys.exit()
+    elif pretty_print:
+        print highlight(query.source_sql())
+        sys.exit()
+
     sql_or_none, missed_param = query.to_final_sql(**dict(kvs))
 
     if sql_or_none is None:
         print_usage(query, missed_param)
 
-    sql = sql_or_none
+    final_sql = sql = sql_or_none
 
     if show:
-        print sql
+        print final_sql
         sys.exit()
-    elif pretty_print:
-        print highlight(sql)
-        sys.exit()
-    elif info:
-        print help_for_query(query)
     else:
         columns = d.describe_query(sql)
         col_names = zip(*columns)[0]
