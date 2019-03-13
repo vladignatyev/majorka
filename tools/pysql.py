@@ -147,6 +147,7 @@ def execute(ch_url, info, show, pretty_print, file, query_param):
 
     if sql_or_none is None:
         print_usage(query, missed_param)
+        sys.exit()
 
     final_sql = sql = sql_or_none
 
