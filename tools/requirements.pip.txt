@@ -4,3 +4,4 @@ hiredis==1.0.0
 furl==2.0.0
 ipaddr==2.2.0
 prettytable==0.7.2
+Click==7.0

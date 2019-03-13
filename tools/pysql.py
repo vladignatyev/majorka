@@ -77,9 +77,9 @@ def parse_from_lines(lines):
                 else:
                     meta['description'] = meta['description'] + u'\n' + clean_line.decode('utf-8')
             elif line.startswith('-- name:'):
-                meta['name'] = line.split('-- name:', 1)[1].strip()
+                meta['name'] = line.split('-- name:', 1)[1].strip().decode('utf-8')
             elif line.startswith('-- author:'):
-                meta['author'] = line.split('-- author:', 1)[1].strip()
+                meta['author'] = line.split('-- author:', 1)[1].strip().decode('utf-8')
             elif line.startswith('-- description:'):
                 meta['description'] = line.split('-- description:', 1)[1].strip().decode('utf-8')
                 state_description_multiline = True
@@ -91,15 +91,17 @@ def parse_from_lines(lines):
     return ParametricQuery(sql=''.join(sql_lines), meta=meta, params=params)
 
 def help_for_query(query):
-    qname = query.meta['name'].decode('utf-8').upper()
+    if query.meta['name'] == '':
+        return query.source_sql()
+    qname = query.meta['name'].upper()
 
-    return """
+    return u"""
 
 {qname}
 {dashes}
 {query_desc}
 
-{author}
+Author: {author}
 
 """.format(qname=qname,
            dashes='=' * len(qname),
@@ -110,26 +112,27 @@ def print_usage(query, missed_param):
     raise click.UsageError(u"""
 {query_help}
 The following parameters are required to run this script:
-    {params_str}
+\t{params_str}
 You can provide the parameters using the following syntax:
   pysql filename.py.sql NAME VALUE NAME VALUE NAME VALUE...
 """.format(param=missed_param,
            query_help=help_for_query(query),
-           params_str=u'\n\t'.join(map(unicode, query.params))))
+           params_str=u'\t'.join(map(unicode, query.params))))
 
 
 @click.command()
 @click.option('--ch-url', envvar='CH_URL', required=True, help='Clickhouse URL, i.e. http://192.168.9.39:8123/. You can use CH_URL environmental variable to set this parameter.')
+@click.option('--info', help='Show info about SQL query from file')
 @click.option('--show', help='Do not execute, just output final SQL')
-@click.option('--pretty-print', help='Do not execute, just output final SQL with syntax highlighting')
+@click.option('--pretty-print', help='Output final SQL with syntax highlighting')
 @click.argument('file', type=click.File(), required=True)
 @click.argument('query-param', required=False, nargs=-1)
-def execute(ch_url, show, pretty_print, file, query_param):
+def execute(ch_url, info, show, pretty_print, file, query_param):
     """Executes .py.sql file on Clickhouse server and prints result.
     """
     d = connection(ch_url=ch_url)
 
-    kvs = zip(query_param[0:2:], query_param[1:2:])
+    kvs = zip(query_param[0::2], query_param[1::2])
 
     query = parse_from_lines(lines=file.readlines())
     sql_or_none, missed_param = query.to_final_sql(**dict(kvs))
@@ -145,6 +148,8 @@ def execute(ch_url, show, pretty_print, file, query_param):
     elif pretty_print:
         print highlight(sql)
         sys.exit()
+    elif info:
+        print help_for_query(query)
     else:
         columns = d.describe_query(sql)
         col_names = zip(*columns)[0]
