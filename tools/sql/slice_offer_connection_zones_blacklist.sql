@@ -24,7 +24,7 @@ inner join
         AND
         dim_zone != '{zoneid}'
         AND dim_zone !=''
-        AND campaign = 0
+        AND campaign = {campaign_id}
         AND dim_useragent != 'ApacheBench/2.3'
     )
 as hits_conversions
