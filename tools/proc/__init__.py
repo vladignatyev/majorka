@@ -11,21 +11,36 @@ class Multiprocess(object):
     def __init__(self, proc, logger=None):
         self.log = logger or logging.getLogger(Multiprocess.LOGGER)
         self.proc = proc
-        self.proc_loggers = {}
-        self.processes = None
 
-    def launch(self):
+        self.processes = {}
+        self.proc_loggers = {}
+
+    def launch(self, proc=None):
+        proc = proc or self.proc
+
         self._log_info_header("Starting...")
 
-        self.processes = dict(map(lambda (name, args): (name, self.spawn(name=name, args=args)), self.proc))
-        self.proc_loggers = dict(map(lambda (name, proc): (name, LogTrap(proc.stdout)), self.processes.items()))
+        for name, args in proc:
+            if self.spawn(name=name, args=args) is None:
+                self.log.error("Unable to spawn process `%s` with args `%s`. The process with such name is already exist", name, ' '.join(args))
+                self.kill()
 
         self._log_proc_tree()
 
     def spawn(self, name, args):
+        if name in self.processes.keys():
+            return None
+
         self.log.info("Launching %s: %s", name, ' '.join(args))
-        return psutil.Popen(args=args, bufsize=0, stdout=subprocess.PIPE,
-            stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        self.processes[name] = proc = psutil.Popen(args=args, bufsize=0,
+                                                   stdout=subprocess.PIPE,
+                                                   stdin=subprocess.PIPE,
+                                                   stderr=subprocess.PIPE)
+        self.proc_loggers[name] = LogTrap(proc.stdout)
+
+        return proc
+
 
     def poll(self):
         return_codes = map(lambda (name, proc): (name, proc, proc.poll()), self.processes.items())
