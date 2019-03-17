@@ -2,21 +2,23 @@ import logging
 import psutil
 import subprocess
 
+from pipelog import LogTrap
 
 
-_LOGGER = 'procession'
+class Multiprocess(object):
+    LOGGER = 'procession'
 
-
-class Session(object):
-    def __init__(self, proc=(), logger=logging.getLogger(_LOGGER)):
-        self.log = logger
+    def __init__(self, proc, logger=None):
+        self.log = logger or logging.getLogger(Session.LOGGER)
         self.proc = proc
+        self.proc_loggers = {}
         self.processes = None
 
     def launch(self):
         self.log.info("Session has started!")
         self.log.info("==============================")
         self.processes = dict(map(lambda (name, args): (name, self.spawn(name=name, args=args)), self.proc))
+        self.proc_loggers = dict(map(lambda (name, proc): (name, LogTrap(proc.stdout)), self.processes.items()))
         self._log_proc_tree()
 
     def spawn(self, name, args):
@@ -25,12 +27,13 @@ class Session(object):
             stdin=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def poll(self):
-        #todo:
-        result = {}
         for name, proc in self.processes.items():
-            self.log.debug("Trying to read STDERR from `%s`", name)
-            # result[name] = proc.stderr.readline()
-        return result
+            returncode = proc.poll()
+            if returncode is not None:
+                self.log.warn("process `%s` PID %s exited unexpectedly with exit code %s", name, proc.pid, returncode)
+                postmortem = self.proc_loggers[name].get_complete_log()
+                return name, proc, postmortem
+        return None
 
     def kill(self):
         self.log.info("Terminating...")
@@ -40,6 +43,7 @@ class Session(object):
         return self
 
     def __exit__(self, exception_type, exception_val, trace):
+        map(lambda (name, logger): logger.destroy(), self.proc_loggers.items())
         self.kill()
         return False
 
@@ -58,15 +62,17 @@ class Session(object):
 
         self.log.info("==============================")
 
+    def _get_pids(self):
+        return dict(map(lambda (name, p): (p.pid, name), self.processes.items()))
 
     def _reap_children(self, timeout=3):
         """Tries hard to terminate and ultimately kill all the children of this process.
         See: https://psutil.readthedocs.io/en/latest/#terminate-my-children
         """
-        pids = dict(map(lambda (name, p): (p.pid, name), self.processes.items()))
+        pids = self._get_pids()
 
         def on_terminate(proc):
-            self.log.info("process `%s` PID %s terminated with exit code %s", pids[proc.pid], proc.pid, proc.returncode)
+            self.log.info("\tprocess `%s` PID %s terminated with exit code %s", pids[proc.pid], proc.pid, proc.returncode)
 
         # send SIGTERM
         for name, p in self.processes.items():
@@ -78,7 +84,7 @@ class Session(object):
         if alive:
             # send SIGKILL
             for p in alive:
-                self.log.debug("process %s survived SIGTERM; trying SIGKILL", p)
+                self.log.debug("\tprocess %s survived SIGTERM; trying SIGKILL", p)
                 try:
                     p.kill()
                 except psutil.NoSuchProcess:
@@ -87,4 +93,4 @@ class Session(object):
             if alive:
                 # give up
                 for p in alive:
-                    self.log.error("zombie process eliminated! Process %s survived SIGKILL.", p)
+                    self.log.error("Zombie process eliminated! Process %s survived SIGKILL.", p)
