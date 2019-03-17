@@ -36,6 +36,25 @@ _ENTITIES = {
 }
 
 
+class EmptyDatabusTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if not os.environ.get('TEST_REDIS_URL', None):
+            raise Exception("\n\nFor safety reason, framework tests are running "
+                            "only on test database instance.\nSet the"
+                            "'TEST_REDIS_URL' environmental variable to proper Redis URL.\n")
+        cls._redis = Redis.from_url(os.environ['TEST_REDIS_URL'])
+        cls._redis.flushdb()
+
+    def setUp(self):
+        self.redis = DatabusTestCase._redis
+        self.bus = Connection(redis=self.redis, entities_meta=_ENTITIES)
+
+    def test_shouldnt_fail_when_no_entities_saved_yet(self):
+        l = list(self.bus.multiread('Offer'))
+        self.assertEqual(len(l), 0)
+
+
 class DatabusTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
