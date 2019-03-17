@@ -90,7 +90,7 @@ class Connection(object):
 
         checked_entity = entity
 
-        counter = int(self._redis.get(_key_counter(checked_entity))) or 0
+        counter = int(self._redis.get(_key_counter(checked_entity)) or 0)
         last_idx = counter - 1
 
         if start > last_idx:
