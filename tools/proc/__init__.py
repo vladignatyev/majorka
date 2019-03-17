@@ -9,16 +9,17 @@ class Multiprocess(object):
     LOGGER = 'procession'
 
     def __init__(self, proc, logger=None):
-        self.log = logger or logging.getLogger(Session.LOGGER)
+        self.log = logger or logging.getLogger(Multiprocess.LOGGER)
         self.proc = proc
         self.proc_loggers = {}
         self.processes = None
 
     def launch(self):
-        self.log.info("Session has started!")
-        self.log.info("==============================")
+        self._log_info_header("Starting...")
+
         self.processes = dict(map(lambda (name, args): (name, self.spawn(name=name, args=args)), self.proc))
         self.proc_loggers = dict(map(lambda (name, proc): (name, LogTrap(proc.stdout)), self.processes.items()))
+
         self._log_proc_tree()
 
     def spawn(self, name, args):
@@ -27,30 +28,37 @@ class Multiprocess(object):
             stdin=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def poll(self):
-        for name, proc in self.processes.items():
-            returncode = proc.poll()
-            if returncode is not None:
-                self.log.warn("process `%s` PID %s exited unexpectedly with exit code %s", name, proc.pid, returncode)
-                postmortem = self.proc_loggers[name].get_complete_log()
-                return name, proc, postmortem
-        return None
+        return_codes = map(lambda (name, proc): (name, proc, proc.poll()), self.processes.items())
+
+        died = filter(lambda (name, proc, code): code is not None, return_codes)
+
+        postmortem = [None] * len(died)
+        for i, dead in enumerate(died):
+            name, proc, code = dead
+            self.log.warn("process `%s` PID %s exited unexpectedly with exit code %s", name, proc.pid, code)
+            postmortem[i] = (name, proc, self.proc_loggers[name].get_complete_log())
+
+        if len(postmortem) == 0:
+            return None
+        else:
+            return postmortem
 
     def kill(self):
-        self.log.info("Terminating...")
+        self._log_info_header("Terminating...")
+
+        self._destroy_logs()
         self._reap_children()
 
-    def __enter__(self):
-        return self
+    def _log_info_header(self, msg):
+        self.log.info("")
+        self.log.info(msg)
+        self.log.info("==============================")
 
-    def __exit__(self, exception_type, exception_val, trace):
+    def _destroy_logs(self):
         map(lambda (name, logger): logger.destroy(), self.proc_loggers.items())
-        self.kill()
-        return False
 
     def _log_proc_tree(self):
-        self.log.info("")
-        self.log.info("Process tree")
-        self.log.info("==============================")
+        self._log_info_header("Process tree")
 
         max_width = max(map(lambda k: len(k + " PID: "), self.processes.keys()))
         self.log.info("%s%s", " PID: ".rjust(max_width), psutil.Process().pid)
@@ -59,8 +67,6 @@ class Multiprocess(object):
             left  = "{name} PID: ".format(name=name.capitalize()).rjust(max_width)
             right = "|--- {pid}".format(pid=proc.pid)
             self.log.info("%s%s", left, right)
-
-        self.log.info("==============================")
 
     def _get_pids(self):
         return dict(map(lambda (name, p): (p.pid, name), self.processes.items()))
@@ -94,3 +100,10 @@ class Multiprocess(object):
                 # give up
                 for p in alive:
                     self.log.error("Zombie process eliminated! Process %s survived SIGKILL.", p)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exception_type, exception_val, trace):
+        self.kill()
+        return False # propagate exceptions

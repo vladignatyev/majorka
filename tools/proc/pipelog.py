@@ -37,7 +37,7 @@ class LogTrap(object):
 
                 result = self.thread.log[self.latest_read_index:]
                 self.latest_read_index = len(self.thread.log) - 1
-                return result
+                return tuple(result)
             else:
                 return []
 
@@ -48,20 +48,12 @@ class LogTrap(object):
         self.thread.start()
 
     def get_complete_log(self):
-        # l = list(chain.from_iterable(self.thread.log.values())) # flatten list of log items
-
         log = (''.join(self.thread.log)).split('\n')
         return log
 
 
     def get_reader(self):
         return self.Reader(log_thread=self.thread)
-
-    # def get_messages_since(self, t):
-    #     out = []
-    #     for
-    #     self.thread.latest_time
-    #     pass
 
     def destroy(self):
         self.thread.die.set()
