@@ -85,6 +85,26 @@ class EnvironmentTestCase(unittest.TestCase):
     def tearDown(self):
         self.multiprocess.kill()
 
+    def test_hang(self):
+        global HANG_TEST
+
+        if HANG_TEST:
+            while True:
+                if raw_input("Stop hanging? [Y/n]: ").lower() == 'y':
+                    break
+
+def main(*args, **kwargs):
+    import sys
+    global HANG_TEST
+    HANG_TEST = False
+
+    argv = sys.argv
+    if '--hang' in argv:
+        HANG_TEST = True
+        argv = argv[:argv.index('--hang')] + argv[argv.index('--hang')+1:]
+
+    unittest.main(argv=argv, *args, **kwargs)
+
 
 
 class TrafficSimulator(object):

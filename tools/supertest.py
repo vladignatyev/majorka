@@ -1,7 +1,35 @@
 import subprocess
 import requests
 import unittest
+import testtools
 from testtools import EnvironmentTestCase
+
+
+class AbTest(EnvironmentTestCase):
+    def _get_ab_args(self, url):
+        return [
+            'ab',
+            '-c',
+            str(10),
+            '-n',
+            str(10000),
+            str(url)
+        ]
+
+    def test_majorka_doesnt_miss_hits_under_load(self):
+        logged_hits = list(self.bus.multiread('Hits', start=0))
+        self.assertEqual(len(logged_hits), 0)
+
+        offers = [
+            self.fixture.create_offer(name='simple test offer', url='http://test-url-1.com/?external_id={external_id}'),
+            self.fixture.create_offer(name='simple test offer', url='http://test-url-2.com/?external_id={external_id}')
+        ]
+        self.fixture.create_campaign(name='test campaign', alias='alias', offer_ids=offers)
+
+        result = subprocess.check_output(self._get_ab_args(url=self.majorka_url().join('alias')))
+
+        logged_hits = list(self.bus.multiread('Hits', start=0))
+        self.assertEqual(len(logged_hits), 10000)
 
 
 class BigTest(EnvironmentTestCase):
@@ -30,31 +58,7 @@ class BigTest(EnvironmentTestCase):
         logged_hits = list(self.bus.multiread('Hits', start=0))
         self.assertEqual(len(logged_hits), 0)
 
-    def _get_ab_args(self, url):
-        return [
-            'ab',
-            '-c',
-            str(10),
-            '-n',
-            str(10000),
-            str(url)
-        ]
-
-    def test_majorka_doesnt_miss_hits_under_load(self):
-        logged_hits = list(self.bus.multiread('Hits', start=0))
-        self.assertEqual(len(logged_hits), 0)
-
-        offers = [
-            self.fixture.create_offer(name='simple test offer', url='http://test-url-1.com/?external_id={external_id}'),
-            self.fixture.create_offer(name='simple test offer', url='http://test-url-2.com/?external_id={external_id}')
-        ]
-        self.fixture.create_campaign(name='test campaign', alias='alias', offer_ids=offers)
-
-        result = subprocess.check_output(self._get_ab_args(url=self.majorka_url().join('alias')))
-
-        logged_hits = list(self.bus.multiread('Hits', start=0))
-        self.assertEqual(len(logged_hits), 10000)
 
 
 if __name__ == '__main__':
-    unittest.main()
+    testtools.main()
