@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-parser = argparse.ArgumentParser(description="huy")
+parser = argparse.ArgumentParser(description="Block zones given via stdin or file for given campaign")
 parser.add_argument('input_file', nargs='?', type=argparse.FileType('r'))
 
 args = parser.parse_args()
@@ -11,7 +11,8 @@ if args.input_file:
     zones = args.input_file.read()    
 elif not sys.stdin.isatty():
     print 'reading stdin...'
-    print sys.stdin.read()
+    zones = sys.stdin.read()
 else:
     parser.print_help()
+print 'zones, ', zones
 
