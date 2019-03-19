@@ -4,7 +4,8 @@ import logging
 
 from furl import furl
 
-from redis import Redis
+from time import sleep
+from redis import Redis, ConnectionError
 
 from majorka import Majorka
 
@@ -22,6 +23,10 @@ DEFAULT_MAJORKA_CLI_BINPATH = '../core/target/debug/majorka-cli'
 DEFAULT_VERBOSE = False
 
 
+global HANG_TEST
+HANG_TEST = False
+
+
 class EnvironmentTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -35,18 +40,55 @@ class EnvironmentTestCase(unittest.TestCase):
 
         cls.fixture = MajorkaFixture(binpath=cls.majorka_cli_binpath, redis_url=cls.redis_url)
 
-        cls.redis = Redis.from_url(cls.redis_url)
-        cls.bus = BusConnection(redis=cls.redis, entities_meta=ENTITIES)
+        # todo: extract to Environment
+        cls.setupLogger()
+        cls.setupServers()
+        cls.setupConnections()
 
         # we need a safe default behaviour, but accesing report_db may change data not as expected, see issue https://github.com/vladignatyev/majorka/issues/23
         # cls.report_db = Database(url=os.environ['TEST_CLICKHOUSE_URL'], db='test', connection_timeout=1, data_read_timeout=1)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.multiprocess.kill()
+
+    @classmethod
+    def setupLogger(cls):
+        cls.logger = logging.getLogger('test')
+        cls.logger.setLevel(logging.DEBUG)
+
+        handler = logging.StreamHandler()
+        handler.setLevel(logging.DEBUG)
+        handler.setFormatter(logging.Formatter('\33[92m[%(name)s] \33[0m\33[90m%(asctime)-15s\33[1m\33[37m %(message)s\33[0m'))
+
+        cls.logger.addHandler(handler)
+
+    @classmethod
+    def setupConnections(cls):
+        cls.redis = Redis.from_url(cls.redis_url)
+        cls.bus = BusConnection(redis=cls.redis, entities_meta=ENTITIES)
+
+    @classmethod
+    def setupServers(cls):
+        servers = (
+            ('Redis Server', EnvironmentTestCase.build_redis_server_cmd(binpath=cls.redis_binpath, port=cls.redis_port)),
+            ('Majorka Server', EnvironmentTestCase.build_majorka_server_cmd(binpath=cls.majorka_binpath, redis_url=cls.redis_url, listen_port=cls.majorka_port, redis_port=cls.redis_port, verbose=False)),
+        )
+
+        cls.multiprocess = Multiprocess(logger=cls.logger, proc=servers)
+        cls.multiprocess.launch()
+
+        cls.multiprocess.await_socket(proc='Redis Server', port=cls.redis_port)
+        cls.multiprocess.await_socket(proc='Majorka Server', port=cls.majorka_port)
+
+        cls.log_readers = dict(map(lambda (k, l): (k, l.get_reader()), cls.multiprocess.proc_loggers.items()))
 
     @classmethod
     def build_majorka_server_cmd(cls, redis_url,
                                  binpath=DEFAULT_MAJORKA_SERVER_BINPATH,
                                  listen_port=DEFAULT_MAJORKA_PORT,
                                  redis_port=DEFAULT_REDIS_PORT,
-                                 verbose=False):
+                                 verbose=True):
         return [
             binpath,
             "--redis", redis_url,
@@ -58,59 +100,58 @@ class EnvironmentTestCase(unittest.TestCase):
     def build_redis_server_cmd(cls, binpath=DEFAULT_REDIS_BINPATH, port=DEFAULT_REDIS_PORT):
         return [binpath, "--port", str(port)]
 
-    def setupLogger(self):
-        self.logger = logging.getLogger('test')
-        self.logger.setLevel(logging.DEBUG)
-
-        handler = logging.StreamHandler()
-        handler.setLevel(logging.DEBUG)
-        handler.setFormatter(logging.Formatter('\33[92m[%(name)s] \33[0m\33[90m%(asctime)-15s\33[1m\33[37m %(message)s\33[0m'))
-
-        self.logger.addHandler(handler)
-
     def majorka_url(self):
         return furl('http://127.0.0.1:{port}/'.format(port=self.majorka_port))
 
     def setUp(self):
-        servers = (
-            ('Redis Server', EnvironmentTestCase.build_redis_server_cmd(binpath=self.redis_binpath, port=self.redis_port)),
-            ('Majorka Server', EnvironmentTestCase.build_majorka_server_cmd(binpath=self.majorka_binpath, redis_url=self.redis_url, listen_port=self.majorka_port, redis_port=self.redis_port, verbose=False)),
-        )
-
-        self.setupLogger()
-
-        self.multiprocess = Multiprocess(logger=self.logger, proc=servers)
-        self.multiprocess.launch()
+        self.redis.flushdb()
 
     def tearDown(self):
-        self.multiprocess.kill()
+        self.redis.flushdb()
 
-    def test_hang(self):
+
+def hang(test):
+    """
+    Test methods decorator that makes them hangs after execution if `--hang`
+    option provided.
+    You should use `testtools.main()` instead of `unittest.main()` to make this
+    works or set global `HANG_TEST` to True before `unittest.main()`
+    """
+    def wrapper(self):
+        test(self)
+
         global HANG_TEST
 
-        if HANG_TEST:
-            while True:
-                if raw_input("Stop hanging? [Y/n]: ").lower() == 'y':
-                    break
+        while HANG_TEST and True:
+            for k, reader in self.log_readers.items():
+                new_logs = reader.read()
+                if new_logs:
+                    self.logger.debug("New logs from process `%s`\n\n\t", k)
+                    self.logger.debug('\t'.join(new_logs))
+
+            if raw_input("Stop hanging? [Y/n]: ").lower() == 'y':
+                break
+
+    # Wrapped method should have the same name,
+    # otherwise it won't run!
+    #
+    # See discussion: https://stackoverflow.com/questions/6312167/python-unittest-cant-call-decorated-test
+    wrapper.__name__ = test.__name__
+    return wrapper
+
 
 def main(*args, **kwargs):
     import sys
     global HANG_TEST
-    HANG_TEST = False
 
     argv = sys.argv
+
     if '--hang' in argv:
+        i = argv.index('--hang')
+        argv = argv[:i] + argv[i + 1:]
         HANG_TEST = True
-        argv = argv[:argv.index('--hang')] + argv[argv.index('--hang')+1:]
 
     unittest.main(argv=argv, *args, **kwargs)
-
-
-
-class TrafficSimulator(object):
-    def __init__(self, samples):
-        # todo
-        pass
 
 
 class MajorkaFixture(Majorka):

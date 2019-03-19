@@ -1,9 +1,36 @@
 import logging
 import psutil
 import subprocess
+import time
+import socket
 
 from pipelog import LogTrap
 
+
+class AwaitingException(Exception): pass
+
+def await_remote_socket(host, port, max_retries=5):
+    num_retries = 0
+
+    while num_retries < max_retries:
+        try:
+            s = socket.socket()
+            s.connect((host, port))
+            s.close()
+            return
+        except socket.error:
+            self.log.debug("Awaiting %s:%s to start listening...", host, port)
+            num_retries += 1
+            time.sleep(1)
+
+    raise AwaitingException("Num retries ({retries}) exceed, " \
+                            "but socket is still not alive for {host}:{port}" \
+                            .format(host=host,
+                                    port=port,
+                                    retries=num_retries))
+
+
+class MultiprocessException(Exception): pass
 
 class Multiprocess(object):
     LOGGER = 'procession'
@@ -63,6 +90,32 @@ class Multiprocess(object):
 
         self._destroy_logs()
         self._reap_children()
+
+    def await_socket(self, proc, port, max_retries=5, ips=('127.0.0.1', '0.0.0.0',)):
+        num_retries = 0
+        socket_ready = False
+        while not socket_ready and num_retries < max_retries:
+            conns = self.processes[proc].connections('inet')
+            for c in conns:
+                for ip in ips:
+                    status_ok = c.status == 'ESTABLISHED' or c.status == 'LISTEN'
+                    ip_ok = c.laddr.ip == ip
+                    port_ok = c.laddr.port == int(port)
+                    socket_ready = socket_ready or (status_ok and ip_ok and port_ok)
+            if socket_ready:
+                return
+            else:
+                self.log.debug("Awaiting `%s` process to start listening on port `%s`...", proc, port)
+                num_retries += 1
+                time.sleep(1)
+
+        raise MultiprocessException("Num retries ({retries}) exceed, " \
+                                    "but socket port {port} still not alive " \
+                                    "for process {proc}" \
+                                    .format(proc=proc,
+                                            port=port,
+                                            retries=num_retries))
+
 
     def _log_info_header(self, msg):
         self.log.info("")
