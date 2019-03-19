@@ -8,26 +8,26 @@ from pipelog import LogTrap
 
 
 class AwaitingException(Exception): pass
-
-def await_remote_socket(host, port, max_retries=5):
-    num_retries = 0
-
-    while num_retries < max_retries:
-        try:
-            s = socket.socket()
-            s.connect((host, port))
-            s.close()
-            return
-        except socket.error:
-            self.log.debug("Awaiting %s:%s to start listening...", host, port)
-            num_retries += 1
-            time.sleep(1)
-
-    raise AwaitingException("Num retries ({retries}) exceed, " \
-                            "but socket is still not alive for {host}:{port}" \
-                            .format(host=host,
-                                    port=port,
-                                    retries=num_retries))
+#
+# def await_remote_socket(host, port, max_retries=5):
+#     num_retries = 0
+#
+#     while num_retries < max_retries:
+#         try:
+#             s = socket.socket()  # todo: use socket_ex instead
+#             s.connect((host, port))
+#             s.close()
+#             return
+#         except socket.error:
+#             self.log.debug("Awaiting %s:%s to start listening...", host, port)
+#             num_retries += 1
+#             time.sleep(1)
+#
+#     raise AwaitingException("Num retries ({retries}) exceed, " \
+#                             "but socket is still not alive for {host}:{port}" \
+#                             .format(host=host,
+#                                     port=port,
+#                                     retries=num_retries))
 
 
 class MultiprocessException(Exception): pass
