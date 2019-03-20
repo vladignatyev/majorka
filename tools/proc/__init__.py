@@ -103,6 +103,7 @@ class Multiprocess(object):
                     port_ok = c.laddr.port == int(port)
                     socket_ready = socket_ready or (status_ok and ip_ok and port_ok)
             if socket_ready:
+                self.log.debug("`%s` started.", proc)
                 return
             else:
                 self.log.debug("Awaiting `%s` process to start listening on port `%s`...", proc, port)

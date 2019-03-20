@@ -6,9 +6,9 @@ import json
 
 import testtools
 from testtools import EnvironmentTestCase, hang, main
-from testtools.simulator import BasicTrafficSampler
+from testtools.simulator import BasicTrafficSampler, samples_from_fixture, with_cost
 
-from testtools.hit_samples import fixture_data
+from testtools.hit_samples import fixture_data as hit_samples
 
 
 class AbTest(EnvironmentTestCase):
@@ -63,13 +63,18 @@ class RedirectsTest(EnvironmentTestCase):
 class TrafficTest(EnvironmentTestCase):
     @hang
     def test_simple(self):
-        base_url = self.majorka_url().join('alias').add({'connection_type':'{connection_type}', 'zone': '{zone}'})
+        # todo: extract method majorka_url_for_campaign_by_alias
+        base_url = self.majorka_url().join('alias').add({
+            'connection_type': '{connection_type}',
+            'zone': '{zone}',
+            'cost': '{cost}',
+            'currency': '{currency}'
+        })
+
+        filtered_samples = filter(lambda hit: hit[u'dimensions'][u'zone'] != '' and hit[u'dimensions'][u'zone'] != 'AB_TEST', samples_from_fixture(hit_samples))
 
 
-        fixture_data_items_excluding_counter = zip(*filter(lambda (k, v): '_counter' not in k, fixture_data.items()))[1]
-        hits = map(json.loads, fixture_data_items_excluding_counter)
-        filtered_samples = filter(lambda hit: hit[u'dimensions'][u'zone'] != '' and hit[u'dimensions'][u'zone'] != 'AB_TEST', hits)
-        sampler = BasicTrafficSampler(base_url=base_url, samples=filtered_samples)
+        sampler = BasicTrafficSampler(base_url=base_url, samples=with_cost(filtered_samples, value='0.005'))
 
         offers = [
             self.fixture.create_offer(name='simple test offer', url='http://test-url-1.com/?external_id={external_id}'),
@@ -87,9 +92,12 @@ class TrafficTest(EnvironmentTestCase):
         logged_hits = list(self.bus.multiread('Hits', start=0))
 
         self.assertEqual(len(logged_hits), 1000)
+        self.assertEqual(logged_hits[0].__dict__['cost']['currency'], 'USD')
+        self.assertEqual(logged_hits[0].__dict__['cost']['value'], 0.005 * 100000)
 
         self.assertNotIn('python-requests', logged_hits[0].__dict__['dimensions']['useragent'])
-        print logged_hits[0].__dict__
+        self.assertIn('Mozilla/5.0', logged_hits[0].__dict__['dimensions']['useragent'])
+        self.assertIn('Chrome/72.0.3626.105', logged_hits[0].__dict__['dimensions']['useragent'])
 
 
 if __name__ == '__main__':
