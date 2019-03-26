@@ -1,7 +1,7 @@
 '''
 Generate fixture from Redis data
 
-Usage example: TEST_REDIS_URL=redis://localhost:6379/0 python framework/test/_prepare_bus_fixture.py  > framework/test/redis_fixture.py
+Usage example: TEST_REDIS_URL=redis://localhost:6379/0 python data/framework/test/fixtures/_prepare_bus_fixture.py  > framework/test/redis_fixture.py
 '''
 import os
 import sys

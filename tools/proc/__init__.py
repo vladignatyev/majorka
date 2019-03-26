@@ -4,7 +4,7 @@ import subprocess
 import time
 import socket
 
-from pipelog import LogTrap
+from proc.pipelog import LogTrap
 
 
 class AwaitingException(Exception): pass
@@ -70,9 +70,9 @@ class Multiprocess(object):
 
 
     def poll(self):
-        return_codes = map(lambda (name, proc): (name, proc, proc.poll()), self.processes.items())
+        return_codes = map(lambda name, proc: name, proc, proc.poll(), self.processes.items())
 
-        died = filter(lambda (name, proc, code): code is not None, return_codes)
+        died = filter(lambda name, proc, code: code is not None, return_codes)
 
         postmortem = [None] * len(died)
         for i, dead in enumerate(died):

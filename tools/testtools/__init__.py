@@ -27,6 +27,46 @@ global HANG_TEST
 HANG_TEST = False
 
 
+class MajorkaInterface(object):
+    def __init__(self, listen_port):
+        self.majorka_port = listen_port
+
+    @classmethod
+    def build_majorka_server_cmd(cls, redis_url,
+                                 binpath=DEFAULT_MAJORKA_SERVER_BINPATH,
+                                 listen_port=DEFAULT_MAJORKA_PORT,
+                                 redis_port=DEFAULT_REDIS_PORT,
+                                 verbose=True):
+        return [
+            binpath,
+            "--redis", redis_url,
+            "--port", str(listen_port),
+            "--log", "debug" if verbose else "critical"
+        ]
+
+    @classmethod
+    def build_redis_server_cmd(cls, binpath=DEFAULT_REDIS_BINPATH, port=DEFAULT_REDIS_PORT):
+        return [binpath, "--port", str(port)]
+
+    def majorka_url(self, campaign_alias=None):
+        """
+        Majorka server URL builder based on `furl`
+
+        >>> i = MajorkaInterface(listen_port=8008)
+        >>> assert str(i.majorka_url()) == 'http://127.0.0.1:8008/'
+        >>> assert str(i.majorka_url(campaign_alias='testcampaign')) == 'http://127.0.0.1:8008/alias?currency=%7Bcurrency%7D&cost=%7Bcost%7D&zone=%7Bzone%7D'
+        >>> assert str(i.majorka_url(campaign_alias='testcampaign').add({'myparam': '{myparam}'})) == 'http://127.0.0.1:8008/alias?currency=%7Bcurrency%7D&cost=%7Bcost%7D&zone=%7Bzone%7D&myparam=%7Bmyparam%7D'
+        """
+        if campaign_alias is None:
+            return furl('http://127.0.0.1:{port}/'.format(port=self.majorka_port))
+        else:
+            return furl('http://127.0.0.1:{port}/'.format(port=self.majorka_port)).join('alias').add({
+                'zone': '{zone}',
+                'cost': '{cost}',
+                'currency': '{currency}'
+            })
+
+
 class EnvironmentTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -39,6 +79,8 @@ class EnvironmentTestCase(unittest.TestCase):
         cls.verbose = bool(os.environ.get('TEST_VERBOSE', DEFAULT_VERBOSE))
 
         cls.fixture = MajorkaFixture(binpath=cls.majorka_cli_binpath, redis_url=cls.redis_url)
+
+        cls.majorka = MajorkaInterface(listen_port=cls.majorka_port)
 
         # todo: extract to Environment
         cls.setupLogger()
@@ -71,8 +113,8 @@ class EnvironmentTestCase(unittest.TestCase):
     @classmethod
     def setupServers(cls):
         servers = (
-            ('Redis Server', EnvironmentTestCase.build_redis_server_cmd(binpath=cls.redis_binpath, port=cls.redis_port)),
-            ('Majorka Server', EnvironmentTestCase.build_majorka_server_cmd(binpath=cls.majorka_binpath, redis_url=cls.redis_url, listen_port=cls.majorka_port, redis_port=cls.redis_port, verbose=False)),
+            ('Redis Server', cls.majorka.build_redis_server_cmd(binpath=cls.redis_binpath, port=cls.redis_port)),
+            ('Majorka Server', cls.majorka.build_majorka_server_cmd(binpath=cls.majorka_binpath, redis_url=cls.redis_url, listen_port=cls.majorka_port, redis_port=cls.redis_port, verbose=False)),
         )
 
         cls.multiprocess = Multiprocess(logger=cls.logger, proc=servers)
@@ -82,26 +124,6 @@ class EnvironmentTestCase(unittest.TestCase):
         cls.multiprocess.await_socket(proc='Majorka Server', port=cls.majorka_port)
 
         cls.log_readers = dict(map(lambda (k, l): (k, l.get_reader()), cls.multiprocess.proc_loggers.items()))
-
-    @classmethod
-    def build_majorka_server_cmd(cls, redis_url,
-                                 binpath=DEFAULT_MAJORKA_SERVER_BINPATH,
-                                 listen_port=DEFAULT_MAJORKA_PORT,
-                                 redis_port=DEFAULT_REDIS_PORT,
-                                 verbose=True):
-        return [
-            binpath,
-            "--redis", redis_url,
-            "--port", str(listen_port),
-            "--log", "debug" if verbose else "critical"
-        ]
-
-    @classmethod
-    def build_redis_server_cmd(cls, binpath=DEFAULT_REDIS_BINPATH, port=DEFAULT_REDIS_PORT):
-        return [binpath, "--port", str(port)]
-
-    def majorka_url(self):
-        return furl('http://127.0.0.1:{port}/'.format(port=self.majorka_port))
 
     def setUp(self):
         self.redis.flushdb()
@@ -157,3 +179,9 @@ def main(*args, **kwargs):
 class MajorkaFixture(Majorka):
     def __init__(self, *args, **kwargs):
         super(MajorkaFixture, self).__init__(*args, **kwargs)
+
+
+if __name__ == '__main__':
+    # Run doctests of the module
+    import doctest
+    doctest.testmod()
