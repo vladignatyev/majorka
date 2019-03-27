@@ -31,9 +31,16 @@ def block_zones_for_given_campaign(zones, campaign_id):
     assert propeller.is_authorized()
 
     logger = logging.getLogger('block_zones')
-    logger.info('zones %s type %s', zones, type(zones))
 
-    propeller.authorized().campaign_set_exclude_zones(campaign_id, zones)
+    uniq_zones = set(zones)
+
+    existing_black_zones = propeller.authorized().campaign_get_exclude_zones(campaign_id=campaign_id)
+
+    set_existing_black_zones = set(existing_black_zones)
+
+    new_zones_black_list = list(set_existing_black_zones.union(uniq_zones))
+
+    propeller.authorized().campaign_set_exclude_zones(campaign_id, new_zones_black_list)
 
     exclude_zones = propeller.authorized().campaign_get_exclude_zones(campaign_id=campaign_id)
     logger.info('exclude %s', exclude_zones)
