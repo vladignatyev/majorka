@@ -108,7 +108,10 @@ class Multiprocess(object):
             else:
                 self.log.debug("Awaiting `%s` process to start listening on port `%s`...", proc, port)
                 num_retries += 1
-                time.sleep(1)
+                try:
+                    time.sleep(1)
+                except KeyboardInterrupt:
+                    return
 
         raise MultiprocessException("Num retries ({retries}) exceed, " \
                                     "but socket port {port} still not alive " \

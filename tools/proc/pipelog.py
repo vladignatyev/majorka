@@ -1,6 +1,5 @@
 from itertools import chain
 from datetime import datetime
-from time import sleep
 import threading
 
 
