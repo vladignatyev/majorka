@@ -99,11 +99,12 @@ class EnvironmentTestCase(unittest.TestCase):
         cls.logger = logging.getLogger('test')
         cls.logger.setLevel(logging.DEBUG)
 
-        handler = logging.StreamHandler()
-        handler.setLevel(logging.DEBUG)
-        handler.setFormatter(logging.Formatter('\33[92m[%(name)s] \33[0m\33[90m%(asctime)-15s\33[1m\33[37m %(message)s\33[0m'))
+        if not cls.logger.handlers:
+            handler = logging.StreamHandler()
+            handler.setLevel(logging.DEBUG)
+            handler.setFormatter(logging.Formatter('\33[92m[%(name)s] \33[0m\33[90m%(asctime)-15s\33[1m\33[37m %(message)s\33[0m'))
 
-        cls.logger.addHandler(handler)
+            cls.logger.addHandler(handler)
 
     @classmethod
     def setupConnections(cls):
