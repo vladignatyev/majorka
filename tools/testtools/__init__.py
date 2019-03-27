@@ -68,68 +68,79 @@ class MajorkaInterface(object):
 
 
 class EnvironmentTestCase(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.redis_port = int(os.environ.get('TEST_REDIS_PORT', DEFAULT_REDIS_PORT))
-        cls.redis_binpath = os.environ.get('TEST_REDIS_BIN', DEFAULT_REDIS_BINPATH)
-        cls.majorka_binpath = os.environ.get('TEST_MAJORKA_SERVER_BIN', DEFAULT_MAJORKA_SERVER_BINPATH)
-        cls.majorka_port =  int(os.environ.get('TEST_MAJORKA_SERVER_PORT', DEFAULT_MAJORKA_PORT))
-        cls.majorka_cli_binpath = os.environ.get('TEST_MAJORKA_CLI_BIN', DEFAULT_MAJORKA_CLI_BINPATH)
-        cls.redis_url = 'redis://localhost:{port}/0'.format(port=cls.redis_port)
-        cls.verbose = bool(os.environ.get('TEST_VERBOSE', DEFAULT_VERBOSE))
+    def setupLogger(self):
+        self.logger = logging.getLogger('test')
+        self.logger.setLevel(logging.DEBUG)
 
-        cls.fixture = MajorkaFixture(binpath=cls.majorka_cli_binpath, redis_url=cls.redis_url)
+        if not self.logger.handlers:
+            handler = logging.StreamHandler()
+            handler.setLevel(logging.DEBUG)
+            handler.setFormatter(logging.Formatter('\33[92m[%(name)s] \33[0m\33[90m%(asctime)-15s\33[1m\33[37m %(message)s\33[0m'))
 
-        cls.majorka = MajorkaInterface(listen_port=cls.majorka_port)
+            self.logger.addHandler(handler)
 
-        # todo: extract to Environment
-        cls.setupLogger()
-        cls.setupServers()
-        cls.setupConnections()
+    def setupConnections(self):
+        self.redis = Redis.from_url(self.redis_url)
+        self.bus = BusConnection(redis=self.redis, entities_meta=ENTITIES)
 
-        # we need a safe default behaviour, but accesing report_db may change data not as expected, see issue https://github.com/vladignatyev/majorka/issues/23
-        # cls.report_db = Database(url=os.environ['TEST_CLICKHOUSE_URL'], db='test', connection_timeout=1, data_read_timeout=1)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.multiprocess.kill()
-
-    @classmethod
-    def setupLogger(cls):
-        cls.logger = logging.getLogger('test')
-        cls.logger.setLevel(logging.DEBUG)
-
-        handler = logging.StreamHandler()
-        handler.setLevel(logging.DEBUG)
-        handler.setFormatter(logging.Formatter('\33[92m[%(name)s] \33[0m\33[90m%(asctime)-15s\33[1m\33[37m %(message)s\33[0m'))
-
-        cls.logger.addHandler(handler)
-
-    @classmethod
-    def setupConnections(cls):
-        cls.redis = Redis.from_url(cls.redis_url)
-        cls.bus = BusConnection(redis=cls.redis, entities_meta=ENTITIES)
-
-    @classmethod
-    def setupServers(cls):
+    def setupServers(self):
         servers = (
-            ('Redis Server', cls.majorka.build_redis_server_cmd(binpath=cls.redis_binpath, port=cls.redis_port)),
-            ('Majorka Server', cls.majorka.build_majorka_server_cmd(binpath=cls.majorka_binpath, redis_url=cls.redis_url, listen_port=cls.majorka_port, redis_port=cls.redis_port, verbose=False)),
+            ('Redis Server', self.majorka.build_redis_server_cmd(binpath=self.redis_binpath, port=self.redis_port)),
+            ('Majorka Server', self.majorka.build_majorka_server_cmd(binpath=self.majorka_binpath, redis_url=self.redis_url, listen_port=self.majorka_port, redis_port=self.redis_port, verbose=False)),
         )
 
-        cls.multiprocess = Multiprocess(logger=cls.logger, proc=servers)
-        cls.multiprocess.launch()
+        self.multiprocess = Multiprocess(logger=self.logger, proc=servers)
+        self.multiprocess.launch()
 
-        cls.multiprocess.await_socket(proc='Redis Server', port=cls.redis_port)
-        cls.multiprocess.await_socket(proc='Majorka Server', port=cls.majorka_port)
+        self.multiprocess.await_socket(proc='Redis Server', port=self.redis_port)
+        self.multiprocess.await_socket(proc='Majorka Server', port=self.majorka_port)
 
-        cls.log_readers = dict(map(lambda (k, l): (k, l.get_reader()), cls.multiprocess.proc_loggers.items()))
+        self.log_readers = dict(map(lambda (k, l): (k, l.get_reader()), self.multiprocess.proc_loggers.items()))
+        #
+        # import signal
+        #
+        # def my_ctrlc_handler(signal, frame):
+        #     self.multiprocess.kill()
+        #     sys.exit(0)
+        #     # raise KeyboardInterrupt
+        #
+        # signal.signal(signal.SIGINT, my_ctrlc_handler)
+
 
     def setUp(self):
+        self.redis_port = int(os.environ.get('TEST_REDIS_PORT', DEFAULT_REDIS_PORT))
+        self.redis_binpath = os.environ.get('TEST_REDIS_BIN', DEFAULT_REDIS_BINPATH)
+        self.majorka_binpath = os.environ.get('TEST_MAJORKA_SERVER_BIN', DEFAULT_MAJORKA_SERVER_BINPATH)
+        self.majorka_port =  int(os.environ.get('TEST_MAJORKA_SERVER_PORT', DEFAULT_MAJORKA_PORT))
+        self.majorka_cli_binpath = os.environ.get('TEST_MAJORKA_CLI_BIN', DEFAULT_MAJORKA_CLI_BINPATH)
+        self.redis_url = 'redis://localhost:{port}/0'.format(port=self.redis_port)
+        self.verbose = bool(os.environ.get('TEST_VERBOSE', DEFAULT_VERBOSE))
+
+        self.fixture = MajorkaFixture(binpath=self.majorka_cli_binpath, redis_url=self.redis_url)
+
+        self.majorka = MajorkaInterface(listen_port=self.majorka_port)
+
+        # todo: extract to Environment
+        self.setupLogger()
+        self.setupServers()
+        self.setupConnections()
+
+        # we need a safe default behaviour, but accesing report_db may change data not as expected, see issue https://github.com/vladignatyev/majorka/issues/23
+        # self.report_db = Database(url=os.environ['TEST_CLICKHOUSE_URL'], db='test', connection_timeout=1, data_read_timeout=1)
+
         self.redis.flushdb()
+
+
 
     def tearDown(self):
         self.redis.flushdb()
+
+        self.multiprocess.kill()
+
+    def __exit__(self, exception_type, exception_val, trace):
+        super(EnvironmentTestCase, self).__exit__(exception_type, exception_val, trace)
+        return False # propagate exceptions
+
 
 
 def hang(test):
@@ -173,7 +184,7 @@ def main(*args, **kwargs):
         argv = argv[:i] + argv[i + 1:]
         HANG_TEST = True
 
-    unittest.main(argv=argv, *args, **kwargs)
+    unittest.main(argv=argv, catchbreak=False, *args, **kwargs)
 
 
 class MajorkaFixture(Majorka):

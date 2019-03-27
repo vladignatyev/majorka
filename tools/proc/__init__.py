@@ -88,8 +88,8 @@ class Multiprocess(object):
     def kill(self):
         self._log_info_header("Terminating...")
 
-        self._destroy_logs()
         self._reap_children()
+        self._destroy_logs()
 
     def await_socket(self, proc, port, max_retries=5, ips=('127.0.0.1', '0.0.0.0',)):
         num_retries = 0
@@ -108,7 +108,10 @@ class Multiprocess(object):
             else:
                 self.log.debug("Awaiting `%s` process to start listening on port `%s`...", proc, port)
                 num_retries += 1
-                time.sleep(1)
+                try:
+                    time.sleep(1)
+                except KeyboardInterrupt:
+                    return
 
         raise MultiprocessException("Num retries ({retries}) exceed, " \
                                     "but socket port {port} still not alive " \
