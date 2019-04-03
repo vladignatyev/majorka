@@ -1,6 +1,7 @@
 import subprocess
 import requests
 import unittest
+from unittest import skip
 
 import json
 
@@ -11,6 +12,8 @@ from testtools.simulator import BasicTrafficSampler, samples_from_fixture, with_
 from testtools.fixtures.hit_samples import fixture_data as hit_samples
 from testtools.models import MultiDimensionDistribution
 
+
+@skip
 class AbTest(EnvironmentTestCase):
     def _get_ab_args(self, url):
         return [
@@ -33,7 +36,7 @@ class AbTest(EnvironmentTestCase):
         ]
         self.fixture.create_campaign(name='test campaign', alias='alias', offer_ids=offers)
 
-        result = subprocess.check_output(self._get_ab_args(url=self.majorka.majorka_url().join('alias')))
+        result = subprocess.check_output(self._get_ab_args(url=self.majorka.campaign_url(campaign='alias')))
 
         logged_hits = list(self.bus.multiread('Hits', start=0))
         self.assertEqual(len(logged_hits), 10000)
@@ -48,7 +51,8 @@ class RedirectsTest(EnvironmentTestCase):
         ]
         self.fixture.create_campaign(name='test campaign', alias='alias', offer_ids=offers)
 
-        url = self.majorka.majorka_url().join('alias') # http://domain.com/alias
+        url = self.majorka.campaign_url(campaign='alias')
+        print str(url)
         response = requests.get(url, allow_redirects=False)
 
         self.assertEqual(response.status_code, 302)
@@ -64,7 +68,7 @@ class TrafficTest(EnvironmentTestCase):
     @hang
     def test_simple(self):
         # todo: extract method majorka_url_for_campaign_by_alias
-        base_url = self.majorka.majorka_url().join('alias').add({
+        base_url = self.majorka.campaign_url(campaign='alias').add({
             'connection_type': '{connection_type}',
             'zone': '{zone}',
             'cost': '{cost}',
@@ -110,7 +114,7 @@ class TrafficSamplerTest(EnvironmentTestCase):
         self.fixture.create_campaign(name='test campaign', alias='alias', offer_ids=offers)
 
         # create url template for campaign, that accepts connection type as a parameter
-        base_url = self.majorka.majorka_url(campaign_alias='alias').add({
+        base_url = self.majorka.campaign_url(campaign='alias').add({
             'connection_type': '{connection_type}'
         })
 
@@ -124,7 +128,6 @@ class TrafficSamplerTest(EnvironmentTestCase):
             response = sampler.send(request)
             self.assertEqual(response.status_code, 302)
             self.assertIn('http://test-url', response.headers['location'])
-            # print response.headers['location']
 
 
 class ZoneSampleModelTest(EnvironmentTestCase):
@@ -167,7 +170,7 @@ class ZoneSampleModelTest(EnvironmentTestCase):
         self.fixture.create_campaign(name='test campaign', alias='alias', offer_ids=[self.fixture.create_offer(name='test offer {i}'.format(i=i), url='http://test-url-{i}.com/?external_id={external_id}'.format(i=i, external_id='{external_id}')) for i, offer_id in enumerate(offer_ids)])
 
         # create url template for campaign, that accepts connection type as a parameter
-        base_url = self.majorka.majorka_url(campaign_alias='alias').add({
+        base_url = self.majorka.campaign_url(campaign='alias').add({
             'connection_type': '{connection_type}'
         })
 
@@ -197,20 +200,14 @@ class ZoneSampleModelTest(EnvironmentTestCase):
 
             if random.random() <= prob:
                 # conversion occured
-                postback_url = self.majorka.majorka_url().set(None, 'postback/').add({'external_id': external_id, 'revenue': '0.06', 'currency': 'usd', 'status': 'lead'})
+                postback_url = self.majorka.postback_url(external_id, revenue='0.06', currency='usd', status='lead')
                 print postback_url
-                requests.get(postback_url)
+                response = requests.get(postback_url)
+                self.assertEqual(response.status_code, 200)
                 conv += 1
-
-        print conv
 
         logged_conversions = list(self.bus.multiread('Conversions', start=0))
         self.assertEqual(len(logged_conversions), conv)
-
-
-
-
-
 
 
 if __name__ == '__main__':

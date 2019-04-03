@@ -48,23 +48,38 @@ class MajorkaInterface(object):
     def build_redis_server_cmd(cls, binpath=DEFAULT_REDIS_BINPATH, port=DEFAULT_REDIS_PORT):
         return [binpath, "--port", str(port)]
 
-    def majorka_url(self, campaign_alias=None):
+    # todo: add separate methods for campaign URL and postback url
+    def majorka_url(self):
         """
         Majorka server URL builder based on `furl`
 
         >>> i = MajorkaInterface(listen_port=8008)
         >>> assert str(i.majorka_url()) == 'http://127.0.0.1:8008/'
-        >>> assert str(i.majorka_url(campaign_alias='testcampaign')) == 'http://127.0.0.1:8008/alias?currency=%7Bcurrency%7D&cost=%7Bcost%7D&zone=%7Bzone%7D'
-        >>> assert str(i.majorka_url(campaign_alias='testcampaign').add({'myparam': '{myparam}'})) == 'http://127.0.0.1:8008/alias?currency=%7Bcurrency%7D&cost=%7Bcost%7D&zone=%7Bzone%7D&myparam=%7Bmyparam%7D'
         """
-        if campaign_alias is None:
-            return furl('http://127.0.0.1:{port}/'.format(port=self.majorka_port))
-        else:
-            return furl('http://127.0.0.1:{port}/'.format(port=self.majorka_port)).join('alias').add({
-                'zone': '{zone}',
-                'cost': '{cost}',
-                'currency': '{currency}'
-            })
+        return furl('http://127.0.0.1:{port}/'.format(port=self.majorka_port))
+
+    def campaign_url(self, campaign):
+        """
+        Majorka server URL builder based on `furl`
+
+        >>> i = MajorkaInterface(listen_port=8008)
+        >>> assert str(i.campaign_url(campaign='testcampaign')) == 'http://127.0.0.1:8008/campaign/testcampaign?currency=%7Bcurrency%7D&cost=%7Bcost%7D&zone=%7Bzone%7D'
+        >>> assert str(i.campaign_url(campaign='testcampaign').add({'myparam': '{myparam}'})) == 'http://127.0.0.1:8008/campaign/testcampaign?currency=%7Bcurrency%7D&cost=%7Bcost%7D&zone=%7Bzone%7D&myparam=%7Bmyparam%7D'
+        """
+        return self.majorka_url().join('campaign/{alias}'.format(alias=campaign)).add({
+            'zone': '{zone}',
+            'cost': '{cost}',
+            'currency': '{currency}'
+        })
+
+    def postback_url(self, external_id, revenue='0.06', currency='usd', status='lead'):
+        return self.majorka_url().set(None, 'postback').add({
+            'external_id': external_id,
+            'revenue': str(revenue),
+            'currency': currency,
+            'status': status
+        })
+
 
 
 class EnvironmentTestCase(unittest.TestCase):

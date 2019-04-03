@@ -33,6 +33,7 @@ class Majorka(object):
             return normal
 
         smart = [
+            '--smart',
             '--hit-limit', str(int(hit_limit)),
             '--slice', ' '.join(map(str, slice))
         ]
