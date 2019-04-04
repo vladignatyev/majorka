@@ -62,5 +62,5 @@ class TabSeparated(object):
 
         output = u""
         dims = len(self.data[0])
-        print self.data
+
         return u'\n'.join(map(_tab_separated_row_func(dims), enumerate(self.data)))
