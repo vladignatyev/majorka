@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "DON't RUN IT IF YOU DUNNO WHY YOU DO"
+exit 1
+
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "agecheck1" --url "https://liveinmac.com/agecheck/age-check/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "agecheck2" --url "https://liveinmac.com/agecheck/age-check-1/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "botcheck1" --url "https://liveinmac.com/botcheck/bot-captcha/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "botcheck2" --url "https://liveinmac.com/botcheck/bot-check/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "botcheck3" --url "https://liveinmac.com/botcheck/bot-check-3/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "botcheck4" --url "https://liveinmac.com/botcheck/bot-detect/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "download1" --url "https://liveinmac.com/download/download/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "download2" --url "https://liveinmac.com/download/download-1/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "mario" --url "https://liveinmac.com/games/mario/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "access-website" --url "https://liveinmac.com/general/access-website/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "progress" --url "https://liveinmac.com/general/progress/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "weather" --url "https://liveinmac.com/general/weather/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "gift-card" --url "https://liveinmac.com/sweeps/gift-card/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "sweep" --url "https://liveinmac.com/sweeps/sweep/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "win-iphone" --url "https://liveinmac.com/sweeps/win-iphone/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "video-play" --url "https://liveinmac.com/video/play/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "video-video" --url "https://liveinmac.com/video/video/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "video1" --url "https://liveinmac.com/video/video-1/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "video2" --url "https://liveinmac.com/video/video-2/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "video3" --url "https://liveinmac.com/video/video-3/?external_id={external_id}"
+../core/target/debug/majorka-cli --redis redis://127.0.0.1:6380/ offers create --name "video4" --url "https://liveinmac.com/video/video-4/?external_id={external_id}"
