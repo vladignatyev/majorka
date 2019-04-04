@@ -43,8 +43,8 @@ def _tab_separated_row_func(dims):
                                     row=row,
                                     val=row_content)
         try:
-            row_tab_separated = '\t'.join(map(_tab_separated_escape_vals, enumerate(row_content)))
-        except TabSeparatedError as e:
+            row_tab_separated = u'\t'.join(map(_tab_separated_escape_vals, enumerate(row_content)))
+        except Exception as e:
             raise TabSeparatedError(msg=e.msg, row=row, col=e.col, val=row_content)
 
         return row_tab_separated
@@ -58,9 +58,9 @@ class TabSeparated(object):
     def generate(self):
         # trivial case
         if len(self.data) == 0:
-            return ""
+            return u""
 
-        output = ""
+        output = u""
         dims = len(self.data[0])
-
-        return '\n'.join(map(_tab_separated_row_func(dims), enumerate(self.data)))
+        print self.data
+        return u'\n'.join(map(_tab_separated_row_func(dims), enumerate(self.data)))

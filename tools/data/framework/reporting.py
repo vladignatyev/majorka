@@ -102,13 +102,13 @@ class SQLGenerator(object):
 
         column_names_fmt = ', '.join(column_names)
 
-        sql = "INSERT INTO {db}.{table_name} ({column_names}) "\
-              "FORMAT TabSeparated\n{tab_separated_data}".format(db=self._db_name,
-                                                                 table_name=table,
-                                                                 column_names=column_names_fmt,
-                                                                 tab_separated_data=tab_separated_data.generate())
+        sql = u"INSERT INTO {db}.{table_name} ({column_names}) "\
+              u"FORMAT TabSeparated\n{tab_separated_data}".format(db=self._db_name,
+                                                                  table_name=table,
+                                                                  column_names=column_names_fmt,
+                                                                  tab_separated_data=tab_separated_data.generate())
 
-        return sql
+        return sql.encode('utf-8')
 
 
 class Database(object):
