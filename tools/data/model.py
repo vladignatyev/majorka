@@ -309,7 +309,7 @@ class DataImport(object):
             if o is None:
                 self.log.warn("Some objects for `hits` collection are missed. "
                               "It is a normal case, when data in Redis has been compacted, but could be a bad sign if it hasn't. "
-                              "Missed hit appeared after hit with ID: {id} ".format(id=last_hit.id))
+                              "Missed hit appeared after hit with ID: {id} ".format(id=getattr(last_hit, 'id', "unknown")))
                 continue
             delta = diff(existing_columns, wrap_comparable(o.into_db_columns()), custom_sorted=_custom_diff_sorting)
             if delta is not None:
