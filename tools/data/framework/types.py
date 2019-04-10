@@ -302,7 +302,10 @@ class Type(object):
 
         def into_db_type(self): return 'Date'
         def from_db_value(self, db_value, column_name=None):
-            return datetime.strptime(db_value, '%Y-%m-%d')
+            if db_value == '0000-00-00':
+                return datetime.strptime('2001-01-01', '%Y-%m-%d')
+            else:
+                return datetime.strptime(db_value, '%Y-%m-%d')
 
         def default_py_value(self):
             now = datetime.now()
@@ -319,7 +322,10 @@ class Type(object):
 
         def into_db_type(self): return 'DateTime'
         def from_db_value(self, db_value, column_name=None):
-            return datetime.strptime(db_value, '%Y-%m-%d %H:%M:%S')
+            if db_value == '0000-00-00 00:00:00':
+                return datetime.strptime('2001-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+            else:
+                return datetime.strptime(db_value, '%Y-%m-%d %H:%M:%S')
 
         def default_py_value(self):
             return datetime.now()
