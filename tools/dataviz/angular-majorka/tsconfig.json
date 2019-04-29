@@ -18,5 +18,11 @@
       "es2018",
       "dom"
     ]
-  }
+  },
+  "include": [
+    "src/**/*",
+    "node_modules/jquery/jquery.min.js",
+    "node_modules/popper.js/dist/popper.min.js",
+    "node_modules/bootstrap/js/dist/*.js"
+  ]
 }

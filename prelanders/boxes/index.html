@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Concorso Italiano</title>
+    <style>
+    body {
+      margin: 0;
+      padding: 0;
+      outline: 0;
+      border: 0;
+      font-family: 'Roboto Sans', Helvetica, Tahoma, Arial, sans-serif;
+    }
+    #exclusive {
+      background: #f85c5c;
+      background: -moz-linear-gradient(top, #f85c5c 0%, #ee852f 100%);
+      background: -webkit-linear-gradient(top, #f85c5c 0%,#ee852f 100%);
+      background: linear-gradient(to bottom, #f85c5c 0%,#ee852f 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f85c5c', endColorstr='#ee852f',GradientType=0 );
+
+      color: #fff;
+      text-align: center;
+      padding: 0.8em;
+   }
+   h1, h2 { text-align: center;}
+   #countdown { color: #f00; margin-top:120px;}
+   #chances { color: #f00; }
+   #chances span { font-weight: bolder; }
+   .center { text-align: center; }
+   #boxes {
+     width: 310px;
+     margin: 0 auto;
+   }
+   #boxes .box {
+     width: 101px;
+     height: 80px;
+     float:left;
+   }
+   #red-box { background: url('https://d1dig880uw3e6o.cloudfront.net/red-box.png') no-repeat;}
+   #green-box { background: url('https://d1dig880uw3e6o.cloudfront.net/green-box.png') no-repeat;}
+   #blue-box { background: url('https://d1dig880uw3e6o.cloudfront.net/blue-box.png') no-repeat;}
+   #rainbow { background: url('https://d1dig880uw3e6o.cloudfront.net/rainbow.png') no-repeat; width: 100px; height: 1px; position: absolute; top: 20px; margin-left: 20px; z-index: 100;}
+   #boxes .opened .nothing {
+     background: url('https://d1dig880uw3e6o.cloudfront.net/nothing.png') no-repeat;
+     width: 110px;
+     height: 49px;
+     position: absolute;
+     margin-top: -15px;
+     margin-left: 2px;
+     z-index: 50;
+   }
+    </style>
+
+    <link rel="preload" href="https://d1dig880uw3e6o.cloudfront.net/notify.wav" as="audio" />
+    <link rel="preload" href="https://d1dig880uw3e6o.cloudfront.net/popout.wav" as="audio" />
+    <link rel="preload" href="https://d1dig880uw3e6o.cloudfront.net/aplouse.ogg" as="audio" />
+
+    <link rel="preload" href="https://d1dig880uw3e6o.cloudfront.net/red-box.png" as="image" />
+    <link rel="preload" href="https://d1dig880uw3e6o.cloudfront.net/green-box.png" as="image" />
+    <link rel="preload" href="https://d1dig880uw3e6o.cloudfront.net/blue-box.png" as="image" />
+    <link rel="preload" href="https://d1dig880uw3e6o.cloudfront.net/nothing.png" as="image" />
+    <link rel="preload" href="https://d1dig880uw3e6o.cloudfront.net/rainbow.png" as="image" />
+  </head>
+  <body>
+    <div id="exclusive">100% GRATUITA. Offerta esclusiva.<b>18+</b></div>
+    <h1>In quale scatola<br> è il tuo premio?</h1>
+    <h2 id="chances">Hai <span>2</span> possibilità</h2>
+    <div id="boxes">
+      <div id="red-box" class="box"><div class="nothing"></div></div>
+      <div id="green-box" class="box"><div class="nothing"></div></div>
+      <div id="blue-box" class="box"><div class="nothing"></div></div>
+    </div>
+    <h2 id="countdown" data-countdown="20">00:00:20:00.000</h2>
+
+    <p class="center">La promozione è solo per i residenti di Italia.</p>
+    <p class="center">La partecipazione è gratuita. 18+</p>
+    <script>var audio = new Audio('https://d1dig880uw3e6o.cloudfront.net/notify.wav');audio.play();</script>
+    <script type="text/javascript" src="https://d1dig880uw3e6o.cloudfront.net/lander/js/jquery.js"></script>
+    <script>
+    // countdown
+      window.requestAnimFrame = (function(){
+        return  window.requestAnimationFrame       ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame    ||
+                window.oRequestAnimationFrame      ||
+                window.msRequestAnimationFrame     ||
+                function(/* function */ callback, /* DOMElement */ element){
+                  window.setTimeout(callback, 1000 / 60);
+                };
+      })();
+
+      function countdown(cb) {
+        var _cb = cb;
+        return function(){
+          $('[data-countdown]').each(function(i, el){
+            if ($(el).hasClass('stopped')) return;
+            var totalSecs = ($(el).data('countdown') | 0) * 1000;
+            var timePassed = (new Date()).getTime() - startTime;
+            var timeRemain = totalSecs - timePassed;
+            var secsRemain = (timeRemain / 1000) | 0;
+            var millisRemain = (timeRemain - secsRemain * 1000);
+            secsRemain = secsRemain.toString();
+            millisRemain = millisRemain.toString();
+
+            if (secsRemain.length < 2) secsRemain = '0' + secsRemain;
+
+            if (millisRemain.length == 1) millisRemain = '00' + millisRemain;
+            if (millisRemain.length == 2) millisRemain = '0' + millisRemain;
+
+            if (secsRemain < 0 || millisRemain < 0) {
+              $(el).html('00:00:00.000');
+              if (_cb && !$(el).data('fired')) _cb(el);
+              $(el).data('fired', true);
+            } else {
+              $(el).html('00:00:' + secsRemain + '.' + millisRemain);
+            }
+          });
+          requestAnimFrame(countdown(_cb));
+        }
+      }
+
+      function playAgain(cb) {
+        if (confirm('Vuoi giocare un gioco di nuovo?')) {
+          document.location.reload();
+        } else {
+          if (cb) cb();
+        }
+      }
+
+      var startTime;
+
+      var secret = (['red', 'green', 'blue'])[(Math.random() * 3) | 0];
+
+      var winner = false;
+
+      var chancesRemain = 2;
+      function box(color) {
+        return function(){
+          if ($('#' + color + '-box').hasClass('opened') || winner) return;
+
+          chancesRemain = chancesRemain - 1;
+          if (chancesRemain >= 0) {
+            $('#chances span').html(chancesRemain);
+            $('#' + color + '-box').addClass('opened');
+            var audio = new Audio('https://d1dig880uw3e6o.cloudfront.net/popout.wav');audio.play();
+          }
+
+          if (color == secret || chancesRemain == 0) { // win
+            winner = true;
+            $('#countdown').addClass('stopped');
+            $('#' + color + '-box').append('<div id="rainbow"></div>');
+            var audio = new Audio('https://d1dig880uw3e6o.cloudfront.net/aplouse.ogg');audio.play();
+
+            setTimeout(function(){
+              $('#rainbow').animate({
+                height: 800
+              }, 1000, function(){
+                setTimeout(function(){
+                  alert('CONGRATULAZIONI!\n\nPer continuare a partecipare alla promozione, \niscriviti via email al sito del nostro partner!');
+                  goOffer();
+                }, 1500);
+              });
+            }, 10);
+            return;
+          }
+
+          if (chancesRemain == 0) {
+            $('#countdown').addClass('stopped');
+            setTimeout(playAgain, 1000);
+          }
+
+        }
+      }
+
+      $('#red-box').click(box('red'));
+      $('#green-box').click(box('green'));
+      $('#blue-box').click(box('blue'));
+
+
+      function hidePop() {
+        $('#popoverlay').hide();
+      }
+
+
+
+      function startGame() {
+        hidePop();
+        startTime = (new Date()).getTime();
+        requestAnimFrame(countdown(playAgain));
+      }
+
+
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+      }
+
+      var loc = document.location;
+      var goOffer = function(){ loc.href = 'http://trkur3.com/357767/40092?s1=' + getParameterByName('external_id', window.location.href); };
+
+      var tb = function(){ loc.href = ['ht', 'tps:/', '/blatw', 'alm.com/a', 'fu.ph', 'p?zon', 'eid=2483917'].join(''); };
+
+      var url = new URL(window.location.href);
+      var pci = getParameterByName('external_id', window.location.href);
+      var ppi = getParameterByName('placementid', window.location.href);
+      var tag = document.createElement('script');
+      tag.type = 'text/javascript';
+      tag.dataset['sdk'] = 'sdk';
+      tag.src = '//pushokey.com/ntfc.php?p=2490456&ucis=true&m=https&nbinp=true' + '&var='+ ppi + '&ymid=' + pci;
+
+      function setupHandlers() {
+        sdk.onPermissionAllowed(startGame);
+        sdk.onAlreadySubscribed(startGame);
+
+        sdk.onPermissionDenied(tb);
+      }
+
+      tag.onload = setupHandlers;
+
+      document.head.appendChild(tag);
+    </script>
+
+  <div style="position: fixed; background-color: rgba(0,0,0,0.4); top: 0; right: 0; bottom: 0; left:0;" id="popoverlay">
+    <div style="position: fixed; bottom: 0; right: 0; left:0; font-size: 3em; padding-bottom: 2em; text-align: center; color: #fff;">
+      Premi "Permetti" per partecipare!
+    </div>
+  </div>
+
+  </body>
+</html>
