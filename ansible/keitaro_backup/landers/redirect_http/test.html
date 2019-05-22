@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Redirect</title>
+  </head>
+  <script src="http_get_params_manipulation.js">
+  </script>
+  <body>
+      <script type="text/javascript">
+          TARGET_LINK_KEY = 'target_link';
+
+          var current_url = window.location.href;
+
+          var url_params = getParams(current_url);
+
+          //DEFAULT URL
+          var target_link = 'http://www.google.com';
+
+          if (url_params.hasOwnProperty(TARGET_LINK_KEY)) {
+            target_link = url_params[TARGET_LINK_KEY];
+            delete url_params[TARGET_LINK_KEY];
+          }
+
+          var result_url = insertAllParamsInto(target_link, getParams(current_url));
+
+          //DEMO GPU MODEL
+          //Insert here likethis fingerprint params
+          result_url = insertParamInto(result_url, 'GPU_MODEL', 'Apple G9 GPU');
+
+          window.location.href = result_url;
+      </script>
+  </body>
+</html>

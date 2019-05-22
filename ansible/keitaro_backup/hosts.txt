@@ -1,0 +1,21 @@
+[server]
+localhost connection=local ansible_user=root
+
+[server:vars]
+skip_firewall=no
+ssl=yes
+ssl_certificate=letsencrypt
+ssl_domains=milf.church
+ssl_email=varuzhnikov@gmail.com
+license_ip=5.9.39.216
+license_key=0ED6-1E58-2167-8634
+db_name=keitaro
+db_user=keitaro
+db_password=K2xpvpg9ums9k57l
+db_restore=no
+db_restore_path=
+db_restore_salt=
+admin_login=admin
+admin_password=Ga4bpov8euIRWOZk
+language=en
+evaluated_by_installer=yes

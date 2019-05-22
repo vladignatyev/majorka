@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="https://d1dig880uw3e6o.cloudfront.net/fp/fingerprint2.min.js"></script>
+<script>
+Fingerprint2.x64hash128 = undefined;
+var options = {
+  webglfp: false,
+  canvasfp: false,
+  dontUseFakeFontInCanvas: true,
+  excludes: {
+    plugins: true,
+    fonts: true
+  }
+};
+
+function fpCallback(f) {
+  var l = '';
+  l = l + 'sub_id_14=' + encodeURI([f['webgl']['unmasked vendor'], f['webgl']['unmasked renderer'], f['webgl']['version']].join('-'));
+  l = l + '&sub_id_13=' + encodeURI([f['webgl']['red bits'], f['webgl']['green bits'], f['webgl']['blue bits'], f['webgl']['depth bits'], f['webgl']['stencil bits']].join(''));
+  l = l + '&sub_id_12=' + encodeURI([f['doNotTrack'], f['adBlock'], f['deviceMemory'],f['hardwareConcurrency']].join('-'));
+  l = l + '&sub_id_11=' + encodeURI([f['hasLiedBrowser']|0, f['hasLiedLanguages']|0, f['hasLiedOs']|0, f['hasLiedResolution']|0].join(''));
+
+  var targetLink = window.location.href.split('target_link=')[1];
+  if (targetLink.indexOf('?') < 0) {
+    targetLink = targetLink + '?';
+  } else {
+    targetLink = targetLink + '&';
+  }
+  window.location.href =  targetLink + l;
+}
+
+if (window.requestIdleCallback) {requestIdleCallback(function(){Fingerprint2.get(options, fpCallback);});}
+else {setTimeout(function(){Fingerprint2.get(options, fpCallback);}, 100);}
+</script>
+<style type="text/css">div { height: 2000px; }</style>
+</head>
+<body>
+<div class="header">&nbsp;</div>
+<a href="{offer}">go</a>
+</body>
+</html>

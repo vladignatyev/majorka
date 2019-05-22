@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <meta charset='utf-8'> 
+    <title>Error: Url returned status fail - Operation canceled</title>
+    <style>* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+}
+
+body {
+  padding: 80px 100px;
+  font: 13px "Helvetica Neue", "Lucida Grande", "Arial";
+  background: #ECE9E9 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#ECE9E9));
+  background: #ECE9E9 -moz-linear-gradient(top, #fff, #ECE9E9);
+  background-repeat: no-repeat;
+  color: #555;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2 {
+  font-size: 22px;
+  color: #343434;
+}
+h1 em, h2 em {
+  padding: 0 5px;
+  font-weight: normal;
+}
+h1 {
+  font-size: 60px;
+}
+h2 {
+  margin-top: 10px;
+}
+ul li {
+  list-style: none;
+}
+#stacktrace {
+  margin-left: 60px;
+}
+</style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <h1>Express</h1>
+      <h2><em>500</em> Error: Url returned status fail - Operation canceled</h2>
+      <ul id="stacktrace"><li></li><li> &nbsp; &nbsp;at Request._callback (/srv/screenshot.keitarotds.com/routes/index.js:87:25)</li><li> &nbsp; &nbsp;at Request.self.callback (/srv/screenshot.keitarotds.com/node_modules/request/main.js:119:22)</li><li> &nbsp; &nbsp;at Request.&lt;anonymous&gt; (/srv/screenshot.keitarotds.com/node_modules/request/main.js:525:16)</li><li> &nbsp; &nbsp;at emitOne (events.js:116:13)</li><li> &nbsp; &nbsp;at Request.emit (events.js:211:7)</li><li> &nbsp; &nbsp;at IncomingMessage.&lt;anonymous&gt; (/srv/screenshot.keitarotds.com/node_modules/request/main.js:484:14)</li><li> &nbsp; &nbsp;at emitNone (events.js:111:20)</li><li> &nbsp; &nbsp;at IncomingMessage.emit (events.js:208:7)</li><li> &nbsp; &nbsp;at endReadableNT (_stream_readable.js:1056:12)</li><li> &nbsp; &nbsp;at _combinedTickCallback (internal/process/next_tick.js:138:11)</li></ul>
+    </div>
+  </body>
+</html>

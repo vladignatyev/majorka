@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pl" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dostęp do strony 18+. Potwierdzenie wymagane.</title>
+    <style>
+    body {
+      margin:0;
+      padding:0;
+      font-family: sans-serif;
+      color: #333;
+      background: #eee;
+    }
+    p {
+      line-height: 1.3em;
+    }
+    .disclaimer {
+      width: 300px;
+      margin: 0 auto;
+    }
+    button {
+      width: 200px;
+      height: 40px;
+      margin: 0 auto;
+      border-radius: 12px;
+      background: #48b055;
+      color: #fff;
+      font-size: 1.0em;
+    }
+    button[disabled] {
+      background: #888;
+    }
+
+    .survey {
+      text-align: center;
+
+    }
+    .survey input {
+      font-size: 1.0em;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="disclaimer">
+      <h1>Dostęp do strony 18+</h1>
+      <p>Teraz wchodzisz na stronę z filmami zawierającymi sceny pornograficzne.</p>
+      <p>Dostęp jest ograniczony do osób powyżej 18 roku życia.</p>
+      <h2>Aby potwierdzić wiek, wprowadź numer telefonu na następnej stronie.</h2>
+      <div class="survey">
+        <p>
+          <input class="fields" id="mamtelefon" type="checkbox"/>
+          <label for="mamtelefon">Mam telefon</label>
+        </p>
+        <button id="accept" onclick="javascript:document.location.href='{offer}';" disabled>Zrozumiałem</button>
+      </div>
+    </div>
+    <script>
+      var a = document.getElementById('mamtelefon');
+      var t = false;
+      var h = function (e) {
+        if (!t) {
+          var i = document.createElement('img');
+          i.src = 'http://main.exoclick.com/tag.php?goal=f38c5601c76ca0bedbe4584e136a8dbd';
+          i.width = 1;
+          i.height = 1;
+          document.body.appendChild(i);
+          t = true;
+        }
+        setTimeout(function(){
+          document.getElementById('accept').disabled = !document.getElementById('accept').disabled;
+        }, 500);
+      };
+      if ("onpropertychange" in a) { a.onpropertychange = h; } else { a.onchange = h; }
+    </script>
+
+  </body>
+</html>

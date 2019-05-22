@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Redirect</title>
+  </head>
+  <script type="text/javascript">
+      var getParams = function (url) {
+        var a_element = document.createElement('a');
+        a_element.href = url;
+
+        var search_string = a_element.search;
+
+        if (search_string === '') {
+          return {};
+        }
+
+        var after_question_symbol_string = search_string.substring(1);
+        var http_get_request_params = after_question_symbol_string.split('&');
+
+        var result = {};
+
+        for (var i = 0; i < http_get_request_params.length; i++) {
+          var pair = http_get_request_params[i].split('=');
+          result[pair[0]] = decodeURIComponent(pair[1]);
+        }
+        return result;
+      };
+
+      var insertParamInto = function (url, key, value) {
+        var key = encodeURI(key);
+        var value = encodeURI(value);
+
+        var a_element = document.createElement('a');
+        a_element.href = url;
+
+        var search_string = a_element.search;
+        var after_question_string = search_string.substr(1);
+
+        if (after_question_string === "") {
+          a_element.search = [key, value].join('=');
+          return a_element.href;
+        }
+
+        var http_get_request_params = after_question_string.split('&');
+
+        var i=http_get_request_params.length; var x; while(i--)
+        {
+          x = http_get_request_params[i].split('=');
+
+          if (x[0]==key)
+          {
+            x[1] = value;
+            http_get_request_params[i] = x.join('=');
+            break;
+          }
+        }
+
+        if ( i < 0 ) {
+          http_get_request_params[http_get_request_params.length] = [key,value].join('=');
+        }
+
+        a_element.search = http_get_request_params.join('&');
+        return a_element.href;
+      };
+
+  </script>
+  <body>
+      <script type="text/javascript">
+          TARGET_LINK_KEY = 'target_link'
+
+          var current_url = window.location.href;
+
+          var url_params = getParams(current_url);
+
+          //DEFAULT URL
+          var target_link = 'http://www.google.com';
+
+          if (url_params.hasOwnProperty(TARGET_LINK_KEY)) {
+            target_link = url_params[TARGET_LINK_KEY];
+            delete url_params[TARGET_LINK_KEY];
+          }
+
+          var result_url = target_link;
+          for (var key in url_params) {
+            if (url_params.hasOwnProperty(key)) {
+              result_url = insertParamInto(result_url, key, url_params[key]);
+            }
+          }
+
+          //DEMO GPU MODEL
+          //Insert here likethis fingerprint params
+          result_url = insertParamInto(result_url, 'GPU_MODEL', 'Apple G9 GPU');
+
+          window.location.href = result_url;
+      </script>
+  </body>
+</html>
